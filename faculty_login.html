@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Portal - Waldorf Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 50%, #667eea 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 10%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(4) {
+            width: 70px;
+            height: 70px;
+            bottom: 20%;
+            right: 20%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            padding: 45px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            position: relative;
+            z-index: 1;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .university-logo {
+            font-size: 4.5rem;
+            margin-bottom: 15px;
+            color: #2c5530;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .login-title {
+            color: #2c5530;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .login-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 35px;
+            font-weight: 500;
+        }
+
+        .stats-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5530;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            color: #2c5530;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            position: relative;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2c5530;
+            box-shadow: 0 0 0 4px rgba(44, 85, 48, 0.1);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #666;
+            z-index: 2;
+        }
+
+        .input-icon.email::before {
+            content: '👨‍🏫';
+        }
+
+        .input-icon.password::before {
+            content: '🔒';
+        }
+
+        .input-icon input {
+            padding-left: 55px;
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .remember-me:hover {
+            color: #2c5530;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        .forgot-password {
+            color: #2c5530;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+            color: #1e3a23;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #1e3a23 0%, #2c5530 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(44, 85, 48, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #e1e8ed, transparent);
+        }
+
+        .divider span {
+            margin: 0 20px;
+            background: white;
+            padding: 0 10px;
+        }
+
+        .quick-access {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .quick-btn {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #666;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .quick-btn:hover {
+            border-color: #2c5530;
+            color: #2c5530;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .faculty-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .faculty-type {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .faculty-type:hover,
+        .faculty-type.selected {
+            border-color: #2c5530;
+            background: rgba(44, 85, 48, 0.1);
+            color: #2c5530;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 85, 48, 0.2);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .back-btn:hover {
+            color: #2c5530;
+            background: rgba(44, 85, 48, 0.1);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            display: none;
+            position: relative;
+            animation: slideInDown 0.3s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.info {
+            background: linear-gradient(135deg, #d1ecf1, #b8daff);
+            color: #0c5460;
+            border: 1px solid #b8daff;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 3px solid transparent;
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .demo-credentials {
+            background: linear-gradient(135deg, #e6f3ff, #cce7ff);
+            border: 1px solid #b3d9ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+        }
+
+        .demo-credentials h4 {
+            color: #0066cc;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .demo-credentials code {
+            background: rgba(0, 102, 204, 0.15);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .feature-highlights {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .feature-highlights h4 {
+            color: #2c5530;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 25px;
+                margin: 10px;
+                max-width: 100%;
+            }
+
+            .login-title {
+                font-size: 1.8rem;
+            }
+
+            .quick-access {
+                grid-template-columns: 1fr;
+            }
+
+            .faculty-types {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-preview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Enhanced animations */
+        .form-input, .quick-btn, .faculty-type, .login-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Progress indicator */
+        .login-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #2c5530, #3e7b3e);
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="login-progress" id="loginProgress"></div>
+
+    <div class="login-container">
+        <div class="university-logo">🎓</div>
+        <h1 class="login-title">Faculty Portal</h1>
+        <p class="login-subtitle">Waldorf Colleges & Universities</p>
+
+        <!-- Quick Stats Preview -->
+        <div class="stats-preview">
+            <div class="stat-item">
+                <span class="stat-number">1,247</span>
+                <span class="stat-label">Students</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">89</span>
+                <span class="stat-label">Faculty</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">45</span>
+                <span class="stat-label">Courses</span>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertMessage" class="alert"></div>
+
+        <!-- Demo Credentials Info -->
+        <div class="demo-credentials">
+            <h4>🔑 Demo Login Credentials</h4>
+            <p><strong>Faculty ID:</strong> <code>FAC001</code> | <code>prof.smith</code> | <code>dr.johnson</code></p>
+            <p><strong>Password:</strong> <code>faculty123</code> | <code>password</code> | <code>admin123</code></p>
+            <p style="margin-top: 8px; font-size: 12px; color: #666;">Click "Demo Faculty" below for quick access</p>
+        </div>
+
+        <!-- Faculty Type Selection -->
+        <div class="faculty-types">
+            <div class="faculty-type selected" data-type="faculty">
+                👨‍🏫 Faculty Member
+            </div>
+            <div class="faculty-type" data-type="admin">
+                🔧 Department Admin
+            </div>
+            <div class="faculty-type" data-type="dean">
+                👔 Dean/Director
+            </div>
+            <div class="faculty-type" data-type="staff">
+                📋 Academic Staff
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="facultyLoginForm">
+            <div class="form-group">
+                <label for="facultyId" class="form-label">Faculty ID / Email</label>
+                <div class="input-icon email">
+                    <input type="text" id="facultyId" name="facultyId" class="form-input" 
+                           placeholder="Enter your Faculty ID or email" required autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-icon password">
+                    <input type="password" id="password" name="password" class="form-input" 
+                           placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+            </div>
+
+            <div class="login-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    Remember me
+                </label>
+                <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="btnText">🔐 Sign In to Faculty Portal</span>
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>Quick Access</span>
+        </div>
+
+        <!-- Quick Access Buttons -->
+        <div class="quick-access">
+            <a href="#" class="quick-btn" onclick="quickLogin('guest')">
+                👤 Guest Access
+            </a>
+            <a href="#" class="quick-btn" onclick="quickLogin('demo')">
+                🧪 Demo Faculty
+            </a>
+        </div>
+
+        <!-- Feature Highlights -->
+        <div class="feature-highlights">
+            <h4>✨ Portal Features</h4>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span>📊</span>
+                    <span>Student Reports</span>
+                </div>
+                <div class="feature-item">
+                    <span>📚</span>
+                    <span>Course Management</span>
+                </div>
+                <div class="feature-item">
+                    <span>📈</span>
+                    <span>Grade Analytics</span>
+                </div>
+                <div class="feature-item">
+                    <span>📋</span>
+                    <span>Attendance Tracking</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Main -->
+        <a href="waldorf_chrome.html" class="back-btn">
+            ← Back to Main Portal
+        </a>
+    </div>
+
+    <script>
+        let selectedFacultyType = 'faculty';
+
+        // Progress bar animation
+        function updateProgress(percentage) {
+            document.getElementById('loginProgress').style.width = percentage + '%';
+        }
+
+        // Faculty type selection
+        document.querySelectorAll('.faculty-type').forEach(type => {
+            type.addEventListener('click', function() {
+                document.querySelectorAll('.faculty-type').forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedFacultyType = this.dataset.type;
+                
+                // Update button text based on selection
+                const btnText = document.getElementById('btnText');
+                const typeNames = {
+                    'faculty': '👨‍🏫 Sign In as Faculty',
+                    'admin': '🔧 Sign In as Admin', 
+                    'dean': '👔 Sign In as Dean',
+                    'staff': '📋 Sign In as Staff'
+                };
+                btnText.innerHTML = `🔐 ${typeNames[selectedFacultyType]}`;
+            });
+        });
+
+        // Login form submission
+        document.getElementById('facultyLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleLogin();
+        });
+
+        function handleLogin() {
+            const facultyId = document.getElementById('facultyId').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Show loading state
+            showLoading(true);
+            updateProgress(25);
+
+            // Simulate authentication process with progress
+            setTimeout(() => {
+                updateProgress(50);
+                setTimeout(() => {
+                    updateProgress(75);
+                    setTimeout(() => {
+                        if (authenticateFaculty(facultyId, password)) {
+                            updateProgress(100);
+                            showAlert('✅ Login successful! Redirecting to Faculty Dashboard...', 'success');
+                            
+                            // Store login session with enhanced data
+                            const facultyData = getFacultyData(facultyId);
+                            sessionStorage.setItem('facultyAuth', JSON.stringify({
+                                facultyId: facultyId,
+                                name: facultyData.name,
+                                department: facultyData.department,
+                                type: selectedFacultyType,
+                                permissions: facultyData.permissions,
+                                loginTime: new Date().toISOString(),
+                                rememberMe: rememberMe
+                            }));
+
+                            // Redirect to faculty management dashboard
+                            setTimeout(() => {
+                                window.location.href = 'faculty_management.html';
+                            }, 2000);
+                        } else {
+                            updateProgress(0);
+                            showAlert('❌ Invalid credentials. Please check your Faculty ID and password.', 'error');
+                            showLoading(false);
+                        }
+                    }, 500);
+                }, 500);
+            }, 800);
+        }
+
+        function authenticateFaculty(facultyId, password) {
+            // Enhanced authentication with more demo accounts
+            const validCredentials = [
+                { id: 'FAC001', password: 'faculty123', name: 'Dr. Alice Smith', department: 'Computer Science', permissions: ['view_students', 'manage_grades', 'generate_reports'] },
+                { id: 'prof.smith', password: 'password', name: 'Prof. John Smith', department: 'Mathematics', permissions: ['view_students', 'manage_grades'] },
+                { id: 'dr.johnson', password: 'faculty123', name: 'Dr. Sarah Johnson', department: 'Physics', permissions: ['view_students', 'manage_grades', 'generate_reports'] },
+                { id: 'dean.brown', password: 'admin123', name: 'Dean Michael Brown', department: 'Administration', permissions: ['view_students', 'manage_grades', 'generate_reports', 'admin_access'] },
+                { id: 'admin', password: 'admin123', name: 'System Administrator', department: 'IT', permissions: ['full_access'] },
+                { id: 'guest', password: 'guest', name: 'Guest User', department: 'Visitor', permissions: ['view_only'] },
+                { id: 'demo', password: 'demo', name: 'Demo Faculty', department: 'Demo', permissions: ['view_students', 'generate_reports'] }
+            ];
+
+            return validCredentials.some(cred => 
+                (cred.id === facultyId || cred.id === facultyId.toLowerCase()) && 
+                cred.password === password
+            );
+        }
+
+        function getFacultyData(facultyId) {
+            const facultyDatabase = {
+                'FAC001': { name: 'Dr. Alice Smith', department: 'Computer Science', permissions: ['view_students', 'manage_grades', 'generate_reports'] },
+                'prof.smith': { name: 'Prof. John Smith', department: 'Mathematics', permissions: ['view_students', 'manage_grades'] },
+                'dr.johnson': { name: 'Dr. Sarah Johnson', department: 'Physics', permissions: ['view_students', 'manage_grades', 'generate_reports'] },
+                'dean.brown': { name: 'Dean Michael Brown', department: 'Administration', permissions: ['view_students', 'manage_grades', 'generate_reports', 'admin_access'] },
+                'admin': { name: 'System Administrator', department: 'IT', permissions: ['full_access'] },
+                'guest': { name: 'Guest User', department: 'Visitor', permissions: ['view_only'] },
+                'demo': { name: 'Demo Faculty', department: 'Demo', permissions: ['view_students', 'generate_reports'] }
+            };
+            
+            return facultyDatabase[facultyId] || facultyDatabase[facultyId.toLowerCase()] || 
+                   { name: 'Faculty Member', department: 'Unknown', permissions: ['view_students'] };
+        }
+
+        function quickLogin(type) {
+            if (type === 'guest') {
+                document.getElementById('facultyId').value = 'guest';
+                document.getElementById('password').value = 'guest';
+                selectedFacultyType = 'staff';
+                document.querySelectorAll('.faculty-type').forEach(t => t.classList.remove('selected'));
+                document.querySelector('[data-type="staff"]').classList.add('selected');
+            } else if (type === 'demo') {
+                document.getElementById('facultyId').value = 'FAC001';
+                document.getElementById('password').value = 'faculty123';
+                selectedFacultyType = 'faculty';
+                document.querySelectorAll('.faculty-type').forEach(t => t.classList.remove('selected'));
+                document.querySelector('[data-type="faculty"]').classList.add('selected');
+            }
+            
+            showAlert(`🚀 Quick login credentials loaded for ${type} access. Click Sign In to continue.`, 'info');
+        }
+
+        function showForgotPassword() {
+            showAlert('🔄 Password Reset: Contact IT Support at <strong>it-support@waldorf.edu</strong> or call <strong>(555) 123-HELP</strong> for password reset assistance.', 'info');
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.innerHTML = message;
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 6000);
+        }
+
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            const btnText = document.getElementById('btnText');
+            const loginBtn = document.querySelector('.login-btn');
+            
+            if (show) {
+                spinner.style.display = 'inline-block';
+                btnText.textContent = 'Authenticating...';
+                loginBtn.disabled = true;
+                loginBtn.style.opacity = '0.8';
+            } else {
+                spinner.style.display = 'none';
+                const typeNames = {
+                    'faculty': '👨‍🏫 Sign In as Faculty',
+                    'admin': '🔧 Sign In as Admin', 
+                    'dean': '👔 Sign In as Dean',
+                    'staff': '📋 Sign In as Staff'
+                };
+                btnText.innerHTML = `🔐 ${typeNames[selectedFacultyType]}`;
+                loginBtn.disabled = false;
+                loginBtn.style.opacity = '1';
+            }
+        }
+
+        // Auto-fill demo credentials and show welcome message
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showAlert('🎓 Welcome to Waldorf Faculty Portal! Use demo credentials above or quick access buttons for testing.', 'info');
+            }, 1000);
+        });
+
+        // Enhanced keyboard handling
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.tagName.toLowerCase() === 'input') {
+                    handleLogin();
+                }
+            }
+        });
+
+        // Add floating animations to form elements
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Initialize animations
+        setTimeout(() => {
+            document.querySelector('.login-container').style.transform = 'scale(1)';
+        }, 100);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waldorf Universities - Department Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 0;
+            padding: 0;
+        }
+
+        .department-card {
+            background: white;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .department-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .department-card:hover::before {
+            left: 100%;
+        }
+
+        .department-card:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .department-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .department-name {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .department-desc {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .department-card:hover .login-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+            transform: translateY(-2px);
+        }
+
+        /* Department-specific colors */
+        .cs { border-left: 5px solid #e74c3c; }
+        .cs:hover { border-left: 8px solid #e74c3c; }
+        .cs .login-btn { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+
+        .math { border-left: 5px solid #f39c12; }
+        .math:hover { border-left: 8px solid #f39c12; }
+        .math .login-btn { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+
+        .physics { border-left: 5px solid #9b59b6; }
+        .physics:hover { border-left: 8px solid #9b59b6; }
+        .physics .login-btn { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+
+        .chemistry { border-left: 5px solid #27ae60; }
+        .chemistry:hover { border-left: 8px solid #27ae60; }
+        .chemistry .login-btn { background: linear-gradient(135deg, #27ae60 0%, #229954 100%); }
+
+        .biology { border-left: 5px solid #16a085; }
+        .biology:hover { border-left: 8px solid #16a085; }
+        .biology .login-btn { background: linear-gradient(135deg, #16a085 0%, #138d75 100%); }
+
+        .engineering { border-left: 5px solid #34495e; }
+        .engineering:hover { border-left: 8px solid #34495e; }
+        .engineering .login-btn { background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); }
+
+        .business { border-left: 5px solid #d35400; }
+        .business:hover { border-left: 8px solid #d35400; }
+        .business .login-btn { background: linear-gradient(135deg, #d35400 0%, #e67e22 100%); }
+
+        .arts { border-left: 5px solid #e91e63; }
+        .arts:hover { border-left: 8px solid #e91e63; }
+        .arts .login-btn { background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%); }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .admin-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85em;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease;
+        }
+
+        .admin-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .departments-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🎓 Waldorf Universities</h1>
+            <p>Department Login Portal</p>
+            <a href="waldorf_chrome.html" class="admin-link">Admin Access</a>
+        </div>
+
+        <div class="departments-grid">
+            <!-- Computer Science -->
+            <div class="department-card cs" onclick="openDepartment('cs')">
+                <div class="department-icon">💻</div>
+                <div class="department-name">Computer Science</div>
+                <div class="department-desc">Software Development, AI, Data Science, Cybersecurity</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+
+            <!-- Mathematics -->
+            <div class="department-card math" onclick="openDepartment('math')">
+                <div class="department-icon">📊</div>
+                <div class="department-name">Mathematics</div>
+                <div class="department-desc">Pure Math, Applied Math, Statistics, Analytics</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+
+            <!-- Physics -->
+            <div class="department-card physics" onclick="openDepartment('physics')">
+                <div class="department-icon">⚛️</div>
+                <div class="department-name">Physics</div>
+                <div class="department-desc">Quantum Physics, Astrophysics, Research Labs</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+
+            <!-- Chemistry -->
+            <div class="department-card chemistry" onclick="openDepartment('chemistry')">
+                <div class="department-icon">🧪</div>
+                <div class="department-name">Chemistry</div>
+                <div class="department-desc">Organic, Inorganic, Biochemistry, Materials</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+
+            <!-- Biology -->
+            <div class="department-card biology" onclick="openDepartment('biology')">
+                <div class="department-icon">🧬</div>
+                <div class="department-name">Biology</div>
+                <div class="department-desc">Molecular Biology, Genetics, Biotechnology</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+
+            <!-- Engineering -->
+            <div class="department-card engineering" onclick="openDepartment('engineering')">
+                <div class="department-icon">⚙️</div>
+                <div class="department-name">Engineering</div>
+                <div class="department-desc">Mechanical, Electrical, Civil, Software Engineering</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+
+            <!-- Business -->
+            <div class="department-card business" onclick="openDepartment('business')">
+                <div class="department-icon">💼</div>
+                <div class="department-name">Business</div>
+                <div class="department-desc">MBA, Finance, Marketing, Entrepreneurship</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+
+            <!-- Liberal Arts -->
+            <div class="department-card arts" onclick="openDepartment('arts')">
+                <div class="department-icon">🎨</div>
+                <div class="department-name">Liberal Arts</div>
+                <div class="department-desc">Literature, History, Philosophy, Fine Arts</div>
+                <button class="login-btn">Access Portal</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 Waldorf Colleges & Universities | Secure Department Access</p>
+        </div>
+    </div>
+
+    <script>
+        function openDepartment(dept) {
+            // Create loading effect
+            const card = event.currentTarget;
+            card.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                // Department-specific redirects
+                const departments = {
+                    'cs': 'dept_login.html?dept=Computer%20Science&color=e74c3c&icon=💻',
+                    'math': 'dept_login.html?dept=Mathematics&color=f39c12&icon=📊',
+                    'physics': 'dept_login.html?dept=Physics&color=9b59b6&icon=⚛️',
+                    'chemistry': 'dept_login.html?dept=Chemistry&color=27ae60&icon=🧪',
+                    'biology': 'dept_login.html?dept=Biology&color=16a085&icon=🧬',
+                    'engineering': 'dept_login.html?dept=Engineering&color=34495e&icon=⚙️',
+                    'business': 'dept_login.html?dept=Business&color=d35400&icon=💼',
+                    'arts': 'dept_login.html?dept=Liberal%20Arts&color=e91e63&icon=🎨'
+                };
+                
+                window.location.href = departments[dept];
+            }, 200);
+        }
+
+        // Add entrance animation delay for cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.department-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Show welcome message
+            setTimeout(() => {
+                console.log('🎓 Welcome to Waldorf Universities Department Portal!');
+            }, 1500);
+        });
+
+        // Add hover sound effect (visual feedback)
+        document.querySelectorAll('.department-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html> 

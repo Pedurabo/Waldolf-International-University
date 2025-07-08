@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .portal-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .portal-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .portal-title {
+            font-size: 1.8em;
+            color: #2c5530;
+            margin-bottom: 15px;
+        }
+
+        .portal-description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .portal-btn {
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .portal-btn:hover {
+            background: linear-gradient(135deg, #1e3a23 0%, #2c5530 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 85, 48, 0.3);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .features-list {
+            list-style: none;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            color: #555;
+        }
+
+        .features-list li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <a href="waldorf_chrome.html" class="back-link">← Back to Main System</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Student Portal</h1>
+            <p>Waldorf Colleges & Universities</p>
+        </div>
+
+        <div class="portal-options">
+            <!-- Student Login Card -->
+            <div class="portal-card">
+                <div class="portal-icon">👨‍🎓</div>
+                <h2 class="portal-title">Student Login</h2>
+                <p class="portal-description">
+                    Access your personal dashboard, grades, schedules, and academic information.
+                </p>
+                <ul class="features-list">
+                    <li>View current grades and GPA</li>
+                    <li>Check class schedules</li>
+                    <li>Access course materials</li>
+                    <li>Pay tuition and fees</li>
+                    <li>Request transcripts</li>
+                </ul>
+                <a href="templates/student_login.html" class="portal-btn">Student Login</a>
+            </div>
+
+            <!-- Faculty Login Card -->
+            <div class="portal-card">
+                <div class="portal-icon">👨‍🏫</div>
+                <h2 class="portal-title">Faculty Portal</h2>
+                <p class="portal-description">
+                    Faculty access for grade management, course administration, and student information.
+                </p>
+                <ul class="features-list">
+                    <li>Manage course grades</li>
+                    <li>View student rosters</li>
+                    <li>Post announcements</li>
+                    <li>Schedule office hours</li>
+                    <li>Access teaching resources</li>
+                </ul>
+                <button class="portal-btn" onclick="alert('Faculty portal coming soon!')">Faculty Login</button>
+            </div>
+
+            <!-- Parent Portal Card -->
+            <div class="portal-card">
+                <div class="portal-icon">👨‍👩‍👧‍👦</div>
+                <h2 class="portal-title">Parent Portal</h2>
+                <p class="portal-description">
+                    Parents and guardians can access their student's academic progress and information.
+                </p>
+                <ul class="features-list">
+                    <li>View student grades</li>
+                    <li>Check attendance records</li>
+                    <li>Access financial information</li>
+                    <li>Communicate with faculty</li>
+                    <li>Emergency notifications</li>
+                </ul>
+                <button class="portal-btn" onclick="alert('Parent portal coming soon!')">Parent Access</button>
+            </div>
+
+            <!-- Admin Portal Card -->
+            <div class="portal-card">
+                <div class="portal-icon">⚙️</div>
+                <h2 class="portal-title">Administrator Access</h2>
+                <p class="portal-description">
+                    Administrative access for system management and institutional oversight.
+                </p>
+                <ul class="features-list">
+                    <li>User management</li>
+                    <li>System configuration</li>
+                    <li>Reports and analytics</li>
+                    <li>Security settings</li>
+                    <li>Database administration</li>
+                </ul>
+                <a href="waldorf_chrome.html" class="portal-btn">Admin Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to cards
+            const cards = document.querySelectorAll('.portal-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 30px 60px rgba(0,0,0,0.15)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+                });
+            });
+
+            // Show welcome message
+            setTimeout(() => {
+                console.log('🎓 Welcome to Waldorf Student Portal!');
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

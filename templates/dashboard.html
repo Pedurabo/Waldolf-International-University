@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waldorf Management System - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #2c5530;
+            font-weight: 600;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c5530;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .system-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .system-info h4 {
+            color: #2c5530;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-enabled {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #1e3a23 0%, #2c5530 100%);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🎓 Waldorf Management System</div>
+            <div class="nav-links">
+                <a href="/">Dashboard</a>
+                <a href="/students">Students</a>
+                <a href="/faculty">Faculty</a>
+                {% if is_admin %}
+                <a href="/admin">Admin Panel</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1>🎓 Welcome to Waldorf Management System</h1>
+            <p>Comprehensive educational management platform</p>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Student Statistics -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">👥</div>
+                    <div class="card-title">Students</div>
+                </div>
+                <div class="stat-number">{{ student_count }}</div>
+                <div class="stat-label">Total Students Enrolled</div>
+                <div style="margin-top: 15px;">
+                    <a href="/students" class="btn">Manage Students</a>
+                </div>
+            </div>
+
+            <!-- Faculty Statistics -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">👨‍🏫</div>
+                    <div class="card-title">Faculty</div>
+                </div>
+                <div class="stat-number">{{ faculty_count }}</div>
+                <div class="stat-label">Faculty Members</div>
+                <div style="margin-top: 15px;">
+                    <a href="/faculty" class="btn">Manage Faculty</a>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">🖥️</div>
+                    <div class="card-title">System Status</div>
+                </div>
+                <div class="system-info">
+                    <h4>System Information</h4>
+                    <p><strong>OS:</strong> {{ system_info.os }}</p>
+                    <p><strong>User:</strong> {{ system_info.user }}</p>
+                    <p><strong>Python:</strong> {{ system_info.python_version }}</p>
+                    <p><strong>Admin Status:</strong> 
+                        <span class="status-badge {% if is_admin %}status-enabled{% else %}status-disabled{% endif %}">
+                            {{ system_info.admin_status }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">⚡</div>
+                    <div class="card-title">Quick Actions</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="/add_student" class="btn">Add New Student</a>
+                    <a href="/students" class="btn">View All Students</a>
+                    <a href="/faculty" class="btn">Faculty Management</a>
+                    {% if is_admin %}
+                    <a href="/admin" class="btn">Admin Panel</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- API Status -->
+        <div class="dashboard-card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div class="card-icon">📊</div>
+                <div class="card-title">API Status</div>
+            </div>
+            <div style="text-align: center;">
+                <p>System API endpoint available at:</p>
+                <code style="background: #f8f9fa; padding: 5px 10px; border-radius: 4px;">/api/status</code>
+                <div style="margin-top: 10px;">
+                    <a href="/api/status" class="btn" target="_blank">Check API Status</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading animation
+            document.querySelectorAll('.dashboard-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Real-time updates
+            setInterval(function() {
+                fetch('/api/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('System status:', data.status);
+                    })
+                    .catch(error => console.log('API check failed:', error));
+            }, 30000); // Check every 30 seconds
+        });
+    </script>
+</body>
+</html> 

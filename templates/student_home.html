@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .user-id {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .welcome-title {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #2c5530;
+            font-weight: 600;
+        }
+
+        .card-content {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c5530;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1e3a23 0%, #2c5530 100%);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .course-list {
+            list-style: none;
+        }
+
+        .course-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .course-item:last-child {
+            border-bottom: none;
+        }
+
+        .course-info h4 {
+            color: #2c5530;
+            margin-bottom: 5px;
+        }
+
+        .course-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .course-grade {
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .grade-a { background: #d4edda; color: #155724; }
+        .grade-b { background: #d1ecf1; color: #0c5460; }
+        .grade-c { background: #fff3cd; color: #856404; }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .schedule-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c5530;
+        }
+
+        .current-class {
+            background: #e8f5e8;
+            font-weight: 600;
+        }
+
+        .announcements {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .announcement-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2c5530;
+        }
+
+        .announcement-date {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .announcement-title {
+            font-weight: 600;
+            color: #2c5530;
+            margin-bottom: 8px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .quick-action {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quick-action:hover {
+            border-color: #2c5530;
+            transform: translateY(-3px);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #2c5530;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c5530, #3e7b3e);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🎓 Waldorf Student Portal</div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-id" id="userId">Student ID</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Welcome Back, <span id="welcomeName">Student</span>!</h1>
+            <p class="welcome-subtitle">Ready to continue your academic journey today?</p>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Academic Overview -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Academic Overview</div>
+                </div>
+                <div class="card-content">
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="currentGPA">3.8</div>
+                            <div class="stat-label">Current GPA</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="creditsEarned">45</div>
+                            <div class="stat-label">Credits Earned</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="semesterRank">12</div>
+                            <div class="stat-label">Class Rank</div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="viewTranscript()">View Transcript</button>
+                        <button class="btn btn-secondary" onclick="viewGrades()">Check Grades</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Courses -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📚</div>
+                    <div class="card-title">Current Courses</div>
+                </div>
+                <div class="card-content">
+                    <ul class="course-list" id="courseList">
+                        <!-- Courses will be loaded here -->
+                    </ul>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="enrollCourses()">Enroll in Courses</button>
+                        <button class="btn btn-secondary" onclick="viewAllCourses()">View All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📅</div>
+                    <div class="card-title">Today's Schedule</div>
+                </div>
+                <div class="card-content">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Course</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTable">
+                            <!-- Schedule will be loaded here -->
+                        </tbody>
+                    </table>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="viewFullSchedule()">Full Schedule</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Announcements -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📢</div>
+                    <div class="card-title">Recent Announcements</div>
+                </div>
+                <div class="card-content">
+                    <div class="announcements" id="announcementsList">
+                        <!-- Announcements will be loaded here -->
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="viewAllAnnouncements()">View All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Progress -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">Academic Progress</div>
+                </div>
+                <div class="card-content">
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Degree Progress</span>
+                            <span id="degreeProgress">37%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 37%"></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>This Semester</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <p><strong>Expected Graduation:</strong> May 2026</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">⚡</div>
+                    <div class="card-title">Quick Actions</div>
+                </div>
+                <div class="card-content">
+                    <div class="quick-actions">
+                        <div class="quick-action" onclick="payTuition()">
+                            <div class="quick-action-icon">💳</div>
+                            <div>Pay Tuition</div>
+                        </div>
+                        <div class="quick-action" onclick="requestTranscript()">
+                            <div class="quick-action-icon">📋</div>
+                            <div>Request Transcript</div>
+                        </div>
+                        <div class="quick-action" onclick="updateProfile()">
+                            <div class="quick-action-icon">👤</div>
+                            <div>Update Profile</div>
+                        </div>
+                        <div class="quick-action" onclick="contactSupport()">
+                            <div class="quick-action-icon">💬</div>
+                            <div>Contact Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const currentStudent = JSON.parse(localStorage.getItem('currentStudent') || '{}');
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+        if (!isLoggedIn || !currentStudent.id) {
+            // Redirect to login if not logged in
+            window.location.href = 'student_login.html';
+        }
+
+        // Sample data
+        const studentData = {
+            'WU001': {
+                name: 'Alice Johnson',
+                major: 'Computer Science',
+                gpa: 3.8,
+                credits: 45,
+                rank: 12,
+                courses: [
+                    { name: 'Data Structures', code: 'CS301', grade: 'A', credits: 3 },
+                    { name: 'Calculus III', code: 'MATH301', grade: 'B+', credits: 4 },
+                    { name: 'Physics II', code: 'PHYS202', grade: 'A-', credits: 3 },
+                    { name: 'English Lit', code: 'ENG201', grade: 'B', credits: 3 }
+                ],
+                schedule: [
+                    { time: '9:00 AM', course: 'Data Structures', room: 'CS-101' },
+                    { time: '11:00 AM', course: 'Calculus III', room: 'MATH-205' },
+                    { time: '2:00 PM', course: 'Physics Lab', room: 'PHYS-LAB' }
+                ]
+            },
+            'WU002': {
+                name: 'Bob Smith',
+                major: 'Mathematics',
+                gpa: 3.6,
+                credits: 52,
+                rank: 18,
+                courses: [
+                    { name: 'Abstract Algebra', code: 'MATH401', grade: 'B+', credits: 3 },
+                    { name: 'Real Analysis', code: 'MATH402', grade: 'A-', credits: 4 },
+                    { name: 'Statistics', code: 'STAT301', grade: 'A', credits: 3 }
+                ],
+                schedule: [
+                    { time: '10:00 AM', course: 'Abstract Algebra', room: 'MATH-301' },
+                    { time: '1:00 PM', course: 'Real Analysis', room: 'MATH-205' },
+                    { time: '3:00 PM', course: 'Statistics', room: 'STAT-101' }
+                ]
+            }
+        };
+
+        const announcements = [
+            {
+                date: 'Dec 8, 2024',
+                title: 'Final Exam Schedule Released',
+                content: 'Check your student portal for final exam dates and locations.'
+            },
+            {
+                date: 'Dec 5, 2024',
+                title: 'Spring Registration Opens',
+                content: 'Registration for Spring 2025 semester begins December 15th.'
+            },
+            {
+                date: 'Dec 3, 2024',
+                title: 'Holiday Break Information',
+                content: 'Campus closes December 20th and reopens January 15th.'
+            }
+        ];
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            const student = studentData[currentStudent.id] || studentData['WU001'];
+            
+            // Update user info
+            document.getElementById('userName').textContent = student.name;
+            document.getElementById('userId').textContent = currentStudent.id;
+            document.getElementById('welcomeName').textContent = student.name.split(' ')[0];
+            
+            // Update stats
+            document.getElementById('currentGPA').textContent = student.gpa;
+            document.getElementById('creditsEarned').textContent = student.credits;
+            document.getElementById('semesterRank').textContent = student.rank;
+            
+            // Load courses
+            loadCourses(student.courses);
+            
+            // Load schedule
+            loadSchedule(student.schedule);
+            
+            // Load announcements
+            loadAnnouncements();
+        }
+
+        function loadCourses(courses) {
+            const courseList = document.getElementById('courseList');
+            courseList.innerHTML = '';
+            
+            courses.forEach(course => {
+                const gradeClass = course.grade.startsWith('A') ? 'grade-a' : 
+                                  course.grade.startsWith('B') ? 'grade-b' : 'grade-c';
+                
+                courseList.innerHTML += `
+                    <li class="course-item">
+                        <div class="course-info">
+                            <h4>${course.name}</h4>
+                            <p>${course.code} • ${course.credits} Credits</p>
+                        </div>
+                        <div class="course-grade ${gradeClass}">${course.grade}</div>
+                    </li>
+                `;
+            });
+        }
+
+        function loadSchedule(schedule) {
+            const scheduleTable = document.getElementById('scheduleTable');
+            scheduleTable.innerHTML = '';
+            
+            schedule.forEach(item => {
+                scheduleTable.innerHTML += `
+                    <tr>
+                        <td>${item.time}</td>
+                        <td>${item.course}</td>
+                        <td>${item.room}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadAnnouncements() {
+            const announcementsList = document.getElementById('announcementsList');
+            announcementsList.innerHTML = '';
+            
+            announcements.forEach(announcement => {
+                announcementsList.innerHTML += `
+                    <div class="announcement-item">
+                        <div class="announcement-date">${announcement.date}</div>
+                        <div class="announcement-title">${announcement.title}</div>
+                        <div>${announcement.content}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Action functions
+        function logout() {
+            localStorage.removeItem('currentStudent');
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'student_login.html';
+        }
+
+        function viewTranscript() {
+            alert('📋 Academic Transcript\n\nThis would open your official transcript with all completed courses, grades, and academic history.');
+        }
+
+        function viewGrades() {
+            alert('📊 Current Grades\n\nThis would show detailed grade information for all current courses, including assignments and exams.');
+        }
+
+        function enrollCourses() {
+            alert('📝 Course Enrollment\n\nThis would open the course registration system where you can enroll in new courses for the upcoming semester.');
+        }
+
+        function viewAllCourses() {
+            alert('📚 All Courses\n\nThis would display a complete list of all available courses in the catalog.');
+        }
+
+        function viewFullSchedule() {
+            alert('📅 Full Schedule\n\nThis would show your complete weekly schedule with all classes, labs, and activities.');
+        }
+
+        function viewAllAnnouncements() {
+            alert('📢 All Announcements\n\nThis would display all recent announcements from faculty and administration.');
+        }
+
+        function payTuition() {
+            alert('💳 Tuition Payment\n\nThis would redirect to the secure payment portal to pay tuition and fees.');
+        }
+
+        function requestTranscript() {
+            alert('📋 Transcript Request\n\nThis would open the form to request official transcripts to be sent to other institutions.');
+        }
+
+        function updateProfile() {
+            alert('👤 Update Profile\n\nThis would allow you to update your personal information, contact details, and preferences.');
+        }
+
+        function contactSupport() {
+            alert('💬 Student Support\n\nThis would open the help desk where you can get assistance with academic and technical issues.');
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html> 

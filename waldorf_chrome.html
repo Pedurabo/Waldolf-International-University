@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waldorf Colleges & Universities - Management Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c5530;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: #2c5530;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: #1e3a23;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            color: #2c5530;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #2c5530;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5530;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            color: #2c5530;
+            font-weight: 600;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-btn:hover {
+            border-color: #2c5530;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #2c5530;
+        }
+
+        .action-text {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        .main-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-btn {
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .main-btn:hover {
+            background: linear-gradient(135deg, #1e3a23 0%, #2c5530 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(44, 85, 48, 0.3);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .hero-title { font-size: 2rem; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .main-actions { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🎓 Waldorf Universities</div>
+            <div class="nav-actions">
+                <span id="systemTime"></span>
+                <a href="#" class="nav-btn" onclick="showSystemInfo()">ℹ️ System Info</a>
+                <a href="#" class="nav-btn" onclick="showHelp()">❓ Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="hero-title">Management Portal</h1>
+            <p class="hero-subtitle">Comprehensive Academic & Administrative System</p>
+            
+            <div class="system-status">
+                <div class="status-card">
+                    <div class="status-value">✅ ONLINE</div>
+                    <div class="status-label">System Status</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value" id="activeUsers">1,247</div>
+                    <div class="status-label">Active Users</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value">🔒 SECURE</div>
+                    <div class="status-label">Security Status</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value">⚡ FAST</div>
+                    <div class="status-label">Performance</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-actions">
+            <button class="main-btn" onclick="openModule('Student Management')">
+                👥 Student Management
+            </button>
+            <button class="main-btn" onclick="openModule('Faculty Management')">
+                👨‍🏫 Faculty Management
+            </button>
+            <button class="main-btn" onclick="openModule('Course Management')">
+                📚 Course Management
+            </button>
+            <button class="main-btn" onclick="openModule('Academic Records')">
+                📋 Academic Records
+            </button>
+            <a href="student_portal.html" class="main-btn" style="text-decoration: none;">
+                🎓 Student Portal
+            </a>
+            <button class="main-btn admin-btn" onclick="openAdminPanel()">
+                🔧 Admin Panel
+            </button>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">Core Management</div>
+                </div>
+                <div class="action-grid">
+                    <div class="action-btn" onclick="quickAction('enrollment')">
+                        <div class="action-icon">📝</div>
+                        <div class="action-text">Enrollment</div>
+                    </div>
+                    <div class="action-btn" onclick="quickAction('grades')">
+                        <div class="action-icon">📊</div>
+                        <div class="action-text">Grades</div>
+                    </div>
+                    <div class="action-btn" onclick="quickAction('schedules')">
+                        <div class="action-icon">📅</div>
+                        <div class="action-text">Schedules</div>
+                    </div>
+                    <div class="action-btn" onclick="quickAction('reports')">
+                        <div class="action-icon">📈</div>
+                        <div class="action-text">Reports</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Analytics & Reports</div>
+                </div>
+                <div class="action-grid">
+                    <div class="action-btn" onclick="analyticsAction('performance')">
+                        <div class="action-icon">⭐</div>
+                        <div class="action-text">Performance</div>
+                    </div>
+                    <div class="action-btn" onclick="analyticsAction('attendance')">
+                        <div class="action-icon">📋</div>
+                        <div class="action-text">Attendance</div>
+                    </div>
+                    <div class="action-btn" onclick="analyticsAction('financial')">
+                        <div class="action-icon">💰</div>
+                        <div class="action-text">Financial</div>
+                    </div>
+                    <div class="action-btn" onclick="analyticsAction('trends')">
+                        <div class="action-icon">📈</div>
+                        <div class="action-text">Trends</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-title">System Features</div>
+                </div>
+                <ul class="feature-list">
+                    <li>✅ Real-time Data Synchronization</li>
+                    <li>✅ Advanced Security & Encryption</li>
+                    <li>✅ Automated Backup Systems</li>
+                    <li>✅ Multi-platform Compatibility</li>
+                    <li>✅ 24/7 System Monitoring</li>
+                    <li>✅ Custom Report Generation</li>
+                    <li>✅ Mobile-Responsive Design</li>
+                    <li>✅ API Integration Support</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🚀</div>
+                    <div class="card-title">Quick Tools</div>
+                </div>
+                <div class="action-grid">
+                    <div class="action-btn" onclick="quickTool('backup')">
+                        <div class="action-icon">💾</div>
+                        <div class="action-text">Backup</div>
+                    </div>
+                    <div class="action-btn" onclick="quickTool('import')">
+                        <div class="action-icon">📥</div>
+                        <div class="action-text">Import</div>
+                    </div>
+                    <div class="action-btn" onclick="quickTool('export')">
+                        <div class="action-icon">📤</div>
+                        <div class="action-text">Export</div>
+                    </div>
+                    <div class="action-btn" onclick="quickTool('maintenance')">
+                        <div class="action-icon">🔧</div>
+                        <div class="action-text">Maintenance</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔧 Administrative Panel</h2>
+                <button class="close-btn" onclick="closeModal('adminModal')">&times;</button>
+            </div>
+            <div style="padding: 2rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #2c5530;">System Health</h4>
+                        <p style="font-size: 1.5rem; color: #27ae60;">98.7%</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #2c5530;">Database Load</h4>
+                        <p style="font-size: 1.5rem; color: #f39c12;">23%</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #2c5530;">Active Sessions</h4>
+                        <p style="font-size: 1.5rem; color: #3498db;">156</p>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <button class="main-btn" onclick="adminAction('users')">👥 User Management</button>
+                    <button class="main-btn" onclick="adminAction('security')">🔒 Security Settings</button>
+                    <button class="main-btn" onclick="adminAction('backup')">💾 Backup System</button>
+                    <button class="main-btn" onclick="adminAction('logs')">📋 System Logs</button>
+                    <button class="main-btn" onclick="adminAction('maintenance')">🔧 Maintenance</button>
+                    <button class="main-btn" onclick="adminAction('analytics')">📊 Analytics</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize system
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSystemTime();
+            setInterval(updateSystemTime, 1000);
+            setInterval(updateActiveUsers, 30000);
+            showNotification('🎓 Waldorf Management Portal loaded successfully!', 'success');
+        });
+
+        function updateSystemTime() {
+            const now = new Date();
+            document.getElementById('systemTime').textContent = now.toLocaleTimeString();
+        }
+
+        function updateActiveUsers() {
+            const users = Math.floor(Math.random() * 100) + 1200;
+            document.getElementById('activeUsers').textContent = users.toLocaleString();
+        }
+
+        // Main module navigation
+        function openModule(moduleName) {
+            showNotification(`Opening ${moduleName}...`, 'info');
+            
+            switch(moduleName) {
+                case 'Student Management':
+                    setTimeout(() => {
+                        window.location.href = 'student_management.html';
+                    }, 1000);
+                    break;
+                    
+                case 'Faculty Management':
+                    setTimeout(() => {
+                        window.location.href = 'faculty_login.html';
+                    }, 1000);
+                    break;
+                    
+                case 'Course Management':
+                    openCourseManagement();
+                    break;
+                    
+                case 'Academic Records':
+                    openAcademicRecords();
+                    break;
+                    
+                default:
+                    showNotification(`${moduleName} functionality coming soon!`, 'info');
+            }
+        }
+
+        function openCourseManagement() {
+            const content = `
+                <div style="padding: 2rem;">
+                    <h3>📚 Course Management System</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0;">
+                        <button class="main-btn" onclick="courseAction('create')">➕ Create Course</button>
+                        <button class="main-btn" onclick="courseAction('manage')">📝 Manage Courses</button>
+                        <button class="main-btn" onclick="courseAction('schedule')">📅 Schedule Classes</button>
+                        <button class="main-btn" onclick="courseAction('enrollment')">👥 Manage Enrollment</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                        <h4>Course Statistics</h4>
+                        <p>Total Courses: <strong>247</strong></p>
+                        <p>Active Courses: <strong>189</strong></p>
+                        <p>Total Enrollment: <strong>3,456</strong></p>
+                        <p>Average Class Size: <strong>18.3</strong></p>
+                    </div>
+                </div>
+            `;
+            showModal('courseModal', 'Course Management', content);
+        }
+
+        function openAcademicRecords() {
+            const content = `
+                <div style="padding: 2rem;">
+                    <h3>📋 Academic Records Management</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0;">
+                        <button class="main-btn" onclick="recordAction('transcripts')">📄 Transcripts</button>
+                        <button class="main-btn" onclick="recordAction('grades')">📊 Grade Management</button>
+                        <button class="main-btn" onclick="recordAction('graduation')">🎓 Graduation Requirements</button>
+                        <button class="main-btn" onclick="recordAction('transfer')">🔄 Transfer Credits</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                        <h4>Academic Overview</h4>
+                        <p>Average GPA: <strong>3.42</strong></p>
+                        <p>Graduation Rate: <strong>87.3%</strong></p>
+                        <p>Dean's List Students: <strong>234</strong></p>
+                        <p>Honor Roll Students: <strong>567</strong></p>
+                    </div>
+                </div>
+            `;
+            showModal('academicModal', 'Academic Records', content);
+        }
+
+        function openAdminPanel() {
+            document.getElementById('adminModal').style.display = 'block';
+        }
+
+        // Quick actions
+        function quickAction(action) {
+            const actions = {
+                'enrollment': 'Student enrollment processing system',
+                'grades': 'Grade management and reporting tools',
+                'schedules': 'Class scheduling and calendar management',
+                'reports': 'Comprehensive reporting and analytics'
+            };
+            
+            showNotification(`${actions[action]} - Feature activated!`, 'success');
+        }
+
+        function analyticsAction(type) {
+            const analytics = {
+                'performance': 'Student and faculty performance analytics',
+                'attendance': 'Attendance tracking and reporting',
+                'financial': 'Financial analysis and budget reports',
+                'trends': 'Academic trends and predictive analytics'
+            };
+            
+            showNotification(`${analytics[type]} - Dashboard opening...`, 'success');
+        }
+
+        function quickTool(tool) {
+            const tools = {
+                'backup': 'System backup initiated successfully',
+                'import': 'Data import wizard launched',
+                'export': 'Data export utility started',
+                'maintenance': 'System maintenance panel opened'
+            };
+            
+            showNotification(tools[tool], 'success');
+        }
+
+        function courseAction(action) {
+            const actions = {
+                'create': 'Course creation wizard launched',
+                'manage': 'Course management dashboard opened',
+                'schedule': 'Class scheduling system activated',
+                'enrollment': 'Enrollment management panel opened'
+            };
+            
+            showNotification(actions[action], 'success');
+        }
+
+        function recordAction(action) {
+            const actions = {
+                'transcripts': 'Transcript management system opened',
+                'grades': 'Grade entry and management tools activated',
+                'graduation': 'Graduation requirements checker launched',
+                'transfer': 'Transfer credit evaluation system opened'
+            };
+            
+            showNotification(actions[action], 'success');
+        }
+
+        function adminAction(action) {
+            const actions = {
+                'users': 'User management panel opened',
+                'security': 'Security configuration accessed',
+                'backup': 'Backup management system launched',
+                'logs': 'System logs viewer opened',
+                'maintenance': 'Maintenance scheduler activated',
+                'analytics': 'Admin analytics dashboard opened'
+            };
+            
+            showNotification(actions[action], 'success');
+        }
+
+        function showSystemInfo() {
+            const info = `🖥️ System Information:
+            
+OS: Windows 10 Professional
+Server: Waldorf Academic Server v2.1
+Database: PostgreSQL 14.2
+Uptime: 127 days, 14:23:45
+Memory Usage: 68% (11.2GB / 16GB)
+CPU Usage: 23%
+Network: 1Gbps Ethernet
+Last Backup: Today, 3:00 AM
+Security Status: All systems secure`;
+            
+            alert(info);
+        }
+
+        function showHelp() {
+            const help = `❓ Waldorf Management Portal Help:
+
+🎯 Navigation:
+• Click any main button to access modules
+• Use quick actions for common tasks
+• Admin panel for system administration
+
+📚 Modules:
+• Student Management: Complete student records
+• Faculty Management: Faculty administration
+• Course Management: Course creation & scheduling
+• Academic Records: Transcripts & grades
+
+🔧 Support:
+• Email: support@waldorf.edu
+• Phone: (555) 123-HELP
+• Online Help: help.waldorf.edu`;
+            
+            alert(help);
+        }
+
+        function showModal(id, title, content) {
+            let modal = document.getElementById(id);
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = id;
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>${title}</h2>
+                            <button class="close-btn" onclick="closeModal('${id}')">&times;</button>
+                        </div>
+                        ${content}
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showNotification(message, type = 'success') {
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 

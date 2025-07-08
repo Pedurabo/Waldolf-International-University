@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Login - Waldorf Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--dept-color, #3498db) 0%, var(--dept-color-dark, #2980b9) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: radial-gradient(circle at 20% 50%, white 2px, transparent 2px),
+                            radial-gradient(circle at 80% 50%, white 2px, transparent 2px);
+            background-size: 60px 60px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--dept-color, #3498db) 0%, var(--dept-color-dark, #2980b9) 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="40" r="2" fill="white" opacity="0.1"/><circle cx="40" cy="80" r="2" fill="white" opacity="0.1"/></svg>');
+            background-size: 100px 100px;
+        }
+
+        .dept-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dept-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dept-subtitle {
+            font-size: 1em;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-form {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--dept-color, #3498db);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(var(--dept-color-rgb, 52, 152, 219), 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #95a5a6;
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--dept-color, #3498db) 0%, var(--dept-color-dark, #2980b9) 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-button:hover::before {
+            left: 100%;
+        }
+
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(var(--dept-color-rgb, 52, 152, 219), 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(-1px);
+        }
+
+        .login-options {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .login-link {
+            color: var(--dept-color, #3498db);
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+
+        .login-link:hover {
+            color: var(--dept-color-dark, #2980b9);
+            text-decoration: underline;
+        }
+
+        .demo-section {
+            background: #f8f9fa;
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--dept-color, #3498db);
+        }
+
+        .demo-title {
+            color: var(--dept-color, #3498db);
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .demo-credentials {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .demo-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e1e8ed;
+        }
+
+        .demo-item:hover {
+            border-color: var(--dept-color, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .demo-role {
+            font-weight: 600;
+            color: var(--dept-color, #3498db);
+            margin-bottom: 5px;
+        }
+
+        .demo-cred {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateX(-5px);
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 10px;
+            }
+            
+            .login-header {
+                padding: 30px 20px;
+            }
+            
+            .login-form {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <a href="departments_login.html" class="back-button">← Back to Departments</a>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <div class="dept-icon" id="deptIcon">🎓</div>
+            <div class="dept-name" id="deptName">Department</div>
+            <div class="dept-subtitle">Faculty & Student Portal</div>
+        </div>
+        
+        <div class="login-form">
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-input" 
+                        placeholder="Enter your username or email"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="login-button" id="loginBtn">
+                    <span class="loading-spinner" id="loadingSpinner"></span>
+                    <span id="btnText">Access Portal</span>
+                </button>
+            </form>
+            
+            <div class="login-options">
+                <a href="#" class="login-link" onclick="showForgotPassword()">Forgot Password?</a>
+                <a href="#" class="login-link" onclick="showHelp()">Need Help?</a>
+            </div>
+            
+            <div class="demo-section">
+                <div class="demo-title">Demo Accounts</div>
+                <div class="demo-credentials">
+                    <div class="demo-item" onclick="fillCredentials('faculty')">
+                        <div class="demo-role">Faculty</div>
+                        <div class="demo-cred">prof.smith / faculty123</div>
+                    </div>
+                    <div class="demo-item" onclick="fillCredentials('student')">
+                        <div class="demo-role">Student</div>
+                        <div class="demo-cred">student001 / student123</div>
+                    </div>
+                    <div class="demo-item" onclick="fillCredentials('admin')">
+                        <div class="demo-role">Admin</div>
+                        <div class="demo-cred">admin / admin123</div>
+                    </div>
+                    <div class="demo-item" onclick="fillCredentials('guest')">
+                        <div class="demo-role">Guest</div>
+                        <div class="demo-cred">guest / guest123</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Parse URL parameters to get department info
+        const urlParams = new URLSearchParams(window.location.search);
+        const deptName = urlParams.get('dept') || 'Department';
+        const deptColor = urlParams.get('color') || '3498db';
+        const deptIcon = urlParams.get('icon') || '🎓';
+
+        // Set department-specific styling
+        document.documentElement.style.setProperty('--dept-color', `#${deptColor}`);
+        document.documentElement.style.setProperty('--dept-color-dark', `#${darkenColor(deptColor, 20)}`);
+        document.documentElement.style.setProperty('--dept-color-rgb', hexToRgb(deptColor));
+
+        // Update department info
+        document.getElementById('deptName').textContent = deptName;
+        document.getElementById('deptIcon').textContent = deptIcon;
+        document.title = `${deptName} Login - Waldorf Universities`;
+
+        // Demo credentials
+        const credentials = {
+            faculty: { username: 'prof.smith', password: 'faculty123' },
+            student: { username: 'student001', password: 'student123' },
+            admin: { username: 'admin', password: 'admin123' },
+            guest: { username: 'guest', password: 'guest123' }
+        };
+
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading
+            showLoading(true);
+            
+            // Simulate authentication delay
+            setTimeout(() => {
+                // Check credentials
+                let isValid = false;
+                let userType = '';
+                
+                for (const [type, creds] of Object.entries(credentials)) {
+                    if (username === creds.username && password === creds.password) {
+                        isValid = true;
+                        userType = type;
+                        break;
+                    }
+                }
+                
+                showLoading(false);
+                
+                if (isValid) {
+                    showSuccess(`Welcome! Logging you into ${deptName} as ${userType}...`);
+                    
+                    // Redirect after success
+                    setTimeout(() => {
+                        alert(`🎓 ${deptName} Portal\n\nLogin successful!\n\nUser: ${username}\nRole: ${userType}\nDepartment: ${deptName}\n\nIn a real system, you would now access the department dashboard.`);
+                    }, 1500);
+                } else {
+                    showError('Invalid username or password. Please try again.');
+                }
+            }, 1500);
+        });
+
+        function fillCredentials(type) {
+            const creds = credentials[type];
+            document.getElementById('username').value = creds.username;
+            document.getElementById('password').value = creds.password;
+            
+            // Add visual feedback
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.style.borderColor = `#${deptColor}`;
+                setTimeout(() => {
+                    input.style.borderColor = '#e1e8ed';
+                }, 1000);
+            });
+        }
+
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            const btnText = document.getElementById('btnText');
+            const btn = document.getElementById('loginBtn');
+            
+            if (show) {
+                spinner.style.display = 'inline-block';
+                btnText.textContent = 'Authenticating...';
+                btn.disabled = true;
+                btn.style.cursor = 'not-allowed';
+            } else {
+                spinner.style.display = 'none';
+                btnText.textContent = 'Access Portal';
+                btn.disabled = false;
+                btn.style.cursor = 'pointer';
+            }
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            hideError();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            hideSuccess();
+        }
+
+        function hideSuccess() {
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function showForgotPassword() {
+            alert(`🔐 Password Reset\n\n${deptName} Department\n\nFor demo purposes, use the provided credentials.\n\nIn a real system, you would receive a password reset email.`);
+        }
+
+        function showHelp() {
+            alert(`❓ Login Help\n\n${deptName} Department Portal\n\n• Use the demo credentials provided\n• Faculty, students, and admins have different access levels\n• Contact IT support for technical issues\n• Visit the registrar for account issues`);
+        }
+
+        // Utility functions
+        function darkenColor(color, percent) {
+            const num = parseInt(color, 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) - amt;
+            const G = (num >> 8 & 0x00FF) - amt;
+            const B = (num & 0x0000FF) - amt;
+            return (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                    (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? 
+                parseInt(result[1], 16) + ', ' + 
+                parseInt(result[2], 16) + ', ' + 
+                parseInt(result[3], 16) : '52, 152, 219';
+        }
+
+        // Clear messages when user starts typing
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('input', () => {
+                hideSuccess();
+                hideError();
+            });
+        });
+    </script>
+</body>
+</html> 

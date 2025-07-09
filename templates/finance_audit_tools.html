@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Tools - Waldorf Colleges & Universities</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-text h1 { color: #e2e8f0; font-size: 1.5em; font-weight: 700; }
+        .back-btn {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white; border: none; padding: 10px 20px; border-radius: 8px;
+            cursor: pointer; text-decoration: none; transition: all 0.3s ease;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 30px 20px; }
+        .page-header {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px; padding: 30px; margin-bottom: 30px; text-align: center;
+        }
+        .page-title {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .dashboard-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px; padding: 25px; margin-bottom: 25px;
+        }
+        .card-title {
+            font-size: 1.3em; color: #00d4ff; font-weight: 600;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;
+            font-size: 14px; font-weight: 600; transition: all 0.3s ease;
+            text-decoration: none; display: inline-block; text-align: center; margin: 5px;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #5b73ff); color: white; }
+        .btn-success { background: linear-gradient(135deg, #16a085, #27ae60); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+        .stat-item { background: rgba(30, 30, 60, 0.4); padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 1.8em; font-weight: bold; color: #00d4ff; margin-bottom: 5px; }
+        .stat-label { color: #94a3b8; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🔍</div>
+                <div class="logo-text"><h1>Audit & Compliance Tools</h1></div>
+            </div>
+            <a href="/finance_dashboard" class="back-btn">← Back to Finance Dashboard</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Financial Audit System</h1>
+            <p style="color: #94a3b8;">Comprehensive audit tools and compliance monitoring</p>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-title">📊 Audit Overview</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">{{ "{:.1f}".format(audit_data.compliance_score) }}%</div>
+                    <div class="stat-label">Compliance Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ audit_data.last_audit }}</div>
+                    <div class="stat-label">Last Audit</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ audit_data.next_audit }}</div>
+                    <div class="stat-label">Next Audit</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ audit_data.findings|length }}</div>
+                    <div class="stat-label">Open Findings</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-title">🔧 Internal Controls</div>
+            {% for control, status in audit_data.internal_controls.items() %}
+            <p><strong>{{ control.replace('_', ' ').title() }}:</strong> {{ status }}</p>
+            {% endfor %}
+            <div style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="runAudit()">Run Audit</button>
+                <button class="btn btn-success" onclick="generateReport()">Generate Report</button>
+                <button class="btn btn-warning" onclick="reviewFindings()">Review Findings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function runAudit() {
+            alert('🔍 Starting comprehensive audit...\n\nThis will check all financial controls and procedures.');
+        }
+        function generateReport() {
+            alert('📊 Generating audit report...');
+        }
+        function reviewFindings() {
+            alert('📋 Opening findings review dashboard...');
+        }
+    </script>
+</body>
+</html> 

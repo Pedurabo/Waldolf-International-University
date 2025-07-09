@@ -1394,122 +1394,33 @@
         }
 
         async function scholarshipManagement() {
-            try {
-                const response = await fetch('/finance/scholarships');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let scholarships = `🎓 Scholarship Management\n\n`;
-                    scholarships += `💰 Total Awarded: $${data.total_awarded.toLocaleString()}\n`;
-                    scholarships += `💵 Remaining Budget: $${data.remaining_budget.toLocaleString()}\n`;
-                    scholarships += `📋 Pending Applications: ${data.applications_pending}\n`;
-                    scholarships += `🔄 Renewals Due: ${data.renewals_due}\n\n`;
-                    
-                    scholarships += `Available Scholarships:\n`;
-                    data.available_scholarships.forEach(scholarship => {
-                        scholarships += `• ${scholarship.name}: $${scholarship.amount.toLocaleString()} x ${scholarship.recipients} recipients\n`;
-                    });
-                    
-                    alert(scholarships);
-                } else {
-                    alert(`❌ Error: ${data.error || 'Failed to load scholarship data'}`);
-                }
-            } catch (error) {
-                alert('❌ Network error occurred. Please try again.');
-            }
+            // Redirect to comprehensive scholarship management dashboard
+            window.location.href = '/finance/scholarship_management';
         }
 
         async function paymentProcessing() {
-            // Redirect to payment processing functionality
-            processPayments();
+            // Redirect to comprehensive payment processing dashboard
+            window.location.href = '/finance/payment_processing_dashboard';
         }
 
         async function budgetManagement() {
-            // Redirect to budget planning functionality
-            budgetPlanning();
+            // Redirect to comprehensive budget management dashboard
+            window.location.href = '/finance/budget_management_dashboard';
         }
 
         async function taxReporting() {
-            try {
-                const response = await fetch('/finance/tax_reporting');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let tax = `📄 Tax Reporting (${data.tax_year})\n\n`;
-                    tax += `📋 Forms Generated:\n`;
-                    Object.entries(data.forms_generated).forEach(([form, count]) => {
-                        tax += `• ${form}: ${count} forms\n`;
-                    });
-                    
-                    tax += `\n📅 Filing Deadline: ${data.filing_deadline}\n`;
-                    tax += `💵 Estimated Refunds: $${data.estimated_refunds.toLocaleString()}\n`;
-                    tax += `🏛️ Tax Exempt Status: ${data.tax_exempt_status}\n`;
-                    tax += `✅ Compliance Status: ${data.compliance_status}`;
-                    
-                    alert(tax);
-                } else {
-                    alert(`❌ Error: ${data.error || 'Failed to load tax data'}`);
-                }
-            } catch (error) {
-                alert('❌ Network error occurred. Please try again.');
-            }
+            // Redirect to comprehensive tax reporting dashboard
+            window.location.href = '/finance/tax_reporting_dashboard';
         }
 
         async function auditTools() {
-            try {
-                const response = await fetch('/finance/audit_tools');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let audit = `🔍 Audit & Compliance Tools\n\n`;
-                    audit += `📅 Last Audit: ${data.last_audit}\n`;
-                    audit += `📅 Next Audit: ${data.next_audit}\n`;
-                    audit += `📊 Compliance Score: ${data.compliance_score}%\n\n`;
-                    
-                    audit += `🔧 Internal Controls:\n`;
-                    Object.entries(data.internal_controls).forEach(([control, status]) => {
-                        audit += `• ${control}: ${status}\n`;
-                    });
-                    
-                    audit += `\n📋 Recent Findings:\n`;
-                    data.findings.forEach(finding => {
-                        audit += `• ${finding.category}: ${finding.status} (${finding.priority} priority)\n`;
-                    });
-                    
-                    alert(audit);
-                } else {
-                    alert(`❌ Error: ${data.error || 'Failed to load audit data'}`);
-                }
-            } catch (error) {
-                alert('❌ Network error occurred. Please try again.');
-            }
+            // Redirect to comprehensive audit tools dashboard
+            window.location.href = '/finance/audit_tools_dashboard';
         }
 
         async function bankingIntegration() {
-            try {
-                const response = await fetch('/finance/banking');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let banking = `🏛️ Banking Integration\n\n`;
-                    banking += `💰 Bank Accounts:\n`;
-                    data.accounts.forEach(account => {
-                        banking += `• ${account.name}: $${account.balance.toLocaleString()} (Last reconciled: ${account.last_reconciled})\n`;
-                    });
-                    
-                    banking += `\n📊 Activity Summary:\n`;
-                    banking += `• Pending Transactions: ${data.pending_transactions}\n`;
-                    banking += `• Unreconciled Items: ${data.unreconciled_items}\n`;
-                    banking += `• Wire Transfers Pending: ${data.wire_transfers.pending}\n`;
-                    banking += `• Wire Transfers Completed Today: ${data.wire_transfers.completed_today}`;
-                    
-                    alert(banking);
-                } else {
-                    alert(`❌ Error: ${data.error || 'Failed to load banking data'}`);
-                }
-            } catch (error) {
-                alert('❌ Network error occurred. Please try again.');
-            }
+            // Redirect to comprehensive banking integration dashboard
+            window.location.href = '/finance/banking_integration_dashboard';
         }
 
         // Search and filter functionality

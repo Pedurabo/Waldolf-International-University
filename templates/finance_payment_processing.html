@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Processing - Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #475569, #334155);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #00d4ff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(30, 30, 60, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .payment-table th {
+            background: rgba(30, 30, 60, 0.8);
+            color: #00d4ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .payment-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .payment-table tr:hover {
+            background: rgba(30, 30, 60, 0.6);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-completed { background: #16a085; color: white; }
+        .status-processing { background: #f39c12; color: white; }
+        .status-pending { background: #3498db; color: white; }
+        .status-failed { background: #e74c3c; color: white; }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        .payment-form {
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .batch-actions {
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(22, 160, 133, 0.2);
+            border-left: 4px solid #16a085;
+            color: #16a085;
+        }
+
+        .alert-warning {
+            background: rgba(243, 156, 18, 0.2);
+            border-left: 4px solid #f39c12;
+            color: #f39c12;
+        }
+
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .page-title {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">💳</div>
+                <div class="logo-text">
+                    <h1>Payment Processing Center</h1>
+                </div>
+            </div>
+            <a href="/finance_dashboard" class="back-btn">← Back to Finance Dashboard</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Payment Processing System</h1>
+            <p style="color: #94a3b8;">Process payments, manage transactions, and handle refunds</p>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ payment_data.today_processed }}</div>
+                <div class="stat-label">Processed Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${{ "{:,.0f}".format(payment_data.today_amount) }}</div>
+                <div class="stat-label">Amount Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ payment_data.pending_count }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ payment_data.failed_count }}</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ "{:.1f}".format(payment_data.success_rate) }}%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${{ "{:.0f}".format(payment_data.avg_amount) }}</div>
+                <div class="stat-label">Avg Amount</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary btn-large" onclick="processBatchPayments()">⚡ Process Batch</button>
+            <button class="btn btn-success btn-large" onclick="manualPayment()">➕ Manual Payment</button>
+            <button class="btn btn-warning btn-large" onclick="processRefunds()">↩️ Process Refunds</button>
+            <button class="btn btn-danger btn-large" onclick="handleFailures()">❌ Handle Failures</button>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Payment Processing Queue -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">⏳ Payment Processing Queue</div>
+                </div>
+
+                <!-- Search Controls -->
+                <div class="search-controls">
+                    <input type="text" class="form-input" placeholder="Search by student ID or name..." onkeyup="filterPayments(this.value)">
+                    <select class="form-select" onchange="filterByStatus(this.value)">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                
+                <table class="payment-table" id="paymentTable">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" onchange="selectAll(this)"></th>
+                            <th>Student</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payment_data.pending_payments %}
+                        <tr data-status="{{ payment.status }}">
+                            <td><input type="checkbox" class="payment-checkbox" value="{{ payment.id }}"></td>
+                            <td>
+                                <strong>{{ payment.student_name }}</strong><br>
+                                <small>{{ payment.student_id }}</small>
+                            </td>
+                            <td>${{ "{:,.2f}".format(payment.amount) }}</td>
+                            <td>{{ payment.method }}</td>
+                            <td>
+                                <span class="status-badge status-{{ payment.status }}">
+                                    {{ payment.status.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" onclick="processPayment('{{ payment.id }}')">Process</button>
+                                {% if payment.status == 'failed' %}
+                                <button class="btn btn-warning" onclick="retryPayment('{{ payment.id }}')">Retry</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Batch Actions -->
+                <div class="batch-actions">
+                    <h4 style="color: #00d4ff; margin-bottom: 15px;">Batch Actions</h4>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="processBatchSelected()">Process Selected</button>
+                        <button class="btn btn-warning" onclick="holdSelected()">Hold Selected</button>
+                        <button class="btn btn-danger" onclick="cancelSelected()">Cancel Selected</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">⚡ Quick Actions</div>
+                </div>
+
+                <!-- Manual Payment Form -->
+                <div class="payment-form">
+                    <h4 style="color: #00d4ff; margin-bottom: 15px;">Manual Payment Entry</h4>
+                    <div class="form-group">
+                        <label class="form-label">Student ID</label>
+                        <input type="text" class="form-input" id="studentId" placeholder="WU001">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-input" id="amount" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select" id="paymentMethod">
+                            <option value="credit_card">Credit Card</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="check">Check</option>
+                            <option value="cash">Cash</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Reference Number</label>
+                        <input type="text" class="form-input" id="reference" placeholder="Optional">
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="submitManualPayment()" style="width: 100%;">Submit Payment</button>
+                </div>
+
+                <!-- Recent Activity -->
+                <div>
+                    <h4 style="color: #00d4ff; margin-bottom: 15px;">Recent Activity</h4>
+                    {% for activity in payment_data.recent_activity %}
+                    <div style="background: rgba(30, 30, 60, 0.4); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>{{ activity.type }}</strong><br>
+                                <small style="color: #94a3b8;">{{ activity.description }}</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: #00d4ff; font-weight: bold;">${{ "{:,.0f}".format(activity.amount) }}</div>
+                                <small style="color: #94a3b8;">{{ activity.time }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Methods & Processing Stats -->
+        <div class="dashboard-card full-width">
+            <div class="card-header">
+                <div class="card-title">📊 Payment Analytics & Methods</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <!-- Payment Methods -->
+                <div style="background: rgba(30, 30, 60, 0.4); padding: 20px; border-radius: 12px;">
+                    <h4 style="color: #00d4ff; margin-bottom: 15px;">💳 Payment Method Distribution</h4>
+                    {% for method, data in payment_data.method_stats.items() %}
+                    <div style="margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>{{ method.replace('_', ' ').title() }}</span>
+                            <span>{{ data.percentage }}%</span>
+                        </div>
+                        <div style="background: rgba(120, 119, 198, 0.3); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background: linear-gradient(135deg, #00d4ff, #5b73ff); height: 100%; width: {{ data.percentage }}%; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Processing Times -->
+                <div style="background: rgba(30, 30, 60, 0.4); padding: 20px; border-radius: 12px;">
+                    <h4 style="color: #00d4ff; margin-bottom: 15px;">⏱️ Processing Times</h4>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Average Processing Time:</strong> {{ payment_data.avg_processing_time }} minutes
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Fastest Payment:</strong> {{ payment_data.fastest_time }} seconds
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Peak Processing Hour:</strong> {{ payment_data.peak_hour }}
+                    </div>
+                    <div>
+                        <strong>Today's Total Volume:</strong> ${{ "{:,.0f}".format(payment_data.daily_volume) }}
+                    </div>
+                </div>
+
+                <!-- Error Analysis -->
+                <div style="background: rgba(30, 30, 60, 0.4); padding: 20px; border-radius: 12px;">
+                    <h4 style="color: #00d4ff; margin-bottom: 15px;">⚠️ Error Analysis</h4>
+                    {% for error_type, count in payment_data.error_analysis.items() %}
+                    <div style="margin-bottom: 8px;">
+                        <span>{{ error_type.replace('_', ' ').title() }}:</span>
+                        <span style="color: #e74c3c; font-weight: bold;">{{ count }}</span>
+                    </div>
+                    {% endfor %}
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-warning" onclick="generateErrorReport()">Generate Error Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Payment processing functionality
+        function processBatchPayments() {
+            if (confirm('Process all pending payments in batch?\n\nThis will attempt to process {{ payment_data.pending_count }} pending payments.')) {
+                alert('⚡ Batch payment processing initiated...\n\n• Processing {{ payment_data.pending_count }} payments\n• Estimated completion time: 5-10 minutes\n• You will be notified when complete\n\nProcessing in background...');
+                // Simulate batch processing
+                setTimeout(() => {
+                    alert('✅ Batch processing completed!\n\n• Successfully processed: {{ payment_data.pending_count - 2 }}\n• Failed: 2\n• Total amount: ${{ "{:,.0f}".format(payment_data.batch_total) }}');
+                    location.reload();
+                }, 3000);
+            }
+        }
+
+        function manualPayment() {
+            document.getElementById('studentId').focus();
+        }
+
+        function processRefunds() {
+            alert('↩️ Refund Processing Center\n\nOpening refund management interface...\n\n• Pending refunds: 3\n• Total refund amount: $2,850\n• Average processing time: 2-3 business days');
+        }
+
+        function handleFailures() {
+            alert('❌ Payment Failure Management\n\n• Failed payments: {{ payment_data.failed_count }}\n• Most common error: Insufficient funds\n• Retry rate: 78%\n\nOpening failure analysis tool...');
+        }
+
+        function processPayment(paymentId) {
+            if (confirm(`Process payment ${paymentId}?`)) {
+                alert(`✅ Payment ${paymentId} processed successfully!\n\n• Status: Completed\n• Processing time: 2.3 seconds\n• Confirmation sent to student`);
+                location.reload();
+            }
+        }
+
+        function retryPayment(paymentId) {
+            if (confirm(`Retry failed payment ${paymentId}?`)) {
+                alert(`🔄 Retrying payment ${paymentId}...\n\n• Attempting retry with alternative payment method\n• Student will be notified if successful`);
+                location.reload();
+            }
+        }
+
+        function submitManualPayment() {
+            const studentId = document.getElementById('studentId').value;
+            const amount = document.getElementById('amount').value;
+            const method = document.getElementById('paymentMethod').value;
+            const reference = document.getElementById('reference').value;
+
+            if (!studentId || !amount) {
+                alert('❌ Please fill in required fields (Student ID and Amount)');
+                return;
+            }
+
+            if (confirm(`Submit manual payment?\n\nStudent: ${studentId}\nAmount: $${amount}\nMethod: ${method.replace('_', ' ')}\nReference: ${reference || 'N/A'}`)) {
+                alert(`✅ Manual payment submitted successfully!\n\n• Payment ID: PAY${Date.now()}\n• Student notified\n• Transaction recorded`);
+                
+                // Clear form
+                document.getElementById('studentId').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('reference').value = '';
+            }
+        }
+
+        function processBatchSelected() {
+            const selected = document.querySelectorAll('.payment-checkbox:checked');
+            if (selected.length === 0) {
+                alert('❌ Please select payments to process');
+                return;
+            }
+            
+            if (confirm(`Process ${selected.length} selected payments?`)) {
+                alert(`✅ Processing ${selected.length} selected payments...\n\nEstimated completion: 2-3 minutes`);
+                location.reload();
+            }
+        }
+
+        function holdSelected() {
+            const selected = document.querySelectorAll('.payment-checkbox:checked');
+            if (selected.length === 0) {
+                alert('❌ Please select payments to hold');
+                return;
+            }
+            
+            if (confirm(`Place ${selected.length} selected payments on hold?`)) {
+                alert(`⏸️ ${selected.length} payments placed on hold\n\nPayments will not process automatically until released`);
+                location.reload();
+            }
+        }
+
+        function cancelSelected() {
+            const selected = document.querySelectorAll('.payment-checkbox:checked');
+            if (selected.length === 0) {
+                alert('❌ Please select payments to cancel');
+                return;
+            }
+            
+            if (confirm(`Cancel ${selected.length} selected payments?\n\nThis action cannot be undone.`)) {
+                alert(`❌ ${selected.length} payments cancelled\n\nStudents will be notified and refunds processed if applicable`);
+                location.reload();
+            }
+        }
+
+        function selectAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.payment-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        function filterPayments(searchTerm) {
+            const table = document.getElementById('paymentTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const studentCell = rows[i].getElementsByTagName('td')[1];
+                if (studentCell.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        function filterByStatus(status) {
+            const table = document.getElementById('paymentTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                if (status === '' || rows[i].getAttribute('data-status') === status) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        function generateErrorReport() {
+            alert('📊 Generating Payment Error Report...\n\n• Error frequency analysis\n• Root cause identification\n• Recommended actions\n• Performance impact\n\nReport will be ready in 2-3 minutes');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('💳 Payment Processing System initialized');
+        });
+    </script>
+</body>
+</html> 

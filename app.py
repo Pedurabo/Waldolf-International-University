@@ -1956,6 +1956,277 @@ if FLASK_AVAILABLE:
         
         return jsonify(budget_data)
 
+    @app.route('/finance/scholarship_management')
+    def finance_scholarship_management_dashboard():
+        """Comprehensive scholarship management dashboard"""
+        if not is_finance_staff():
+            flash('Please log in to access scholarship management.', 'error')
+            return redirect(url_for('home'))
+        
+        scholarship_data = {
+            'total_awarded': 447500,
+            'remaining_budget': 52500,
+            'applications_pending': 12,
+            'renewals_due': 8,
+            'active_scholarships': 4,
+            'total_recipients': 100,
+            'available_scholarships': [
+                {'name': 'Merit Scholarship', 'amount': 5000, 'recipients': 25},
+                {'name': 'Need-based Grant', 'amount': 3000, 'recipients': 40},
+                {'name': 'Athletic Scholarship', 'amount': 7500, 'recipients': 15},
+                {'name': 'Academic Excellence', 'amount': 4500, 'recipients': 20}
+            ],
+            'recent_recipients': [
+                {
+                    'name': 'Alice Johnson',
+                    'student_id': 'WU001',
+                    'amount': 5000,
+                    'gpa': 3.8,
+                    'major': 'Computer Science',
+                    'award_date': '2025-01-05',
+                    'progress': 85
+                },
+                {
+                    'name': 'Bob Smith',
+                    'student_id': 'WU002',
+                    'amount': 3000,
+                    'gpa': 3.6,
+                    'major': 'Mathematics',
+                    'award_date': '2025-01-03',
+                    'progress': 92
+                },
+                {
+                    'name': 'Carol Davis',
+                    'student_id': 'WU003',
+                    'amount': 7500,
+                    'gpa': 3.9,
+                    'major': 'Physics',
+                    'award_date': '2025-01-02',
+                    'progress': 78
+                }
+            ],
+            'programs_overview': [
+                {
+                    'name': 'Merit-Based Program',
+                    'budget': 150000,
+                    'awarded': 125000
+                },
+                {
+                    'name': 'Need-Based Program',
+                    'budget': 200000,
+                    'awarded': 180000
+                },
+                {
+                    'name': 'Athletic Program',
+                    'budget': 100000,
+                    'awarded': 90000
+                },
+                {
+                    'name': 'Academic Excellence',
+                    'budget': 75000,
+                    'awarded': 52500
+                }
+            ]
+        }
+        
+        return render_template('finance_scholarship_management.html', scholarship_data=scholarship_data)
+
+    @app.route('/finance/payment_processing_dashboard')
+    def finance_payment_processing_dashboard():
+        """Comprehensive payment processing dashboard"""
+        if not is_finance_staff():
+            flash('Please log in to access payment processing.', 'error')
+            return redirect(url_for('home'))
+        
+        payment_data = {
+            'today_processed': 145,
+            'today_amount': 68750.00,
+            'pending_count': 23,
+            'failed_count': 4,
+            'success_rate': 97.2,
+            'avg_amount': 892.50,
+            'avg_processing_time': 2.3,
+            'fastest_time': 0.8,
+            'peak_hour': '2:00 PM - 3:00 PM',
+            'daily_volume': 125450.00,
+            'batch_total': 18500.00,
+            'pending_payments': [
+                {
+                    'id': 'PAY001',
+                    'student_name': 'Alice Johnson',
+                    'student_id': 'WU001',
+                    'amount': 750.00,
+                    'method': 'Credit Card',
+                    'status': 'pending'
+                },
+                {
+                    'id': 'PAY002',
+                    'student_name': 'Bob Smith',
+                    'student_id': 'WU002',
+                    'amount': 1200.00,
+                    'method': 'Bank Transfer',
+                    'status': 'processing'
+                },
+                {
+                    'id': 'PAY003',
+                    'student_name': 'Carol Davis',
+                    'student_id': 'WU003',
+                    'amount': 950.00,
+                    'method': 'Check',
+                    'status': 'failed'
+                },
+                {
+                    'id': 'PAY004',
+                    'student_name': 'David Wilson',
+                    'student_id': 'WU004',
+                    'amount': 600.00,
+                    'method': 'Credit Card',
+                    'status': 'completed'
+                }
+            ],
+            'recent_activity': [
+                {
+                    'type': 'Payment Processed',
+                    'description': 'Spring 2025 tuition payment',
+                    'amount': 750.00,
+                    'time': '2 minutes ago'
+                },
+                {
+                    'type': 'Refund Issued',
+                    'description': 'Housing fee refund',
+                    'amount': 450.00,
+                    'time': '15 minutes ago'
+                },
+                {
+                    'type': 'Payment Failed',
+                    'description': 'Insufficient funds',
+                    'amount': 1200.00,
+                    'time': '32 minutes ago'
+                }
+            ],
+            'method_stats': {
+                'credit_card': {'percentage': 45},
+                'bank_transfer': {'percentage': 32},
+                'check': {'percentage': 15},
+                'cash': {'percentage': 8}
+            },
+            'error_analysis': {
+                'insufficient_funds': 12,
+                'expired_card': 3,
+                'network_timeout': 2,
+                'invalid_account': 1
+            }
+        }
+        
+        return render_template('finance_payment_processing.html', payment_data=payment_data)
+
+    @app.route('/finance/tax_reporting_dashboard')
+    def finance_tax_reporting_dashboard():
+        """Tax reporting and compliance dashboard"""
+        if not is_finance_staff():
+            flash('Please log in to access tax reporting.', 'error')
+            return redirect(url_for('home'))
+        
+        tax_data = {
+            'tax_year': 2024,
+            'forms_generated': {
+                '1098-T': 285,
+                '1099-MISC': 45,
+                'W-2': 125
+            },
+            'compliance_status': 'Current',
+            'filing_deadline': '2025-01-31',
+            'estimated_refunds': 125000,
+            'tax_exempt_status': 'Active'
+        }
+        
+        return render_template('finance_tax_reporting.html', tax_data=tax_data)
+
+    @app.route('/finance/audit_tools_dashboard')
+    def finance_audit_tools_dashboard():
+        """Financial audit and compliance tools dashboard"""
+        if not is_finance_staff():
+            flash('Please log in to access audit tools.', 'error')
+            return redirect(url_for('home'))
+        
+        audit_data = {
+            'last_audit': '2024-06-15',
+            'next_audit': '2025-06-15',
+            'compliance_score': 98.5,
+            'findings': [
+                {'category': 'Documentation', 'status': 'Resolved', 'priority': 'Low'},
+                {'category': 'Controls', 'status': 'In Progress', 'priority': 'Medium'}
+            ],
+            'internal_controls': {
+                'segregation_of_duties': 'Implemented',
+                'authorization_limits': 'Current',
+                'documentation_policies': 'Updated'
+            }
+        }
+        
+        return render_template('finance_audit_tools.html', audit_data=audit_data)
+
+    @app.route('/finance/banking_integration_dashboard')
+    def finance_banking_integration_dashboard():
+        """Banking integration and reconciliation dashboard"""
+        if not is_finance_staff():
+            flash('Please log in to access banking integration.', 'error')
+            return redirect(url_for('home'))
+        
+        banking_data = {
+            'accounts': [
+                {'name': 'Operating Account', 'balance': 485000, 'last_reconciled': '2025-01-08'},
+                {'name': 'Scholarship Fund', 'balance': 125000, 'last_reconciled': '2025-01-08'},
+                {'name': 'Capital Projects', 'balance': 750000, 'last_reconciled': '2025-01-07'}
+            ],
+            'pending_transactions': 12,
+            'unreconciled_items': 3,
+            'wire_transfers': {
+                'pending': 2,
+                'completed_today': 5
+            }
+        }
+        
+        return render_template('finance_banking_integration.html', banking_data=banking_data)
+
+    # Enhanced Finance Route for Budget Management Dashboard
+    @app.route('/finance/budget_management_dashboard')
+    def finance_budget_management_dashboard():
+        """Enhanced budget management dashboard"""
+        if not is_finance_staff():
+            flash('Please log in to access budget management.', 'error')
+            return redirect(url_for('home'))
+        
+        # This will use the existing budget planning template but with enhanced data
+        budget_data = {
+            'current_year': 2025,
+            'total_budget': 5200000,
+            'revenue_forecast': {
+                'tuition': 3600000,
+                'fees': 600000,
+                'grants': 750000,
+                'other': 250000
+            },
+            'expense_forecast': {
+                'faculty_salaries': 2100000,
+                'staff_salaries': 850000,
+                'facilities': 650000,
+                'technology': 300000,
+                'student_services': 200000,
+                'administration': 150000,
+                'other': 100000
+            },
+            'departments': [
+                {'name': 'Computer Science', 'budget': 450000, 'spent': 320000},
+                {'name': 'Mathematics', 'budget': 380000, 'spent': 280000},
+                {'name': 'Physics', 'budget': 420000, 'spent': 310000},
+                {'name': 'Chemistry', 'budget': 410000, 'spent': 295000},
+                {'name': 'Biology', 'budget': 390000, 'spent': 275000}
+            ]
+        }
+        
+        return render_template('finance_budget_planning.html', budget_data=budget_data)
+
     # Error handlers
     @app.errorhandler(404)
     def not_found_error(error):

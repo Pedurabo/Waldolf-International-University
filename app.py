@@ -5,7 +5,7 @@ Flask web app that runs in Chrome browser
 """
 
 try:
-    from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+    from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
     FLASK_AVAILABLE = True
 except ImportError:
     FLASK_AVAILABLE = False
@@ -123,6 +123,65 @@ if FLASK_AVAILABLE:
         return render_template('admin_test.html', 
                              test_results=test_results, 
                              is_admin=is_admin)
+
+    # Student authentication system
+    student_credentials = {
+        'WU001': {'password': 'alice123', 'name': 'Alice Johnson'},
+        'WU002': {'password': 'bob456', 'name': 'Bob Smith'},
+        'WU003': {'password': 'carol789', 'name': 'Carol Davis'},
+        'WU004': {'password': 'david012', 'name': 'David Wilson'}
+    }
+
+    @app.route('/student_login', methods=['GET', 'POST'])
+    def student_login():
+        """Student login page and authentication"""
+        if request.method == 'POST':
+            student_id = request.form.get('student_id', '').strip()
+            password = request.form.get('password', '')
+            
+            # Validate credentials
+            if student_id in student_credentials and student_credentials[student_id]['password'] == password:
+                # Successful login - store in session
+                session['student_id'] = student_id
+                session['student_name'] = student_credentials[student_id]['name']
+                session['is_logged_in'] = True
+                
+                flash(f'Welcome back, {student_credentials[student_id]["name"]}!', 'success')
+                return redirect(url_for('student_dashboard'))
+            else:
+                flash('Invalid Student ID or Password. Please try again.', 'error')
+                return render_template('student_login.html')
+        
+        # GET request - show login form
+        return render_template('student_login.html')
+
+    @app.route('/student_dashboard')
+    def student_dashboard():
+        """Student dashboard - requires login"""
+        # Check if student is logged in
+        if not session.get('is_logged_in') or not session.get('student_id'):
+            flash('Please log in to access the student dashboard.', 'error')
+            return redirect(url_for('student_login'))
+        
+        # Get current student data
+        student_id = session.get('student_id')
+        current_student = next((s for s in students if s['id'] == student_id), None)
+        
+        if not current_student:
+            flash('Student record not found. Please contact administration.', 'error')
+            return redirect(url_for('student_login'))
+        
+        # Render the student dashboard
+        return render_template('student_home.html', 
+                             student=current_student,
+                             student_name=session.get('student_name'))
+
+    @app.route('/student_logout')
+    def student_logout():
+        """Student logout"""
+        session.clear()
+        flash('You have been logged out successfully.', 'success')
+        return redirect(url_for('student_login'))
 
     @app.route('/api/status')
     def api_status():

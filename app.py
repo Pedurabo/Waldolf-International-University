@@ -133,9 +133,26 @@ if FLASK_AVAILABLE:
         {"id": "LR007", "title": "JSTOR Academic Journal Archive", "author": "JSTOR", "type": "Database", "available": True, "location": "Online Resources"}
     ]
 
-    @app.route('/')
+    @app.route('/', methods=['GET', 'POST'])
     def home():
-        """Main homepage - default route"""
+        """Main homepage with integrated student login"""
+        if request.method == 'POST':
+            # Handle student login from homepage
+            student_id = request.form.get('student_id', '').strip()
+            password = request.form.get('password', '')
+            
+            if student_id in department_credentials['students'] and department_credentials['students'][student_id]['password'] == password:
+                session['student_id'] = student_id
+                session['student_name'] = department_credentials['students'][student_id]['name']
+                session['is_logged_in'] = True
+                session['user_type'] = 'student'
+                
+                flash(f'Welcome back, {department_credentials["students"][student_id]["name"]}!', 'success')
+                return redirect(url_for('student_management_dashboard'))
+            else:
+                flash('Invalid Student ID or Password. Please try again.', 'error')
+        
+        # GET request - show homepage
         is_admin = check_admin_privileges()
         system_info = {
             'os': f"{platform.system()} {platform.release()}",
@@ -151,26 +168,10 @@ if FLASK_AVAILABLE:
 
     # ============= STUDENT MANAGEMENT SYSTEM =============
     
-    @app.route('/student_login', methods=['GET', 'POST'])
+    @app.route('/student_login')
     def student_login():
-        """Student login with comprehensive authentication"""
-        if request.method == 'POST':
-            student_id = request.form.get('student_id', '').strip()
-            password = request.form.get('password', '')
-            
-            if student_id in department_credentials['students'] and department_credentials['students'][student_id]['password'] == password:
-                session['student_id'] = student_id
-                session['student_name'] = department_credentials['students'][student_id]['name']
-                session['is_logged_in'] = True
-                session['user_type'] = 'student'
-                
-                flash(f'Welcome back, {department_credentials["students"][student_id]["name"]}!', 'success')
-                return redirect(url_for('student_management_dashboard'))
-            else:
-                flash('Invalid Student ID or Password. Please try again.', 'error')
-                return render_template('student_login.html')
-        
-        return render_template('student_login.html')
+        """Redirect old student login route to homepage"""
+        return redirect(url_for('home'))
 
     @app.route('/student_management')
     @app.route('/student_dashboard')
@@ -178,14 +179,14 @@ if FLASK_AVAILABLE:
         """Comprehensive Student Management Dashboard"""
         if not session.get('is_logged_in') or session.get('user_type') != 'student':
             flash('Please log in to access the student dashboard.', 'error')
-            return redirect(url_for('student_login'))
+            return redirect(url_for('home'))
         
         student_id = session.get('student_id')
         current_student = next((s for s in students if s['id'] == student_id), None)
         
         if not current_student:
             flash('Student record not found. Please contact administration.', 'error')
-            return redirect(url_for('student_login'))
+            return redirect(url_for('home'))
         
         # Get student's enrolled courses
         student_courses = [c for c in courses if student_id in ['WU001', 'WU002', 'WU003', 'WU004', 'WU005']][:4]
@@ -193,7 +194,7 @@ if FLASK_AVAILABLE:
         # Get financial information
         finances = student_finances.get(student_id, {'balance': 0, 'paid': 0, 'scholarships': [], 'payment_plan': False})
         
-        return render_template('student_management_dashboard.html', 
+        return render_template('student_home.html', 
                              student=current_student,
                              courses=student_courses,
                              finances=finances,
@@ -2231,6 +2232,578 @@ if FLASK_AVAILABLE:
     @app.errorhandler(404)
     def not_found_error(error):
         return render_template('404.html'), 404
+
+    # ============= STUDENT DASHBOARD FUNCTIONALITY =============
+    
+    @app.route('/student/transcript')
+    def student_view_transcript():
+        """View student academic transcript"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access your transcript.'}), 403
+        
+        student_id = session.get('student_id')
+        current_student = next((s for s in students if s['id'] == student_id), None)
+        
+        if not current_student:
+            return jsonify({'error': 'Student record not found.'}), 404
+        
+        # Simulate transcript data
+        transcript_data = {
+            'student': current_student,
+            'academic_summary': {
+                'total_credits': 45,
+                'cumulative_gpa': current_student['gpa'],
+                'academic_standing': 'Good Standing',
+                'expected_graduation': 'May 2026'
+            },
+            'semester_records': [
+                {
+                    'semester': 'Fall 2024',
+                    'courses': [
+                        {'code': 'CS301', 'name': 'Data Structures', 'credits': 3, 'grade': 'A', 'points': 12.0},
+                        {'code': 'MATH301', 'name': 'Calculus III', 'credits': 4, 'grade': 'B+', 'points': 13.2},
+                        {'code': 'PHYS202', 'name': 'Physics II', 'credits': 3, 'grade': 'A-', 'points': 11.1},
+                        {'code': 'ENG201', 'name': 'English Literature', 'credits': 3, 'grade': 'B', 'points': 9.0}
+                    ],
+                    'semester_gpa': 3.7,
+                    'semester_credits': 13
+                },
+                {
+                    'semester': 'Spring 2024',
+                    'courses': [
+                        {'code': 'CS201', 'name': 'Programming Fundamentals', 'credits': 4, 'grade': 'A', 'points': 16.0},
+                        {'code': 'MATH201', 'name': 'Calculus II', 'credits': 4, 'grade': 'A-', 'points': 14.8},
+                        {'code': 'PHYS101', 'name': 'Physics I', 'credits': 3, 'grade': 'B+', 'points': 9.9},
+                        {'code': 'HIST101', 'name': 'World History', 'credits': 3, 'grade': 'A', 'points': 12.0}
+                    ],
+                    'semester_gpa': 3.9,
+                    'semester_credits': 14
+                }
+            ]
+        }
+        
+        return jsonify(transcript_data)
+
+    @app.route('/student/grades')
+    def student_view_grades():
+        """View current semester grades"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access your grades.'}), 403
+        
+        student_id = session.get('student_id')
+        current_student = next((s for s in students if s['id'] == student_id), None)
+        
+        if not current_student:
+            return jsonify({'error': 'Student record not found.'}), 404
+        
+        # Simulate current grades
+        grades_data = {
+            'student': current_student,
+            'semester': 'Spring 2025',
+            'courses': [
+                {
+                    'code': 'CS401',
+                    'name': 'Advanced Data Structures',
+                    'instructor': 'Dr. Smith',
+                    'credits': 3,
+                    'current_grade': 'A-',
+                    'assignments': [
+                        {'name': 'Assignment 1', 'score': 95, 'max_score': 100, 'weight': '20%'},
+                        {'name': 'Midterm Exam', 'score': 88, 'max_score': 100, 'weight': '30%'},
+                        {'name': 'Assignment 2', 'score': 92, 'max_score': 100, 'weight': '20%'},
+                        {'name': 'Final Project', 'score': 'Pending', 'max_score': 100, 'weight': '30%'}
+                    ]
+                },
+                {
+                    'code': 'MATH401',
+                    'name': 'Linear Algebra',
+                    'instructor': 'Dr. Johnson',
+                    'credits': 4,
+                    'current_grade': 'B+',
+                    'assignments': [
+                        {'name': 'Quiz 1', 'score': 85, 'max_score': 100, 'weight': '15%'},
+                        {'name': 'Quiz 2', 'score': 90, 'max_score': 100, 'weight': '15%'},
+                        {'name': 'Midterm', 'score': 82, 'max_score': 100, 'weight': '35%'},
+                        {'name': 'Final Exam', 'score': 'Scheduled', 'max_score': 100, 'weight': '35%'}
+                    ]
+                },
+                {
+                    'code': 'CS402',
+                    'name': 'Database Systems',
+                    'instructor': 'Prof. Williams',
+                    'credits': 3,
+                    'current_grade': 'A',
+                    'assignments': [
+                        {'name': 'Lab 1', 'score': 98, 'max_score': 100, 'weight': '25%'},
+                        {'name': 'Lab 2', 'score': 96, 'max_score': 100, 'weight': '25%'},
+                        {'name': 'Project Phase 1', 'score': 94, 'max_score': 100, 'weight': '25%'},
+                        {'name': 'Project Phase 2', 'score': 'In Progress', 'max_score': 100, 'weight': '25%'}
+                    ]
+                }
+            ],
+            'gpa_calculation': {
+                'current_semester_gpa': 3.7,
+                'cumulative_gpa': current_student['gpa'],
+                'total_credits_attempted': 45,
+                'total_credits_earned': 42
+            }
+        }
+        
+        return jsonify(grades_data)
+
+    @app.route('/student/courses/enroll')
+    def student_enroll_courses():
+        """Course enrollment system"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access course enrollment.'}), 403
+        
+        student_id = session.get('student_id')
+        current_student = next((s for s in students if s['id'] == student_id), None)
+        
+        if not current_student:
+            return jsonify({'error': 'Student record not found.'}), 404
+        
+        # Available courses for enrollment
+        available_courses = [
+            {
+                'code': 'CS501',
+                'name': 'Machine Learning',
+                'instructor': 'Dr. Anderson',
+                'credits': 3,
+                'schedule': 'MWF 10:00-10:50 AM',
+                'capacity': 30,
+                'enrolled': 25,
+                'prerequisites': 'CS301, MATH301',
+                'description': 'Introduction to machine learning algorithms and applications.'
+            },
+            {
+                'code': 'CS502',
+                'name': 'Software Engineering',
+                'instructor': 'Prof. Brown',
+                'credits': 4,
+                'schedule': 'TTh 2:00-3:50 PM',
+                'capacity': 25,
+                'enrolled': 20,
+                'prerequisites': 'CS301',
+                'description': 'Software development methodologies and project management.'
+            },
+            {
+                'code': 'MATH501',
+                'name': 'Abstract Algebra II',
+                'instructor': 'Dr. Davis',
+                'credits': 3,
+                'schedule': 'MWF 1:00-1:50 PM',
+                'capacity': 20,
+                'enrolled': 15,
+                'prerequisites': 'MATH401',
+                'description': 'Advanced topics in abstract algebra including ring theory.'
+            },
+            {
+                'code': 'PHYS301',
+                'name': 'Quantum Physics',
+                'instructor': 'Dr. Wilson',
+                'credits': 4,
+                'schedule': 'TTh 9:00-10:50 AM',
+                'capacity': 15,
+                'enrolled': 12,
+                'prerequisites': 'PHYS202, MATH301',
+                'description': 'Introduction to quantum mechanics and modern physics.'
+            }
+        ]
+        
+        enrollment_data = {
+            'student': current_student,
+            'enrollment_period': {
+                'start_date': '2025-01-15',
+                'end_date': '2025-01-25',
+                'status': 'Open'
+            },
+            'available_courses': available_courses,
+            'current_enrolled': [
+                {'code': 'CS401', 'name': 'Advanced Data Structures', 'credits': 3},
+                {'code': 'MATH401', 'name': 'Linear Algebra', 'credits': 4},
+                {'code': 'CS402', 'name': 'Database Systems', 'credits': 3}
+            ],
+            'enrollment_status': {
+                'current_credits': 10,
+                'max_credits': 18,
+                'available_credits': 8
+            }
+        }
+        
+        return jsonify(enrollment_data)
+
+    @app.route('/student/courses/all')
+    def student_view_all_courses():
+        """View all available courses in catalog"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access course catalog.'}), 403
+        
+        # Group courses by department
+        course_catalog = {
+            'Computer Science': [
+                {'code': 'CS101', 'name': 'Introduction to Programming', 'credits': 3, 'level': 'Undergraduate'},
+                {'code': 'CS201', 'name': 'Programming Fundamentals', 'credits': 4, 'level': 'Undergraduate'},
+                {'code': 'CS301', 'name': 'Data Structures', 'credits': 3, 'level': 'Undergraduate'},
+                {'code': 'CS401', 'name': 'Advanced Data Structures', 'credits': 3, 'level': 'Undergraduate'},
+                {'code': 'CS501', 'name': 'Machine Learning', 'credits': 3, 'level': 'Graduate'},
+                {'code': 'CS502', 'name': 'Software Engineering', 'credits': 4, 'level': 'Graduate'}
+            ],
+            'Mathematics': [
+                {'code': 'MATH101', 'name': 'Calculus I', 'credits': 4, 'level': 'Undergraduate'},
+                {'code': 'MATH201', 'name': 'Calculus II', 'credits': 4, 'level': 'Undergraduate'},
+                {'code': 'MATH301', 'name': 'Calculus III', 'credits': 4, 'level': 'Undergraduate'},
+                {'code': 'MATH401', 'name': 'Linear Algebra', 'credits': 4, 'level': 'Undergraduate'},
+                {'code': 'MATH501', 'name': 'Abstract Algebra II', 'credits': 3, 'level': 'Graduate'}
+            ],
+            'Physics': [
+                {'code': 'PHYS101', 'name': 'Physics I', 'credits': 3, 'level': 'Undergraduate'},
+                {'code': 'PHYS202', 'name': 'Physics II', 'credits': 3, 'level': 'Undergraduate'},
+                {'code': 'PHYS301', 'name': 'Quantum Physics', 'credits': 4, 'level': 'Graduate'}
+            ],
+            'English': [
+                {'code': 'ENG101', 'name': 'English Composition', 'credits': 3, 'level': 'Undergraduate'},
+                {'code': 'ENG201', 'name': 'English Literature', 'credits': 3, 'level': 'Undergraduate'}
+            ]
+        }
+        
+        return jsonify({
+            'catalog': course_catalog,
+            'total_courses': sum(len(dept_courses) for dept_courses in course_catalog.values()),
+            'departments': list(course_catalog.keys())
+        })
+
+    @app.route('/student/schedule')
+    def student_view_schedule():
+        """View full weekly schedule"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access your schedule.'}), 403
+        
+        student_id = session.get('student_id')
+        current_student = next((s for s in students if s['id'] == student_id), None)
+        
+        if not current_student:
+            return jsonify({'error': 'Student record not found.'}), 404
+        
+        # Complete weekly schedule
+        weekly_schedule = {
+            'student': current_student,
+            'semester': 'Spring 2025',
+            'schedule': {
+                'Monday': [
+                    {'time': '9:00-9:50 AM', 'course': 'CS401 - Advanced Data Structures', 'room': 'CS-201', 'instructor': 'Dr. Smith'},
+                    {'time': '11:00-11:50 AM', 'course': 'MATH401 - Linear Algebra', 'room': 'MATH-305', 'instructor': 'Dr. Johnson'},
+                    {'time': '2:00-2:50 PM', 'course': 'CS402 - Database Systems', 'room': 'CS-102', 'instructor': 'Prof. Williams'}
+                ],
+                'Tuesday': [
+                    {'time': '10:00-11:50 AM', 'course': 'CS402 Lab - Database Lab', 'room': 'CS-LAB1', 'instructor': 'TA: Sarah'},
+                    {'time': '1:00-2:50 PM', 'course': 'MATH401 - Linear Algebra', 'room': 'MATH-305', 'instructor': 'Dr. Johnson'}
+                ],
+                'Wednesday': [
+                    {'time': '9:00-9:50 AM', 'course': 'CS401 - Advanced Data Structures', 'room': 'CS-201', 'instructor': 'Dr. Smith'},
+                    {'time': '11:00-11:50 AM', 'course': 'MATH401 - Linear Algebra', 'room': 'MATH-305', 'instructor': 'Dr. Johnson'},
+                    {'time': '2:00-2:50 PM', 'course': 'CS402 - Database Systems', 'room': 'CS-102', 'instructor': 'Prof. Williams'},
+                    {'time': '4:00-5:00 PM', 'course': 'Study Group - CS401', 'room': 'Library Room 205', 'instructor': 'Self-Study'}
+                ],
+                'Thursday': [
+                    {'time': '1:00-2:50 PM', 'course': 'MATH401 - Linear Algebra', 'room': 'MATH-305', 'instructor': 'Dr. Johnson'},
+                    {'time': '3:00-4:50 PM', 'course': 'CS401 Lab - Programming Lab', 'room': 'CS-LAB2', 'instructor': 'TA: Mike'}
+                ],
+                'Friday': [
+                    {'time': '9:00-9:50 AM', 'course': 'CS401 - Advanced Data Structures', 'room': 'CS-201', 'instructor': 'Dr. Smith'},
+                    {'time': '11:00-11:50 AM', 'course': 'MATH401 - Linear Algebra', 'room': 'MATH-305', 'instructor': 'Dr. Johnson'},
+                    {'time': '2:00-2:50 PM', 'course': 'CS402 - Database Systems', 'room': 'CS-102', 'instructor': 'Prof. Williams'}
+                ]
+            },
+            'office_hours': [
+                {'instructor': 'Dr. Smith', 'time': 'Monday 3:00-4:00 PM', 'location': 'CS-301'},
+                {'instructor': 'Dr. Johnson', 'time': 'Wednesday 10:00-11:00 AM', 'location': 'MATH-201'},
+                {'instructor': 'Prof. Williams', 'time': 'Friday 1:00-2:00 PM', 'location': 'CS-305'}
+            ]
+        }
+        
+        return jsonify(weekly_schedule)
+
+    @app.route('/student/announcements')
+    def student_view_announcements():
+        """View all announcements"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access announcements.'}), 403
+        
+        announcements_data = {
+            'announcements': [
+                {
+                    'id': 'ANN001',
+                    'date': '2025-01-09',
+                    'title': 'Final Exam Schedule Released',
+                    'content': 'The final exam schedule for Spring 2025 has been posted. Please check your student portal for exam dates, times, and locations. Make sure to arrive 15 minutes early for each exam.',
+                    'category': 'Academic',
+                    'priority': 'High',
+                    'author': 'Academic Affairs Office'
+                },
+                {
+                    'id': 'ANN002',
+                    'date': '2025-01-08',
+                    'title': 'Spring Registration Deadline',
+                    'content': 'Reminder: The deadline for Spring 2025 course registration is January 25th. Late registration fees will apply after this date.',
+                    'category': 'Registration',
+                    'priority': 'High',
+                    'author': 'Registrar Office'
+                },
+                {
+                    'id': 'ANN003',
+                    'date': '2025-01-07',
+                    'title': 'Library Extended Hours',
+                    'content': 'The library will be open 24/7 starting January 15th through the end of the semester to support students during finals preparation.',
+                    'category': 'Library',
+                    'priority': 'Medium',
+                    'author': 'Library Services'
+                },
+                {
+                    'id': 'ANN004',
+                    'date': '2025-01-06',
+                    'title': 'Career Fair 2025',
+                    'content': 'The annual Career Fair will be held on February 20-21, 2025 in the Student Center. Over 100 employers will be present. Register now!',
+                    'category': 'Career Services',
+                    'priority': 'Medium',
+                    'author': 'Career Development Center'
+                },
+                {
+                    'id': 'ANN005',
+                    'date': '2025-01-05',
+                    'title': 'Parking Permit Renewal',
+                    'content': 'Parking permits for the Spring semester must be renewed by January 20th. Renewal can be done online through the student portal.',
+                    'category': 'Campus Services',
+                    'priority': 'Low',
+                    'author': 'Campus Security'
+                },
+                {
+                    'id': 'ANN006',
+                    'date': '2025-01-04',
+                    'title': 'Student Health Center Hours',
+                    'content': 'The Student Health Center will resume normal operating hours (8 AM - 6 PM) starting January 15th. Appointments can be scheduled online.',
+                    'category': 'Health Services',
+                    'priority': 'Low',
+                    'author': 'Student Health Center'
+                }
+            ],
+            'categories': ['Academic', 'Registration', 'Library', 'Career Services', 'Campus Services', 'Health Services'],
+            'unread_count': 3
+        }
+        
+        return jsonify(announcements_data)
+
+    @app.route('/student/payment')
+    def student_payment_portal():
+        """Student payment portal"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access payment portal.'}), 403
+        
+        student_id = session.get('student_id')
+        current_student = next((s for s in students if s['id'] == student_id), None)
+        
+        if not current_student:
+            return jsonify({'error': 'Student record not found.'}), 404
+        
+        # Get financial information
+        finances = student_finances.get(student_id, {'balance': 0, 'paid': 0, 'scholarships': [], 'payment_plan': False})
+        
+        payment_data = {
+            'student': current_student,
+            'account_summary': {
+                'current_balance': finances.get('balance', 0),
+                'total_paid': finances.get('paid', 0),
+                'payment_plan_active': finances.get('payment_plan', False),
+                'due_date': '2025-02-15',
+                'late_fees': 0
+            },
+            'payment_history': [
+                {'date': '2024-12-15', 'amount': 2500.00, 'description': 'Spring Tuition Payment', 'method': 'Credit Card'},
+                {'date': '2024-11-20', 'amount': 1200.00, 'description': 'Housing Payment', 'method': 'Bank Transfer'},
+                {'date': '2024-10-15', 'amount': 800.00, 'description': 'Meal Plan', 'method': 'Cash'}
+            ],
+            'upcoming_charges': [
+                {'due_date': '2025-02-15', 'amount': 2500.00, 'description': 'Spring Semester Tuition'},
+                {'due_date': '2025-02-01', 'amount': 1200.00, 'description': 'Spring Housing'},
+                {'due_date': '2025-02-01', 'amount': 400.00, 'description': 'Meal Plan'}
+            ],
+            'payment_methods': [
+                {'type': 'Credit/Debit Card', 'fee': '2.5%', 'processing_time': 'Immediate'},
+                {'type': 'Bank Transfer (ACH)', 'fee': 'Free', 'processing_time': '3-5 business days'},
+                {'type': 'Check by Mail', 'fee': 'Free', 'processing_time': '7-10 business days'}
+            ]
+        }
+        
+        return jsonify(payment_data)
+
+    @app.route('/student/transcript/request', methods=['GET', 'POST'])
+    def student_request_transcript():
+        """Request official transcript"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to request transcript.'}), 403
+        
+        if request.method == 'POST':
+            # Process transcript request
+            request_data = request.get_json() or {}
+            
+            # Simulate transcript request processing
+            transcript_request = {
+                'request_id': f"TR{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                'student_id': session.get('student_id'),
+                'recipient_name': request_data.get('recipient_name'),
+                'recipient_address': request_data.get('recipient_address'),
+                'delivery_method': request_data.get('delivery_method', 'Mail'),
+                'transcript_type': request_data.get('transcript_type', 'Official'),
+                'rush_processing': request_data.get('rush_processing', False),
+                'fee': 25.00 if request_data.get('rush_processing') else 10.00,
+                'status': 'Processing',
+                'submitted_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'estimated_completion': (datetime.now() + timedelta(days=3 if request_data.get('rush_processing') else 7)).strftime('%Y-%m-%d')
+            }
+            
+            return jsonify({
+                'success': True,
+                'message': 'Transcript request submitted successfully',
+                'request': transcript_request
+            })
+        
+        # GET request - show transcript request form data
+        return jsonify({
+            'transcript_types': ['Official', 'Unofficial'],
+            'delivery_methods': ['Mail', 'Email', 'Pick-up'],
+            'fees': {
+                'standard_processing': 10.00,
+                'rush_processing': 25.00
+            },
+            'processing_times': {
+                'standard': '5-7 business days',
+                'rush': '2-3 business days'
+            }
+        })
+
+    @app.route('/student/profile', methods=['GET', 'POST'])
+    def student_update_profile():
+        """Update student profile"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to update profile.'}), 403
+        
+        student_id = session.get('student_id')
+        current_student = next((s for s in students if s['id'] == student_id), None)
+        
+        if not current_student:
+            return jsonify({'error': 'Student record not found.'}), 404
+        
+        if request.method == 'POST':
+            # Process profile update
+            update_data = request.get_json() or {}
+            
+            # Simulate profile update
+            updated_fields = []
+            allowed_fields = ['email', 'phone', 'address', 'emergency_contact']
+            
+            for field in allowed_fields:
+                if field in update_data:
+                    updated_fields.append(field)
+            
+            return jsonify({
+                'success': True,
+                'message': f'Profile updated successfully. Updated fields: {", ".join(updated_fields)}',
+                'updated_fields': updated_fields
+            })
+        
+        # GET request - show current profile data
+        profile_data = {
+            'student': current_student,
+            'contact_info': {
+                'email': current_student.get('email', f"{student_id.lower() if student_id else 'student'}@waldorf.edu"),
+                'phone': current_student.get('phone', '(555) 123-4567'),
+                'address': current_student.get('address', '123 Student St, University City, ST 12345')
+            },
+            'emergency_contact': {
+                'name': 'Parent/Guardian',
+                'relationship': 'Parent',
+                'phone': '(555) 987-6543',
+                'email': 'parent@email.com'
+            },
+            'preferences': {
+                'email_notifications': True,
+                'sms_notifications': False,
+                'preferred_language': 'English'
+            }
+        }
+        
+        return jsonify(profile_data)
+
+    @app.route('/student/support')
+    def student_contact_support():
+        """Student support and help desk"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'student':
+            return jsonify({'error': 'Please log in to access support.'}), 403
+        
+        support_data = {
+            'support_categories': [
+                {
+                    'category': 'Academic Support',
+                    'description': 'Course-related questions, academic advising, tutoring services',
+                    'contact': 'academic@waldorf.edu',
+                    'phone': '(555) 123-4567',
+                    'hours': 'Mon-Fri 8 AM - 6 PM'
+                },
+                {
+                    'category': 'Technical Support',
+                    'description': 'Login issues, portal problems, computer lab assistance',
+                    'contact': 'ithelp@waldorf.edu',
+                    'phone': '(555) 123-4568',
+                    'hours': 'Mon-Fri 7 AM - 10 PM, Sat-Sun 9 AM - 5 PM'
+                },
+                {
+                    'category': 'Financial Aid',
+                    'description': 'Billing questions, financial aid, payment plans',
+                    'contact': 'finance@waldorf.edu',
+                    'phone': '(555) 123-4569',
+                    'hours': 'Mon-Fri 8 AM - 5 PM'
+                },
+                {
+                    'category': 'Registration',
+                    'description': 'Course enrollment, schedule changes, transcript requests',
+                    'contact': 'registrar@waldorf.edu',
+                    'phone': '(555) 123-4570',
+                    'hours': 'Mon-Fri 8 AM - 5 PM'
+                },
+                {
+                    'category': 'Student Life',
+                    'description': 'Housing, meal plans, campus activities, counseling',
+                    'contact': 'studentlife@waldorf.edu',
+                    'phone': '(555) 123-4571',
+                    'hours': 'Mon-Fri 8 AM - 6 PM'
+                }
+            ],
+            'emergency_contacts': [
+                {'service': 'Campus Security', 'phone': '(555) 911-0000', 'available': '24/7'},
+                {'service': 'Health Center', 'phone': '(555) 123-4572', 'available': 'Mon-Fri 8 AM - 6 PM'},
+                {'service': 'Crisis Counseling', 'phone': '(555) 988-5656', 'available': '24/7'}
+            ],
+            'faq': [
+                {
+                    'question': 'How do I reset my portal password?',
+                    'answer': 'Visit the login page and click "Forgot Password". Follow the instructions sent to your email.'
+                },
+                {
+                    'question': 'When is the deadline for course registration?',
+                    'answer': 'Course registration deadline is typically one week before the semester starts. Check the academic calendar for exact dates.'
+                },
+                {
+                    'question': 'How can I request a transcript?',
+                    'answer': 'Use the transcript request feature in your student portal or visit the Registrar\'s office in person.'
+                },
+                {
+                    'question': 'Where can I view my grades?',
+                    'answer': 'Grades are available in the student portal under "Academic" > "View Grades".'
+                }
+            ]
+        }
+        
+        return jsonify(support_data)
 
 else:
     # Fallback for when Flask is not available

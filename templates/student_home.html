@@ -532,7 +532,7 @@
 
         if (!isLoggedIn || !currentStudent.id) {
             // Redirect to login if not logged in
-            window.location.href = 'student_login.html';
+            window.location.href = '/student_login';
         }
 
         // Sample data
@@ -670,47 +670,388 @@
         function logout() {
             localStorage.removeItem('currentStudent');
             localStorage.removeItem('isLoggedIn');
-            window.location.href = 'student_login.html';
+            window.location.href = '/logout';
         }
 
         function viewTranscript() {
-            alert('📋 Academic Transcript\n\nThis would open your official transcript with all completed courses, grades, and academic history.');
+            fetch('/student/transcript')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let transcriptContent = `📋 Academic Transcript\n\n`;
+                    transcriptContent += `Student: ${data.student.name}\n`;
+                    transcriptContent += `ID: ${data.student.id}\n`;
+                    transcriptContent += `Cumulative GPA: ${data.academic_summary.cumulative_gpa}\n`;
+                    transcriptContent += `Total Credits: ${data.academic_summary.total_credits}\n`;
+                    transcriptContent += `Academic Standing: ${data.academic_summary.academic_standing}\n\n`;
+                    
+                    data.semester_records.forEach(semester => {
+                        transcriptContent += `${semester.semester} (GPA: ${semester.semester_gpa})\n`;
+                        semester.courses.forEach(course => {
+                            transcriptContent += `  ${course.code} - ${course.name}: ${course.grade} (${course.credits} credits)\n`;
+                        });
+                        transcriptContent += '\n';
+                    });
+                    
+                    alert(transcriptContent);
+                })
+                .catch(error => {
+                    alert('Error loading transcript: ' + error.message);
+                });
         }
 
         function viewGrades() {
-            alert('📊 Current Grades\n\nThis would show detailed grade information for all current courses, including assignments and exams.');
+            fetch('/student/grades')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let gradesContent = `📊 Current Grades - ${data.semester}\n\n`;
+                    data.courses.forEach(course => {
+                        gradesContent += `${course.code} - ${course.name}\n`;
+                        gradesContent += `Instructor: ${course.instructor}\n`;
+                        gradesContent += `Current Grade: ${course.current_grade}\n`;
+                        gradesContent += `Credits: ${course.credits}\n\n`;
+                        
+                        course.assignments.forEach(assignment => {
+                            const score = assignment.score === 'Pending' || assignment.score === 'In Progress' || assignment.score === 'Scheduled' 
+                                ? assignment.score : `${assignment.score}/${assignment.max_score}`;
+                            gradesContent += `  ${assignment.name}: ${score} (${assignment.weight})\n`;
+                        });
+                        gradesContent += '\n';
+                    });
+                    
+                    gradesContent += `Current Semester GPA: ${data.gpa_calculation.current_semester_gpa}\n`;
+                    gradesContent += `Cumulative GPA: ${data.gpa_calculation.cumulative_gpa}`;
+                    
+                    alert(gradesContent);
+                })
+                .catch(error => {
+                    alert('Error loading grades: ' + error.message);
+                });
         }
 
         function enrollCourses() {
-            alert('📝 Course Enrollment\n\nThis would open the course registration system where you can enroll in new courses for the upcoming semester.');
+            fetch('/student/courses/enroll')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let enrollmentContent = `📝 Course Enrollment\n\n`;
+                    enrollmentContent += `Enrollment Period: ${data.enrollment_period.start_date} to ${data.enrollment_period.end_date}\n`;
+                    enrollmentContent += `Status: ${data.enrollment_period.status}\n\n`;
+                    
+                    enrollmentContent += `Current Credits: ${data.enrollment_status.current_credits}/${data.enrollment_status.max_credits}\n`;
+                    enrollmentContent += `Available Credits: ${data.enrollment_status.available_credits}\n\n`;
+                    
+                    enrollmentContent += `Available Courses:\n`;
+                    data.available_courses.forEach(course => {
+                        enrollmentContent += `${course.code} - ${course.name} (${course.credits} credits)\n`;
+                        enrollmentContent += `  Instructor: ${course.instructor}\n`;
+                        enrollmentContent += `  Schedule: ${course.schedule}\n`;
+                        enrollmentContent += `  Capacity: ${course.enrolled}/${course.capacity}\n`;
+                        enrollmentContent += `  Prerequisites: ${course.prerequisites}\n\n`;
+                    });
+                    
+                    alert(enrollmentContent);
+                })
+                .catch(error => {
+                    alert('Error loading enrollment data: ' + error.message);
+                });
         }
 
         function viewAllCourses() {
-            alert('📚 All Courses\n\nThis would display a complete list of all available courses in the catalog.');
+            fetch('/student/courses/all')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let catalogContent = `📚 Course Catalog (${data.total_courses} courses)\n\n`;
+                    
+                    Object.keys(data.catalog).forEach(department => {
+                        catalogContent += `${department}:\n`;
+                        data.catalog[department].forEach(course => {
+                            catalogContent += `  ${course.code} - ${course.name} (${course.credits} credits) - ${course.level}\n`;
+                        });
+                        catalogContent += '\n';
+                    });
+                    
+                    alert(catalogContent);
+                })
+                .catch(error => {
+                    alert('Error loading course catalog: ' + error.message);
+                });
         }
 
         function viewFullSchedule() {
-            alert('📅 Full Schedule\n\nThis would show your complete weekly schedule with all classes, labs, and activities.');
+            fetch('/student/schedule')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let scheduleContent = `📅 Weekly Schedule - ${data.semester}\n\n`;
+                    
+                    Object.keys(data.schedule).forEach(day => {
+                        scheduleContent += `${day}:\n`;
+                        if (data.schedule[day].length === 0) {
+                            scheduleContent += `  No classes scheduled\n`;
+                        } else {
+                            data.schedule[day].forEach(item => {
+                                scheduleContent += `  ${item.time}: ${item.course}\n`;
+                                scheduleContent += `    Room: ${item.room} | Instructor: ${item.instructor}\n`;
+                            });
+                        }
+                        scheduleContent += '\n';
+                    });
+                    
+                    scheduleContent += `Office Hours:\n`;
+                    data.office_hours.forEach(office => {
+                        scheduleContent += `  ${office.instructor}: ${office.time} (${office.location})\n`;
+                    });
+                    
+                    alert(scheduleContent);
+                })
+                .catch(error => {
+                    alert('Error loading schedule: ' + error.message);
+                });
         }
 
         function viewAllAnnouncements() {
-            alert('📢 All Announcements\n\nThis would display all recent announcements from faculty and administration.');
+            fetch('/student/announcements')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let announcementsContent = `📢 All Announcements (${data.unread_count} unread)\n\n`;
+                    
+                    data.announcements.forEach(announcement => {
+                        announcementsContent += `${announcement.date} - ${announcement.priority} Priority\n`;
+                        announcementsContent += `${announcement.title}\n`;
+                        announcementsContent += `${announcement.content}\n`;
+                        announcementsContent += `Category: ${announcement.category} | Author: ${announcement.author}\n\n`;
+                    });
+                    
+                    alert(announcementsContent);
+                })
+                .catch(error => {
+                    alert('Error loading announcements: ' + error.message);
+                });
         }
 
         function payTuition() {
-            alert('💳 Tuition Payment\n\nThis would redirect to the secure payment portal to pay tuition and fees.');
+            fetch('/student/payment')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let paymentContent = `💳 Payment Portal\n\n`;
+                    paymentContent += `Current Balance: $${data.account_summary.current_balance.toFixed(2)}\n`;
+                    paymentContent += `Total Paid: $${data.account_summary.total_paid.toFixed(2)}\n`;
+                    paymentContent += `Payment Plan Active: ${data.account_summary.payment_plan_active ? 'Yes' : 'No'}\n`;
+                    paymentContent += `Due Date: ${data.account_summary.due_date}\n\n`;
+                    
+                    paymentContent += `Upcoming Charges:\n`;
+                    data.upcoming_charges.forEach(charge => {
+                        paymentContent += `  ${charge.due_date}: $${charge.amount.toFixed(2)} - ${charge.description}\n`;
+                    });
+                    
+                    paymentContent += `\nPayment Methods:\n`;
+                    data.payment_methods.forEach(method => {
+                        paymentContent += `  ${method.type} (Fee: ${method.fee}) - Processing: ${method.processing_time}\n`;
+                    });
+                    
+                    alert(paymentContent);
+                })
+                .catch(error => {
+                    alert('Error loading payment information: ' + error.message);
+                });
         }
 
         function requestTranscript() {
-            alert('📋 Transcript Request\n\nThis would open the form to request official transcripts to be sent to other institutions.');
+            // Show a simple form dialog for transcript request
+            const recipient = prompt('Enter recipient name:');
+            if (!recipient) return;
+            
+            const address = prompt('Enter recipient address:');
+            if (!address) return;
+            
+            const deliveryMethod = prompt('Enter delivery method (Mail/Email/Pick-up):', 'Mail');
+            if (!deliveryMethod) return;
+            
+            const transcriptType = prompt('Enter transcript type (Official/Unofficial):', 'Official');
+            if (!transcriptType) return;
+            
+            const rushProcessing = confirm('Do you need rush processing? (Additional $15 fee)');
+            
+            const requestData = {
+                recipient_name: recipient,
+                recipient_address: address,
+                delivery_method: deliveryMethod,
+                transcript_type: transcriptType,
+                rush_processing: rushProcessing
+            };
+            
+            fetch('/student/transcript/request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                    return;
+                }
+                
+                if (data.success) {
+                    let requestContent = `📋 Transcript Request Submitted\n\n`;
+                    requestContent += `Request ID: ${data.request.request_id}\n`;
+                    requestContent += `Recipient: ${data.request.recipient_name}\n`;
+                    requestContent += `Delivery Method: ${data.request.delivery_method}\n`;
+                    requestContent += `Type: ${data.request.transcript_type}\n`;
+                    requestContent += `Rush Processing: ${data.request.rush_processing ? 'Yes' : 'No'}\n`;
+                    requestContent += `Fee: $${data.request.fee.toFixed(2)}\n`;
+                    requestContent += `Status: ${data.request.status}\n`;
+                    requestContent += `Estimated Completion: ${data.request.estimated_completion}`;
+                    
+                    alert(requestContent);
+                }
+            })
+            .catch(error => {
+                alert('Error submitting transcript request: ' + error.message);
+            });
         }
 
         function updateProfile() {
-            alert('👤 Update Profile\n\nThis would allow you to update your personal information, contact details, and preferences.');
+            fetch('/student/profile')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let profileContent = `👤 Student Profile\n\n`;
+                    profileContent += `Name: ${data.student.name}\n`;
+                    profileContent += `ID: ${data.student.id}\n`;
+                    profileContent += `Major: ${data.student.major}\n`;
+                    profileContent += `Year: ${data.student.year}\n\n`;
+                    
+                    profileContent += `Contact Information:\n`;
+                    profileContent += `Email: ${data.contact_info.email}\n`;
+                    profileContent += `Phone: ${data.contact_info.phone}\n`;
+                    profileContent += `Address: ${data.contact_info.address}\n\n`;
+                    
+                    profileContent += `Emergency Contact:\n`;
+                    profileContent += `Name: ${data.emergency_contact.name}\n`;
+                    profileContent += `Relationship: ${data.emergency_contact.relationship}\n`;
+                    profileContent += `Phone: ${data.emergency_contact.phone}\n`;
+                    profileContent += `Email: ${data.emergency_contact.email}\n\n`;
+                    
+                    profileContent += `Preferences:\n`;
+                    profileContent += `Email Notifications: ${data.preferences.email_notifications ? 'Enabled' : 'Disabled'}\n`;
+                    profileContent += `SMS Notifications: ${data.preferences.sms_notifications ? 'Enabled' : 'Disabled'}\n`;
+                    profileContent += `Preferred Language: ${data.preferences.preferred_language}`;
+                    
+                    alert(profileContent);
+                    
+                    // Optionally allow updates
+                    const updateInfo = confirm('Would you like to update your contact information?');
+                    if (updateInfo) {
+                        const newEmail = prompt('Enter new email (or press cancel to skip):', data.contact_info.email);
+                        const newPhone = prompt('Enter new phone (or press cancel to skip):', data.contact_info.phone);
+                        
+                        if (newEmail || newPhone) {
+                            const updateData = {};
+                            if (newEmail) updateData.email = newEmail;
+                            if (newPhone) updateData.phone = newPhone;
+                            
+                            fetch('/student/profile', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(updateData)
+                            })
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.success) {
+                                    alert(`Profile updated successfully!\nUpdated fields: ${result.updated_fields.join(', ')}`);
+                                } else {
+                                    alert('Error updating profile: ' + result.error);
+                                }
+                            })
+                            .catch(error => {
+                                alert('Error updating profile: ' + error.message);
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    alert('Error loading profile: ' + error.message);
+                });
         }
 
         function contactSupport() {
-            alert('💬 Student Support\n\nThis would open the help desk where you can get assistance with academic and technical issues.');
+            fetch('/student/support')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        return;
+                    }
+                    
+                    let supportContent = `💬 Student Support\n\n`;
+                    
+                    supportContent += `Support Categories:\n`;
+                    data.support_categories.forEach(category => {
+                        supportContent += `\n${category.category}:\n`;
+                        supportContent += `  ${category.description}\n`;
+                        supportContent += `  Contact: ${category.contact}\n`;
+                        supportContent += `  Phone: ${category.phone}\n`;
+                        supportContent += `  Hours: ${category.hours}\n`;
+                    });
+                    
+                    supportContent += `\n\nEmergency Contacts:\n`;
+                    data.emergency_contacts.forEach(contact => {
+                        supportContent += `  ${contact.service}: ${contact.phone} (${contact.available})\n`;
+                    });
+                    
+                    supportContent += `\n\nFrequently Asked Questions:\n`;
+                    data.faq.forEach(item => {
+                        supportContent += `\nQ: ${item.question}\n`;
+                        supportContent += `A: ${item.answer}\n`;
+                    });
+                    
+                    alert(supportContent);
+                })
+                .catch(error => {
+                    alert('Error loading support information: ' + error.message);
+                });
         }
 
         // Initialize dashboard when page loads

@@ -500,6 +500,353 @@
         .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
         .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
         .dashboard-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            margin: 2% auto;
+            padding: 0;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: rgba(15, 15, 35, 0.95);
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #00d4ff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 2em;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .modal-body {
+            padding: 30px;
+            color: #e2e8f0;
+        }
+
+        .application-card {
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .application-card:hover {
+            border-color: rgba(0, 212, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .application-info {
+            flex-grow: 1;
+        }
+
+        .application-id {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .application-status {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #f39c12; color: white; }
+        .status-approved { background: #16a085; color: white; }
+        .status-rejected { background: #e74c3c; color: white; }
+        .status-review { background: #3498db; color: white; }
+
+        .application-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .detail-label {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-review {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .overview-card {
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .overview-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .overview-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .overview-change {
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .budget-section {
+            margin-bottom: 30px;
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: rgba(30, 30, 60, 0.4);
+            border-radius: 10px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .budget-title {
+            font-size: 1.2em;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .budget-amount {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        .budget-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .budget-item {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid;
+        }
+
+        .budget-item.revenue { border-left-color: #16a085; }
+        .budget-item.expense { border-left-color: #e74c3c; }
+        .budget-item.savings { border-left-color: #f39c12; }
+
+        .budget-category {
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .budget-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .budget-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(120, 119, 198, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .budget-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-revenue { background: linear-gradient(135deg, #16a085, #27ae60); }
+        .progress-expense { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .progress-savings { background: linear-gradient(135deg, #f39c12, #e67e22); }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select, .filter-input {
+            padding: 10px 15px;
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #00d4ff;
+        }
+
+        .spinner {
+            border: 3px solid rgba(120, 119, 198, 0.3);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -740,6 +1087,165 @@
         </div>
     </div>
 
+    <!-- Review Applications Modal -->
+    <div id="applicationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>📋</span>
+                    Financial Aid Applications Review
+                </div>
+                <button class="modal-close" onclick="closeModal('applicationsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="filter-controls">
+                    <select class="filter-select" id="statusFilter" onchange="filterApplications()">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="review">Under Review</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <select class="filter-select" id="typeFilter" onchange="filterApplications()">
+                        <option value="">All Types</option>
+                        <option value="scholarship">Scholarship</option>
+                        <option value="grant">Grant</option>
+                        <option value="loan">Loan</option>
+                        <option value="work_study">Work Study</option>
+                    </select>
+                    <input type="text" class="filter-input" id="studentFilter" placeholder="Search by student name..." onkeyup="filterApplications()">
+                </div>
+                
+                <div id="applicationsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading applications...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Overview Modal -->
+    <div id="overviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>📊</span>
+                    Financial Overview Management
+                </div>
+                <button class="modal-close" onclick="closeModal('overviewModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('overview-dashboard')">Dashboard</button>
+                    <button class="tab" onclick="switchTab('overview-reports')">Reports</button>
+                    <button class="tab" onclick="switchTab('overview-analytics')">Analytics</button>
+                    <button class="tab" onclick="switchTab('overview-alerts')">Alerts</button>
+                </div>
+
+                <div id="overview-dashboard" class="tab-content active">
+                    <div class="overview-grid" id="overviewGrid">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading overview data...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="overview-reports" class="tab-content">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">📄 Financial Reports</h3>
+                    <div id="reportsContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading reports...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="overview-analytics" class="tab-content">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">📈 Financial Analytics</h3>
+                    <div id="analyticsContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading analytics...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="overview-alerts" class="tab-content">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">🔔 System Alerts</h3>
+                    <div id="alertsContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading alerts...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Tools Modal -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>💰</span>
+                    Budget Planning & Management Tools
+                </div>
+                <button class="modal-close" onclick="closeModal('budgetModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('budget-overview')">Overview</button>
+                    <button class="tab" onclick="switchTab('budget-planning')">Planning</button>
+                    <button class="tab" onclick="switchTab('budget-tracking')">Tracking</button>
+                    <button class="tab" onclick="switchTab('budget-forecasting')">Forecasting</button>
+                </div>
+
+                <div id="budget-overview" class="tab-content active">
+                    <div id="budgetOverviewContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading budget overview...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="budget-planning" class="tab-content">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">📋 Budget Planning</h3>
+                    <div id="planningContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading planning tools...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="budget-tracking" class="tab-content">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">📊 Budget Tracking</h3>
+                    <div id="trackingContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading tracking data...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="budget-forecasting" class="tab-content">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">🔮 Budget Forecasting</h3>
+                    <div id="forecastingContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading forecasting models...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Finance management functionality
         async function processPayments() {
@@ -873,76 +1379,18 @@
         }
 
         async function reviewApplications() {
-            try {
-                const response = await fetch('/finance/applications');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let applications = `📋 Financial Aid Applications (${data.pending_count} pending)\n\n`;
-                    
-                    data.applications.forEach(app => {
-                        applications += `${app.id}: ${app.name} (${app.student_id})\n`;
-                        applications += `  Type: ${app.type} | Amount: $${app.amount.toLocaleString()}\n`;
-                        applications += `  Status: ${app.status} | Submitted: ${app.submitted}\n\n`;
-                    });
-                    
-                    alert(applications);
-                } else {
-                    alert(`❌ Error: ${data.error || 'Failed to load applications'}`);
-                }
-            } catch (error) {
-                alert('❌ Network error occurred. Please try again.');
-            }
+            openModal('applicationsModal');
+            await loadApplications();
         }
 
         async function manageOverdue() {
-            try {
-                const response = await fetch('/finance/overdue');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let overdue = `⚠️ Overdue Accounts (${data.total_overdue} accounts)\n\n`;
-                    
-                    data.overdue_accounts.forEach(account => {
-                        overdue += `${account.student_id}: ${account.name}\n`;
-                        overdue += `  Balance: $${account.balance.toLocaleString()} | ${account.days_overdue} days overdue\n`;
-                        overdue += `  Last Payment: ${account.last_payment} | Contact Attempts: ${account.contact_attempts}\n\n`;
-                    });
-                    
-                    alert(overdue);
-                } else {
-                    alert(`❌ Error: ${data.error || 'Failed to load overdue accounts'}`);
-                }
-            } catch (error) {
-                alert('❌ Network error occurred. Please try again.');
-            }
+            openModal('overviewModal');
+            await loadOverview();
         }
 
         async function budgetPlanning() {
-            try {
-                const response = await fetch('/finance/budget_planning');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    let budget = `📈 Budget Planning (${data.current_year})\n\n`;
-                    budget += `💰 Total Budget: $${data.total_budget.toLocaleString()}\n\n`;
-                    budget += `📈 Revenue Forecast:\n`;
-                    Object.entries(data.revenue_forecast).forEach(([category, amount]) => {
-                        budget += `• ${category}: $${amount.toLocaleString()}\n`;
-                    });
-                    
-                    budget += `\n📉 Expense Forecast:\n`;
-                    Object.entries(data.expense_forecast).forEach(([category, amount]) => {
-                        budget += `• ${category}: $${amount.toLocaleString()}\n`;
-                    });
-                    
-                    alert(budget);
-                } else {
-                    alert(`❌ Error: ${data.error || 'Failed to load budget data'}`);
-                }
-            } catch (error) {
-                alert('❌ Network error occurred. Please try again.');
-            }
+            openModal('budgetModal');
+            await loadBudgetOverview();
         }
 
         async function scholarshipManagement() {
@@ -1134,6 +1582,515 @@
             }, 50);
         }
 
+        // Modal Management Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Tab Management
+        function switchTab(tabId) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            // Load content based on tab
+            switch(tabId) {
+                case 'overview-dashboard':
+                    loadOverview();
+                    break;
+                case 'overview-reports':
+                    loadReports();
+                    break;
+                case 'overview-analytics':
+                    loadAnalytics();
+                    break;
+                case 'overview-alerts':
+                    loadAlerts();
+                    break;
+                case 'budget-overview':
+                    loadBudgetOverview();
+                    break;
+                case 'budget-planning':
+                    loadBudgetPlanning();
+                    break;
+                case 'budget-tracking':
+                    loadBudgetTracking();
+                    break;
+                case 'budget-forecasting':
+                    loadBudgetForecasting();
+                    break;
+            }
+        }
+
+        // Applications Management
+        async function loadApplications() {
+            try {
+                const response = await fetch('/finance/applications/detailed');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayApplications(data.applications);
+                } else {
+                    document.getElementById('applicationsContainer').innerHTML = `
+                        <div class="no-data">❌ Failed to load applications: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('applicationsContainer').innerHTML = `
+                    <div class="no-data">❌ Network error occurred. Please try again.</div>
+                `;
+            }
+        }
+
+        function displayApplications(applications) {
+            const container = document.getElementById('applicationsContainer');
+            
+            if (applications.length === 0) {
+                container.innerHTML = '<div class="no-data">📭 No applications found.</div>';
+                return;
+            }
+
+            container.innerHTML = applications.map(app => `
+                <div class="application-card" data-status="${app.status}" data-type="${app.type}" data-student="${app.student_name.toLowerCase()}">
+                    <div class="application-header">
+                        <div class="application-info">
+                            <div class="application-id">${app.id}</div>
+                            <div style="color: #e2e8f0; font-weight: 600;">${app.student_name} (${app.student_id})</div>
+                        </div>
+                        <div class="application-status status-${app.status}">${app.status}</div>
+                    </div>
+                    
+                    <div class="application-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">${app.type}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Amount:</span>
+                            <span class="detail-value">$${app.amount.toLocaleString()}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Submitted:</span>
+                            <span class="detail-value">${app.submitted_date}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">GPA:</span>
+                            <span class="detail-value">${app.gpa}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Expected Graduation:</span>
+                            <span class="detail-value">${app.graduation_year}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Priority:</span>
+                            <span class="detail-value">${app.priority}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="application-actions">
+                        ${app.status === 'pending' ? `
+                            <button class="btn btn-approve" onclick="processApplication('${app.id}', 'approve')">✅ Approve</button>
+                            <button class="btn btn-reject" onclick="processApplication('${app.id}', 'reject')">❌ Reject</button>
+                            <button class="btn btn-review" onclick="processApplication('${app.id}', 'review')">📋 Review</button>
+                        ` : `
+                            <button class="btn btn-primary" onclick="viewApplicationDetails('${app.id}')">👁️ View Details</button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterApplications() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const studentFilter = document.getElementById('studentFilter').value.toLowerCase();
+            
+            document.querySelectorAll('.application-card').forEach(card => {
+                const status = card.getAttribute('data-status');
+                const type = card.getAttribute('data-type');
+                const student = card.getAttribute('data-student');
+                
+                let show = true;
+                
+                if (statusFilter && status !== statusFilter) show = false;
+                if (typeFilter && type !== typeFilter) show = false;
+                if (studentFilter && !student.includes(studentFilter)) show = false;
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        async function processApplication(appId, action) {
+            const confirmation = confirm(`Are you sure you want to ${action} application ${appId}?`);
+            if (!confirmation) return;
+            
+            try {
+                const response = await fetch(`/finance/applications/${appId}/process`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: action })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`✅ Application ${appId} has been ${action}ed successfully!`);
+                    loadApplications(); // Reload applications
+                } else {
+                    alert(`❌ Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
+        }
+
+        function viewApplicationDetails(appId) {
+            window.open(`/finance/application_detail/${appId}`, '_blank');
+        }
+
+        // Overview Management
+        async function loadOverview() {
+            try {
+                const response = await fetch('/finance/overview/detailed');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayOverview(data);
+                } else {
+                    document.getElementById('overviewGrid').innerHTML = `
+                        <div class="no-data">❌ Failed to load overview: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('overviewGrid').innerHTML = `
+                    <div class="no-data">❌ Network error occurred. Please try again.</div>
+                `;
+            }
+        }
+
+        function displayOverview(data) {
+            document.getElementById('overviewGrid').innerHTML = `
+                <div class="overview-card">
+                    <div class="overview-number">${data.total_students}</div>
+                    <div class="overview-label">Total Students</div>
+                    <div class="overview-change positive">+${data.new_students} this month</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number">$${data.total_revenue.toLocaleString()}</div>
+                    <div class="overview-label">Total Revenue</div>
+                    <div class="overview-change ${data.revenue_change >= 0 ? 'positive' : 'negative'}">${data.revenue_change >= 0 ? '+' : ''}${data.revenue_change}%</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number">${data.overdue_accounts}</div>
+                    <div class="overview-label">Overdue Accounts</div>
+                    <div class="overview-change ${data.overdue_change <= 0 ? 'positive' : 'negative'}">${data.overdue_change <= 0 ? '' : '+'}${data.overdue_change} from last week</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number">$${data.outstanding_balance.toLocaleString()}</div>
+                    <div class="overview-label">Outstanding Balance</div>
+                    <div class="overview-change ${data.balance_change <= 0 ? 'positive' : 'negative'}">${data.balance_change <= 0 ? '' : '+'}${data.balance_change}%</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number">${data.payment_plans}</div>
+                    <div class="overview-label">Active Payment Plans</div>
+                    <div class="overview-change neutral">${data.new_plans} new this month</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number">${data.collection_rate}%</div>
+                    <div class="overview-label">Collection Rate</div>
+                    <div class="overview-change positive">+${data.collection_improvement}% improved</div>
+                </div>
+            `;
+        }
+
+        async function loadReports() {
+            try {
+                const response = await fetch('/finance/reports/list');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('reportsContainer').innerHTML = data.reports.map(report => `
+                        <div class="overview-card" style="cursor: pointer;" onclick="generateReport('${report.id}')">
+                            <div style="font-size: 1.5em; margin-bottom: 10px;">${report.icon}</div>
+                            <div style="font-weight: 600; color: #00d4ff; margin-bottom: 8px;">${report.name}</div>
+                            <div style="color: #94a3b8; font-size: 0.9em;">${report.description}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('reportsContainer').innerHTML = `
+                        <div class="no-data">❌ Failed to load reports: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('reportsContainer').innerHTML = `
+                    <div class="no-data">❌ Network error occurred. Please try again.</div>
+                `;
+            }
+        }
+
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/finance/analytics/dashboard');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('analyticsContainer').innerHTML = `
+                        <div class="overview-grid">
+                            <div class="overview-card">
+                                <div class="overview-number">${data.avg_payment_time}</div>
+                                <div class="overview-label">Avg Payment Time (days)</div>
+                            </div>
+                            <div class="overview-card">
+                                <div class="overview-number">$${data.avg_transaction.toLocaleString()}</div>
+                                <div class="overview-label">Average Transaction</div>
+                            </div>
+                            <div class="overview-card">
+                                <div class="overview-number">${data.payment_success_rate}%</div>
+                                <div class="overview-label">Payment Success Rate</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #00d4ff; margin-bottom: 15px;">📊 Payment Method Distribution</h4>
+                            <div class="budget-breakdown">
+                                ${Object.entries(data.payment_methods).map(([method, percentage]) => `
+                                    <div class="budget-item revenue">
+                                        <div class="budget-category">${method}</div>
+                                        <div class="budget-value" style="color: #16a085;">${percentage}%</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('analyticsContainer').innerHTML = `
+                        <div class="no-data">❌ Failed to load analytics: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('analyticsContainer').innerHTML = `
+                    <div class="no-data">❌ Network error occurred. Please try again.</div>
+                `;
+            }
+        }
+
+        async function loadAlerts() {
+            try {
+                const response = await fetch('/finance/alerts/system');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('alertsContainer').innerHTML = data.alerts.map(alert => `
+                        <div class="application-card">
+                            <div class="application-header">
+                                <div class="application-info">
+                                    <div style="color: #e2e8f0; font-weight: 600;">${alert.title}</div>
+                                    <div style="color: #94a3b8; font-size: 0.9em;">${alert.timestamp}</div>
+                                </div>
+                                <div class="application-status status-${alert.priority}">${alert.priority}</div>
+                            </div>
+                            <div style="margin: 15px 0; color: #cbd5e1;">${alert.message}</div>
+                            <div class="application-actions">
+                                <button class="btn btn-primary" onclick="dismissAlert('${alert.id}')">Dismiss</button>
+                                ${alert.action_required ? '<button class="btn btn-warning" onclick="handleAlert(\'' + alert.id + '\')">Take Action</button>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('alertsContainer').innerHTML = `
+                        <div class="no-data">❌ Failed to load alerts: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('alertsContainer').innerHTML = `
+                    <div class="no-data">❌ Network error occurred. Please try again.</div>
+                `;
+            }
+        }
+
+        // Budget Management
+        async function loadBudgetOverview() {
+            try {
+                const response = await fetch('/finance/budget/overview');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayBudgetOverview(data);
+                } else {
+                    document.getElementById('budgetOverviewContainer').innerHTML = `
+                        <div class="no-data">❌ Failed to load budget overview: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('budgetOverviewContainer').innerHTML = `
+                    <div class="no-data">❌ Network error occurred. Please try again.</div>
+                `;
+            }
+        }
+
+        function displayBudgetOverview(data) {
+            document.getElementById('budgetOverviewContainer').innerHTML = `
+                <div class="budget-section">
+                    <div class="budget-header">
+                        <div class="budget-title">📊 ${data.current_year} Budget Overview</div>
+                        <div class="budget-amount">$${data.total_budget.toLocaleString()}</div>
+                    </div>
+                    
+                    <div class="budget-breakdown">
+                        <div class="budget-item revenue">
+                            <div class="budget-category">💰 Total Revenue</div>
+                            <div class="budget-value" style="color: #16a085;">$${data.revenue.total.toLocaleString()}</div>
+                            <div class="budget-progress">
+                                <div class="budget-progress-bar progress-revenue" style="width: ${data.revenue.percentage}%"></div>
+                            </div>
+                            <div style="font-size: 0.9em; color: #94a3b8;">${data.revenue.percentage}% of target</div>
+                        </div>
+                        
+                        <div class="budget-item expense">
+                            <div class="budget-category">💸 Total Expenses</div>
+                            <div class="budget-value" style="color: #e74c3c;">$${data.expenses.total.toLocaleString()}</div>
+                            <div class="budget-progress">
+                                <div class="budget-progress-bar progress-expense" style="width: ${data.expenses.percentage}%"></div>
+                            </div>
+                            <div style="font-size: 0.9em; color: #94a3b8;">${data.expenses.percentage}% of budget</div>
+                        </div>
+                        
+                        <div class="budget-item savings">
+                            <div class="budget-category">💎 Net Income</div>
+                            <div class="budget-value" style="color: #f39c12;">$${data.net_income.toLocaleString()}</div>
+                            <div class="budget-progress">
+                                <div class="budget-progress-bar progress-savings" style="width: ${Math.abs(data.net_income) / data.total_budget * 100}%"></div>
+                            </div>
+                            <div style="font-size: 0.9em; color: #94a3b8;">${data.net_income >= 0 ? 'Surplus' : 'Deficit'}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="budget-section">
+                    <div class="budget-header">
+                        <div class="budget-title">📈 Revenue Breakdown</div>
+                    </div>
+                    <div class="budget-breakdown">
+                        ${Object.entries(data.revenue_breakdown).map(([category, amount]) => `
+                            <div class="budget-item revenue">
+                                <div class="budget-category">${category}</div>
+                                <div class="budget-value" style="color: #16a085;">$${amount.toLocaleString()}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="budget-section">
+                    <div class="budget-header">
+                        <div class="budget-title">📉 Expense Breakdown</div>
+                    </div>
+                    <div class="budget-breakdown">
+                        ${Object.entries(data.expense_breakdown).map(([category, amount]) => `
+                            <div class="budget-item expense">
+                                <div class="budget-category">${category}</div>
+                                <div class="budget-value" style="color: #e74c3c;">$${amount.toLocaleString()}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadBudgetPlanning() {
+            document.getElementById('planningContainer').innerHTML = `
+                <div class="budget-section">
+                    <div class="budget-header">
+                        <div class="budget-title">📋 Budget Planning Tools</div>
+                    </div>
+                    <div class="action-buttons" style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="createBudgetPlan()">🆕 Create New Budget</button>
+                        <button class="btn btn-secondary" onclick="importBudgetData()">📁 Import Budget Data</button>
+                        <button class="btn btn-warning" onclick="compareBudgets()">⚖️ Compare Budgets</button>
+                        <button class="btn btn-success" onclick="approveBudget()">✅ Approve Budget</button>
+                    </div>
+                </div>
+                
+                <div class="no-data" style="margin-top: 30px;">
+                    🚧 Budget planning tools are under development.<br>
+                    Advanced budgeting features will be available soon.
+                </div>
+            `;
+        }
+
+        async function loadBudgetTracking() {
+            document.getElementById('trackingContainer').innerHTML = `
+                <div class="no-data">
+                    📊 Budget tracking dashboard will display:<br><br>
+                    • Real-time budget vs actual spending<br>
+                    • Department-wise budget utilization<br>
+                    • Variance analysis and alerts<br>
+                    • Monthly/quarterly tracking reports
+                </div>
+            `;
+        }
+
+        async function loadBudgetForecasting() {
+            document.getElementById('forecastingContainer').innerHTML = `
+                <div class="no-data">
+                    🔮 Budget forecasting models will include:<br><br>
+                    • Revenue projection models<br>
+                    • Enrollment-based forecasting<br>
+                    • Seasonal variation analysis<br>
+                    • Multi-year budget scenarios
+                </div>
+            `;
+        }
+
+        // Helper Functions
+        function generateReport(reportId) {
+            window.open(`/finance/report/${reportId}`, '_blank');
+        }
+
+        function dismissAlert(alertId) {
+            // Implementation for dismissing alerts
+            alert(`Alert ${alertId} dismissed.`);
+        }
+
+        function handleAlert(alertId) {
+            // Implementation for handling alerts
+            alert(`Taking action on alert ${alertId}.`);
+        }
+
+        function createBudgetPlan() {
+            alert('🆕 Create New Budget functionality will be implemented soon.');
+        }
+
+        function importBudgetData() {
+            alert('📁 Import Budget Data functionality will be implemented soon.');
+        }
+
+        function compareBudgets() {
+            alert('⚖️ Compare Budgets functionality will be implemented soon.');
+        }
+
+        function approveBudget() {
+            alert('✅ Approve Budget functionality will be implemented soon.');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.altKey) {
@@ -1150,7 +2107,21 @@
                     case 'b':
                         budgetManagement();
                         break;
+                    case 'a':
+                        reviewApplications();
+                        break;
+                    case 'o':
+                        manageOverdue();
+                        break;
                 }
+            }
+            
+            // ESC key to close modals
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = 'auto';
             }
         });
     </script>

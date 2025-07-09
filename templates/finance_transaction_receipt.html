@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt - {{ receipt.receipt_number }} | Waldorf Colleges & Universities</title>
+    <style>
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none !important; }
+            .header { background: #0f0f23 !important; -webkit-print-color-adjust: exact; }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .receipt-container {
+            background: rgba(255, 255, 255, 0.98);
+            color: #2d3748;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: 20px 0;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #0f0f23;
+            padding-bottom: 20px;
+        }
+
+        .university-name {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #0f0f23;
+            margin-bottom: 5px;
+        }
+
+        .receipt-title {
+            font-size: 1.8em;
+            color: #00d4ff;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+
+        .receipt-number {
+            font-size: 1.2em;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        .receipt-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #0f0f23;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .transaction-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .amount-highlight {
+            text-align: center;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .amount-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .amount-description {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .itemization-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .itemization-table th {
+            background: #0f0f23;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .itemization-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .itemization-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .itemization-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background: #e8f5e8 !important;
+            border-top: 2px solid #00d4ff;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            color: #666;
+        }
+
+        .footer-note {
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #16a085;
+            color: white;
+        }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 6em;
+            color: rgba(0, 212, 255, 0.05);
+            font-weight: bold;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .receipt-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .receipt-container {
+                padding: 25px;
+            }
+            
+            .university-name {
+                font-size: 1.8em;
+            }
+            
+            .amount-display {
+                font-size: 2em;
+            }
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            
+            .receipt-container {
+                box-shadow: none !important;
+                background: white !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="watermark">PAID</div>
+    
+    <!-- Header -->
+    <header class="header no-print">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🧾</div>
+                <div class="logo-text">
+                    <h1>Payment Receipt</h1>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <a href="/finance/transaction_detail/{{ receipt.transaction_id }}" class="btn btn-secondary">← Back to Details</a>
+                <button class="btn btn-primary" onclick="window.print()">🖨️ Print Receipt</button>
+                <button class="btn btn-primary" onclick="downloadPDF()">📄 Save as PDF</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="receipt-container">
+            <!-- Receipt Header -->
+            <div class="receipt-header">
+                <div class="university-name">🎓 Waldorf Colleges & Universities</div>
+                <div style="color: #666; margin: 10px 0;">Finance Department</div>
+                <div class="receipt-title">PAYMENT RECEIPT</div>
+                <div class="receipt-number">Receipt #{{ receipt.receipt_number }}</div>
+                <div style="margin-top: 10px;">
+                    <span class="status-badge">PAID</span>
+                </div>
+            </div>
+
+            <!-- Student and Transaction Info -->
+            <div class="receipt-info">
+                <div class="info-section">
+                    <div class="section-title">👤 Student Information</div>
+                    <div class="info-row">
+                        <span class="info-label">Student ID:</span>
+                        <span class="info-value">{{ receipt.student.id }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value">{{ receipt.student.name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">{{ receipt.student.email }}</span>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="section-title">📅 Transaction Information</div>
+                    <div class="info-row">
+                        <span class="info-label">Transaction ID:</span>
+                        <span class="info-value">{{ receipt.transaction_id }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date:</span>
+                        <span class="info-value">{{ receipt.transaction.date }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Payment Method:</span>
+                        <span class="info-value">{{ receipt.transaction.method }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Reference:</span>
+                        <span class="info-value">{{ receipt.transaction.reference }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amount Highlight -->
+            <div class="amount-highlight">
+                <div class="amount-display">${{ "{:,.2f}".format(receipt.transaction.amount) }}</div>
+                <div class="amount-description">{{ receipt.transaction.description }}</div>
+            </div>
+
+            <!-- Itemization -->
+            <div class="transaction-details">
+                <h3 style="color: #0f0f23; margin-bottom: 15px;">💰 Payment Breakdown</h3>
+                <table class="itemization-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="text-align: right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in receipt.itemization %}
+                        <tr>
+                            <td>{{ item.description }}</td>
+                            <td style="text-align: right;">${{ "{:,.2f}".format(item.amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td style="border-top: 2px solid #ddd; padding-top: 15px;"><strong>Subtotal</strong></td>
+                            <td style="text-align: right; border-top: 2px solid #ddd; padding-top: 15px;"><strong>${{ "{:,.2f}".format(receipt.totals.subtotal) }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Processing Fee</td>
+                            <td style="text-align: right;">${{ "{:,.2f}".format(receipt.totals.processing_fee) }}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Total Charged</strong></td>
+                            <td style="text-align: right;"><strong>${{ "{:,.2f}".format(receipt.totals.total_charged) }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Receipt Footer -->
+            <div class="receipt-footer">
+                <div class="footer-note">
+                    <strong>Thank you for your payment!</strong>
+                </div>
+                <div class="footer-note">
+                    This receipt serves as proof of payment and should be retained for your records.
+                </div>
+                <div class="footer-note">
+                    Receipt generated on {{ receipt.date_issued }}
+                </div>
+                
+                <div class="contact-info">
+                    <strong>Contact Information</strong><br>
+                    📞 Finance Department: (555) 123-4567<br>
+                    📧 Email: finance@waldorf.edu<br>
+                    🏢 Address: 123 University Drive, Campus City, ST 12345<br>
+                    🕒 Office Hours: Monday - Friday, 8:00 AM - 5:00 PM
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 0.8em; color: #999;">
+                    <strong>Important Notes:</strong><br>
+                    • This is an official payment receipt from Waldorf Colleges & Universities<br>
+                    • For questions about this payment, please contact the Finance Department<br>
+                    • Keep this receipt for tax and financial aid purposes<br>
+                    • Payment processing may take 1-2 business days to reflect in your account
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            // Simulate PDF generation
+            alert('📄 PDF Generation\n\nGenerating PDF receipt...\n\nFeatures:\n• Official letterhead\n• Digital signature\n• Secure watermark\n• Email delivery option\n\nPDF would be generated and downloaded.');
+        }
+
+        // Auto-print if requested
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('print') === 'true') {
+            window.onload = function() {
+                setTimeout(() => {
+                    window.print();
+                }, 1000);
+            };
+        }
+    </script>
+</body>
+</html> 

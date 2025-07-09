@@ -1339,6 +1339,623 @@ if FLASK_AVAILABLE:
         
         return render_template('finance_collection_report.html', report=report_data)
 
+    # Enhanced Finance Transaction Routes
+    @app.route('/finance/transaction_detail/<transaction_id>')
+    def transaction_detail(transaction_id):
+        """View detailed transaction information"""
+        if not is_finance_staff():
+            return redirect('/finance_dashboard')
+        
+        # Sample enhanced transaction data
+        transaction_detail = {
+            'id': transaction_id,
+            'date': '2025-01-09 14:30:25',
+            'student_id': 'WU001',
+            'student_name': 'Alice Johnson',
+            'amount': 750.00,
+            'type': 'Payment',
+            'method': 'Credit Card',
+            'status': 'Completed',
+            'reference_number': f'REF{random.randint(100000, 999999)}',
+            'payment_gateway': 'Stripe',
+            'gateway_transaction_id': f'txn_{random.randint(1000000000, 9999999999)}',
+            'fees': 22.50,
+            'net_amount': 727.50,
+            'description': 'Spring 2025 Tuition Payment',
+            'billing_address': {
+                'name': 'Alice Johnson',
+                'address': '123 Student Lane',
+                'city': 'University City',
+                'state': 'CA',
+                'zip': '90210'
+            },
+            'card_details': {
+                'last_four': '4242',
+                'brand': 'Visa',
+                'exp_month': '12',
+                'exp_year': '2027'
+            },
+            'timeline': [
+                {
+                    'timestamp': '2025-01-09 14:30:25',
+                    'event': 'Transaction Initiated',
+                    'details': 'Payment request submitted by student'
+                },
+                {
+                    'timestamp': '2025-01-09 14:30:28',
+                    'event': 'Payment Gateway Processing',
+                    'details': 'Transaction sent to Stripe for authorization'
+                },
+                {
+                    'timestamp': '2025-01-09 14:30:30',
+                    'event': 'Authorization Successful',
+                    'details': 'Payment method authorized by bank'
+                },
+                {
+                    'timestamp': '2025-01-09 14:30:32',
+                    'event': 'Funds Captured',
+                    'details': 'Payment successfully captured'
+                },
+                {
+                    'timestamp': '2025-01-09 14:30:35',
+                    'event': 'Account Updated',
+                    'details': 'Student account balance updated'
+                },
+                {
+                    'timestamp': '2025-01-09 14:30:40',
+                    'event': 'Receipt Generated',
+                    'details': 'Payment confirmation sent to student'
+                }
+            ],
+            'related_documents': [
+                {'name': 'Payment Receipt', 'type': 'PDF', 'size': '245 KB'},
+                {'name': 'Transaction Log', 'type': 'TXT', 'size': '12 KB'},
+                {'name': 'Gateway Response', 'type': 'JSON', 'size': '8 KB'}
+            ],
+            'account_impact': {
+                'previous_balance': 3250.00,
+                'payment_amount': 750.00,
+                'new_balance': 2500.00
+            }
+        }
+        
+        return render_template('finance_transaction_detail.html', transaction=transaction_detail)
+
+    @app.route('/finance/transactions/export', methods=['POST'])
+    def export_transactions():
+        """Export transactions in various formats"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        export_format = data.get('format', 'csv')
+        filters = data.get('filters', {})
+        
+        # Simulate transaction filtering and export
+        export_data = {
+            'format': export_format,
+            'filename': f'transactions_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.{export_format}',
+            'total_records': 156,
+            'filtered_records': 45,
+            'file_size': '2.4 MB',
+            'download_url': f'/finance/download_export/{random.randint(100000, 999999)}',
+            'expires_at': (datetime.now() + timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S'),
+            'columns_included': [
+                'Transaction ID', 'Date', 'Student ID', 'Student Name',
+                'Amount', 'Type', 'Method', 'Status', 'Reference Number'
+            ],
+            'filters_applied': filters
+        }
+        
+        return jsonify({
+            'success': True,
+            'message': f'Export successfully generated in {export_format.upper()} format',
+            'export_data': export_data
+        })
+
+    @app.route('/finance/transactions/filter', methods=['POST'])
+    def filter_transactions():
+        """Advanced transaction filtering with backend processing"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        filters = data.get('filters', {})
+        page = data.get('page', 1)
+        per_page = data.get('per_page', 10)
+        
+        # Expanded sample transaction list for filtering
+        all_transactions = [
+            {'id': 'TXN001', 'date': '2025-01-09 14:30', 'student_id': 'WU001', 'student_name': 'Alice Johnson', 'amount': 750.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+            {'id': 'TXN002', 'date': '2025-01-09 13:45', 'student_id': 'WU003', 'student_name': 'Carol Davis', 'amount': 1200.00, 'type': 'Payment', 'method': 'Bank Transfer', 'status': 'Completed'},
+            {'id': 'TXN003', 'date': '2025-01-09 12:20', 'student_id': 'WU005', 'student_name': 'Emily Wilson', 'amount': 300.00, 'type': 'Payment', 'method': 'Cash', 'status': 'Completed'},
+            {'id': 'TXN004', 'date': '2025-01-09 11:15', 'student_id': 'WU002', 'student_name': 'Bob Smith', 'amount': 450.00, 'type': 'Refund', 'method': 'Bank Transfer', 'status': 'Processing'},
+            {'id': 'TXN005', 'date': '2025-01-09 10:30', 'student_id': 'WU004', 'student_name': 'David Wilson', 'amount': 875.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+            {'id': 'TXN006', 'date': '2025-01-08 16:45', 'student_id': 'WU001', 'student_name': 'Alice Johnson', 'amount': 1250.00, 'type': 'Payment', 'method': 'Check', 'status': 'Completed'},
+            {'id': 'TXN007', 'date': '2025-01-08 14:20', 'student_id': 'WU004', 'student_name': 'David Wilson', 'amount': 650.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+            {'id': 'TXN008', 'date': '2025-01-08 13:10', 'student_id': 'WU006', 'student_name': 'Frank Miller', 'amount': 500.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Failed'},
+            {'id': 'TXN009', 'date': '2025-01-08 11:30', 'student_id': 'WU007', 'student_name': 'Grace Lee', 'amount': 2100.00, 'type': 'Payment', 'method': 'Bank Transfer', 'status': 'Completed'},
+            {'id': 'TXN010', 'date': '2025-01-08 09:45', 'student_id': 'WU008', 'student_name': 'Henry Brown', 'amount': 325.00, 'type': 'Fee', 'method': 'Credit Card', 'status': 'Pending'},
+            {'id': 'TXN011', 'date': '2025-01-07 15:20', 'student_id': 'WU009', 'student_name': 'Ivy Chen', 'amount': 775.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+            {'id': 'TXN012', 'date': '2025-01-07 14:05', 'student_id': 'WU010', 'student_name': 'Jack Taylor', 'amount': 1450.00, 'type': 'Payment', 'method': 'Bank Transfer', 'status': 'Completed'},
+            {'id': 'TXN013', 'date': '2025-01-07 12:30', 'student_id': 'WU002', 'student_name': 'Bob Smith', 'amount': 850.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+            {'id': 'TXN014', 'date': '2025-01-07 10:15', 'student_id': 'WU003', 'student_name': 'Carol Davis', 'amount': 600.00, 'type': 'Payment', 'method': 'Cash', 'status': 'Completed'},
+            {'id': 'TXN015', 'date': '2025-01-06 16:40', 'student_id': 'WU005', 'student_name': 'Emily Wilson', 'amount': 1100.00, 'type': 'Payment', 'method': 'Check', 'status': 'Completed'}
+        ]
+        
+        # Apply filters
+        filtered_transactions = all_transactions
+        
+        if filters.get('txn_id'):
+            filtered_transactions = [t for t in filtered_transactions if filters['txn_id'].lower() in t['id'].lower()]
+        
+        if filters.get('student_id'):
+            filtered_transactions = [t for t in filtered_transactions if filters['student_id'].lower() in t['student_id'].lower()]
+        
+        if filters.get('type'):
+            filtered_transactions = [t for t in filtered_transactions if t['type'] == filters['type']]
+        
+        if filters.get('method'):
+            filtered_transactions = [t for t in filtered_transactions if t['method'] == filters['method']]
+        
+        if filters.get('status'):
+            filtered_transactions = [t for t in filtered_transactions if t['status'] == filters['status']]
+        
+        if filters.get('amount_range'):
+            amount_filter = filters['amount_range']
+            if amount_filter == '0-100':
+                filtered_transactions = [t for t in filtered_transactions if 0 <= t['amount'] <= 100]
+            elif amount_filter == '100-500':
+                filtered_transactions = [t for t in filtered_transactions if 100 < t['amount'] <= 500]
+            elif amount_filter == '500-1000':
+                filtered_transactions = [t for t in filtered_transactions if 500 < t['amount'] <= 1000]
+            elif amount_filter == '1000+':
+                filtered_transactions = [t for t in filtered_transactions if t['amount'] > 1000]
+        
+        # Pagination
+        total_records = len(filtered_transactions)
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+        paginated_transactions = filtered_transactions[start_index:end_index]
+        
+        # Calculate summary statistics
+        total_amount = sum(t['amount'] for t in filtered_transactions if t['type'] != 'Refund')
+        refund_amount = sum(t['amount'] for t in filtered_transactions if t['type'] == 'Refund')
+        net_amount = total_amount - refund_amount
+        
+        return jsonify({
+            'success': True,
+            'transactions': paginated_transactions,
+            'pagination': {
+                'current_page': page,
+                'per_page': per_page,
+                'total_records': total_records,
+                'total_pages': (total_records + per_page - 1) // per_page
+            },
+            'summary': {
+                'total_amount': total_amount,
+                'refund_amount': refund_amount,
+                'net_amount': net_amount,
+                'transaction_count': total_records
+            },
+            'filters_applied': filters
+        })
+
+    @app.route('/finance/transactions/analytics')
+    def transaction_analytics():
+        """Generate transaction analytics and insights"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        analytics_data = {
+            'daily_volume': [
+                {'date': '2025-01-09', 'count': 5, 'amount': 3575.00},
+                {'date': '2025-01-08', 'count': 6, 'amount': 5800.00},
+                {'date': '2025-01-07', 'count': 4, 'amount': 3675.00},
+                {'date': '2025-01-06', 'count': 1, 'amount': 1100.00}
+            ],
+            'method_breakdown': {
+                'Credit Card': {'count': 8, 'percentage': 53.3, 'amount': 6250.00},
+                'Bank Transfer': {'count': 4, 'percentage': 26.7, 'amount': 5100.00},
+                'Check': {'count': 2, 'percentage': 13.3, 'amount': 2350.00},
+                'Cash': {'count': 1, 'percentage': 6.7, 'amount': 900.00}
+            },
+            'status_distribution': {
+                'Completed': {'count': 12, 'percentage': 80.0},
+                'Processing': {'count': 1, 'percentage': 6.7},
+                'Pending': {'count': 1, 'percentage': 6.7},
+                'Failed': {'count': 1, 'percentage': 6.7}
+            },
+            'top_students': [
+                {'student_id': 'WU001', 'name': 'Alice Johnson', 'transaction_count': 2, 'total_amount': 2000.00},
+                {'student_id': 'WU004', 'name': 'David Wilson', 'transaction_count': 2, 'total_amount': 1525.00},
+                {'student_id': 'WU009', 'name': 'Ivy Chen', 'transaction_count': 1, 'total_amount': 2100.00}
+            ],
+            'insights': [
+                'Credit card payments represent 53% of all transactions',
+                'Average transaction amount is $890.33',
+                'Peak transaction time is between 2-3 PM',
+                'Failed transaction rate is 6.7% - within acceptable limits'
+            ]
+        }
+        
+        return jsonify(analytics_data)
+
+    @app.route('/finance/download_export/<export_id>')
+    def download_export(export_id):
+        """Download exported transaction file"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        # Simulate file download
+        return jsonify({
+            'success': True,
+            'message': f'Export file {export_id} downloaded successfully',
+            'download_started': True,
+            'file_info': {
+                'filename': f'transactions_export_{export_id}.csv',
+                'size': '2.4 MB',
+                'records': 156
+            }
+        })
+
+    @app.route('/finance/transaction_receipt/<transaction_id>')
+    def transaction_receipt(transaction_id):
+        """Generate and view transaction receipt"""
+        if not is_finance_staff():
+            return redirect('/finance_dashboard')
+        
+        # Sample receipt data
+        receipt_data = {
+            'transaction_id': transaction_id,
+            'receipt_number': f'RCP{random.randint(100000, 999999)}',
+            'date_issued': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'student': {
+                'id': 'WU001',
+                'name': 'Alice Johnson',
+                'email': 'alice.johnson@waldorf.edu'
+            },
+            'transaction': {
+                'date': '2025-01-09 14:30:25',
+                'amount': 750.00,
+                'method': 'Credit Card ending in 4242',
+                'description': 'Spring 2025 Tuition Payment',
+                'reference': f'REF{random.randint(100000, 999999)}'
+            },
+            'itemization': [
+                {'description': 'Tuition - Spring 2025', 'amount': 700.00},
+                {'description': 'Technology Fee', 'amount': 50.00}
+            ],
+            'totals': {
+                'subtotal': 750.00,
+                'processing_fee': 22.50,
+                'total_charged': 772.50
+            }
+        }
+        
+        return render_template('finance_transaction_receipt.html', receipt=receipt_data)
+
+    # Enhanced Finance Dashboard Routes
+    @app.route('/finance/applications/detailed')
+    def finance_applications_detailed():
+        """Get detailed financial aid applications for review"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        # Sample detailed applications data
+        applications = [
+            {
+                'id': 'APP001',
+                'student_id': 'WU001',
+                'student_name': 'Alice Johnson',
+                'type': 'scholarship',
+                'amount': 5000.00,
+                'status': 'pending',
+                'submitted_date': '2025-01-05',
+                'gpa': 3.8,
+                'graduation_year': 2026,
+                'priority': 'High',
+                'essay_score': 85,
+                'financial_need': 'High'
+            },
+            {
+                'id': 'APP002',
+                'student_id': 'WU003',
+                'student_name': 'Carol Davis',
+                'type': 'grant',
+                'amount': 3000.00,
+                'status': 'review',
+                'submitted_date': '2025-01-03',
+                'gpa': 3.9,
+                'graduation_year': 2025,
+                'priority': 'Medium',
+                'essay_score': 92,
+                'financial_need': 'Medium'
+            },
+            {
+                'id': 'APP003',
+                'student_id': 'WU005',
+                'student_name': 'Emily Wilson',
+                'type': 'work_study',
+                'amount': 2500.00,
+                'status': 'pending',
+                'submitted_date': '2025-01-07',
+                'gpa': 3.6,
+                'graduation_year': 2027,
+                'priority': 'Low',
+                'essay_score': 78,
+                'financial_need': 'Low'
+            },
+            {
+                'id': 'APP004',
+                'student_id': 'WU002',
+                'student_name': 'Bob Smith',
+                'type': 'loan',
+                'amount': 8000.00,
+                'status': 'approved',
+                'submitted_date': '2024-12-15',
+                'gpa': 3.7,
+                'graduation_year': 2025,
+                'priority': 'High',
+                'essay_score': 88,
+                'financial_need': 'High'
+            },
+            {
+                'id': 'APP005',
+                'student_id': 'WU004',
+                'student_name': 'David Wilson',
+                'type': 'scholarship',
+                'amount': 4500.00,
+                'status': 'rejected',
+                'submitted_date': '2024-12-20',
+                'gpa': 3.4,
+                'graduation_year': 2026,
+                'priority': 'Medium',
+                'essay_score': 65,
+                'financial_need': 'Medium'
+            }
+        ]
+        
+        return jsonify({
+            'success': True,
+            'applications': applications,
+            'total_count': len(applications),
+            'pending_count': len([app for app in applications if app['status'] == 'pending'])
+        })
+
+    @app.route('/finance/applications/<app_id>/process', methods=['POST'])
+    def process_application(app_id):
+        """Process application approval/rejection/review"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        action = data.get('action', 'review')
+        
+        if action not in ['approve', 'reject', 'review']:
+            return jsonify({'error': 'Invalid action'}), 400
+        
+        # Simulate processing
+        result = {
+            'success': True,
+            'message': f'Application {app_id} has been {action}ed successfully',
+            'application_id': app_id,
+            'action': action,
+            'processed_by': 'Finance Staff',
+            'processed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        return jsonify(result)
+
+    @app.route('/finance/overview/detailed')
+    def finance_overview_detailed():
+        """Get detailed financial overview data"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        overview_data = {
+            'total_students': 1247,
+            'new_students': 45,
+            'total_revenue': 2850000.00,
+            'revenue_change': 12.5,
+            'overdue_accounts': 28,
+            'overdue_change': -3,
+            'outstanding_balance': 127850.00,
+            'balance_change': -8.3,
+            'payment_plans': 34,
+            'new_plans': 7,
+            'collection_rate': 94.7,
+            'collection_improvement': 2.1,
+            'avg_payment_time': 14.5,
+            'payment_success_rate': 97.2
+        }
+        
+        return jsonify(overview_data)
+
+    @app.route('/finance/reports/list')
+    def finance_reports_list():
+        """Get list of available financial reports"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        reports = [
+            {
+                'id': 'monthly_revenue',
+                'name': 'Monthly Revenue Report',
+                'description': 'Comprehensive monthly revenue analysis',
+                'icon': '📊'
+            },
+            {
+                'id': 'student_balances',
+                'name': 'Student Balance Summary',
+                'description': 'Current student account balances',
+                'icon': '💰'
+            },
+            {
+                'id': 'payment_analysis',
+                'name': 'Payment Analysis',
+                'description': 'Payment trends and analysis',
+                'icon': '📈'
+            },
+            {
+                'id': 'overdue_report',
+                'name': 'Overdue Accounts Report',
+                'description': 'Detailed overdue accounts analysis',
+                'icon': '⚠️'
+            },
+            {
+                'id': 'scholarship_summary',
+                'name': 'Scholarship Summary',
+                'description': 'Scholarship awards and utilization',
+                'icon': '🎓'
+            },
+            {
+                'id': 'budget_variance',
+                'name': 'Budget Variance Report',
+                'description': 'Budget vs actual spending analysis',
+                'icon': '📋'
+            },
+            {
+                'id': 'cash_flow',
+                'name': 'Cash Flow Statement',
+                'description': 'Monthly cash flow analysis',
+                'icon': '💵'
+            },
+            {
+                'id': 'collection_report',
+                'name': 'Collection Efficiency',
+                'description': 'Collection efforts and results',
+                'icon': '🔍'
+            }
+        ]
+        
+        return jsonify({
+            'success': True,
+            'reports': reports,
+            'total_count': len(reports)
+        })
+
+    @app.route('/finance/analytics/dashboard')
+    def finance_analytics_dashboard():
+        """Get financial analytics data for dashboard"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        analytics_data = {
+            'avg_payment_time': 14,
+            'avg_transaction': 847.50,
+            'payment_success_rate': 97,
+            'payment_methods': {
+                'Credit Card': 45,
+                'Bank Transfer': 32,
+                'Cash': 15,
+                'Check': 8
+            },
+            'monthly_trends': {
+                'January': {'payments': 245, 'amount': 187500.00},
+                'February': {'payments': 289, 'amount': 201200.00},
+                'March': {'payments': 267, 'amount': 195800.00}
+            },
+            'top_revenue_sources': {
+                'Tuition': 75,
+                'Fees': 15,
+                'Housing': 8,
+                'Other': 2
+            }
+        }
+        
+        return jsonify(analytics_data)
+
+    @app.route('/finance/alerts/system')
+    def finance_system_alerts():
+        """Get system alerts for finance dashboard"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        alerts = [
+            {
+                'id': 'ALERT001',
+                'title': 'High Number of Overdue Accounts',
+                'message': '28 accounts are now past due. Consider sending additional reminders.',
+                'priority': 'review',
+                'timestamp': '2025-01-09 10:30:00',
+                'action_required': True
+            },
+            {
+                'id': 'ALERT002',
+                'title': 'Payment Processing Successful',
+                'message': 'Batch payment processing completed successfully. 45 payments processed.',
+                'priority': 'approved',
+                'timestamp': '2025-01-09 09:15:00',
+                'action_required': False
+            },
+            {
+                'id': 'ALERT003',
+                'title': 'Budget Variance Detected',
+                'message': 'Scholarship budget is 15% over projected amount for this period.',
+                'priority': 'pending',
+                'timestamp': '2025-01-09 08:45:00',
+                'action_required': True
+            },
+            {
+                'id': 'ALERT004',
+                'title': 'Monthly Report Ready',
+                'message': 'December financial report has been generated and is ready for review.',
+                'priority': 'approved',
+                'timestamp': '2025-01-08 16:30:00',
+                'action_required': False
+            }
+        ]
+        
+        return jsonify({
+            'success': True,
+            'alerts': alerts,
+            'total_count': len(alerts),
+            'high_priority_count': len([a for a in alerts if a['priority'] == 'review'])
+        })
+
+    @app.route('/finance/budget/overview')
+    def finance_budget_overview():
+        """Get comprehensive budget overview data"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        budget_data = {
+            'current_year': 2025,
+            'total_budget': 5200000.00,
+            'revenue': {
+                'total': 4850000.00,
+                'percentage': 93
+            },
+            'expenses': {
+                'total': 4200000.00,
+                'percentage': 81
+            },
+            'net_income': 650000.00,
+            'revenue_breakdown': {
+                'Tuition & Fees': 3600000.00,
+                'Grants & Donations': 750000.00,
+                'Investment Income': 350000.00,
+                'Other Revenue': 150000.00
+            },
+            'expense_breakdown': {
+                'Faculty Salaries': 2100000.00,
+                'Staff Salaries': 850000.00,
+                'Facilities': 650000.00,
+                'Technology': 300000.00,
+                'Student Services': 200000.00,
+                'Other Expenses': 100000.00
+            },
+            'quarterly_performance': {
+                'Q1': {'revenue': 1200000.00, 'expenses': 1050000.00},
+                'Q2': {'revenue': 1250000.00, 'expenses': 1100000.00},
+                'Q3': {'revenue': 1180000.00, 'expenses': 1000000.00},
+                'Q4': {'revenue': 1220000.00, 'expenses': 1050000.00}
+            }
+        }
+        
+        return jsonify(budget_data)
+
     # Error handlers
     @app.errorhandler(404)
     def not_found_error(error):

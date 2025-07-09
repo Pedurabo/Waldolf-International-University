@@ -525,54 +525,107 @@
         }
 
         function applyFilters() {
-            const filters = {
-                txnId: document.getElementById('filterTxnId').value.toLowerCase(),
-                studentId: document.getElementById('filterStudentId').value.toLowerCase(),
-                dateFrom: document.getElementById('filterDateFrom').value,
-                dateTo: document.getElementById('filterDateTo').value,
-                type: document.getElementById('filterType').value,
-                method: document.getElementById('filterMethod').value,
-                status: document.getElementById('filterStatus').value,
-                amount: document.getElementById('filterAmount').value
-            };
+            const filters = getAppliedFilters();
+            
+            // Show loading state
+            const applyBtn = document.querySelector('button[onclick="applyFilters()"]');
+            const originalText = applyBtn.innerHTML;
+            applyBtn.innerHTML = '⏳ Filtering...';
+            applyBtn.disabled = true;
 
-            filteredTransactions = allTransactions.filter(transaction => {
-                let matches = true;
-
-                if (filters.txnId && !transaction.id.toLowerCase().includes(filters.txnId)) {
-                    matches = false;
-                }
-                if (filters.studentId && !transaction.student_id.toLowerCase().includes(filters.studentId)) {
-                    matches = false;
-                }
-                if (filters.type && transaction.type !== filters.type) {
-                    matches = false;
-                }
-                if (filters.method && transaction.method !== filters.method) {
-                    matches = false;
-                }
-                if (filters.status && transaction.status !== filters.status) {
-                    matches = false;
-                }
-                if (filters.amount) {
-                    const amount = transaction.amount;
-                    const [min, max] = filters.amount.split('-').map(v => v.replace('+', '').replace('$', '').replace(',', ''));
-                    if (filters.amount.includes('+')) {
-                        if (amount < parseInt(min)) matches = false;
+            // Call backend filtering API
+            fetch('/finance/transactions/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    filters: filters,
+                    page: 1,
+                    per_page: 10
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update transactions with filtered data
+                    allTransactions = data.transactions;
+                    filteredTransactions = [...allTransactions];
+                    
+                    // Update pagination info
+                    currentPage = data.pagination.current_page;
+                    totalPages = data.pagination.total_pages;
+                    
+                    // Update summary statistics
+                    updateSummaryCards(data.summary);
+                    
+                    // Re-render table
+                    renderTransactions();
+                    updatePagination();
+                    
+                    // Show results message
+                    const resultsCount = data.pagination.total_records;
+                    if (resultsCount === 0) {
+                        alert('🔍 No Results Found\n\nNo transactions match your filter criteria.\nTry adjusting your filters.');
                     } else {
-                        if (amount < parseInt(min) || amount > parseInt(max)) matches = false;
+                        // Update UI to show filter results
+                        const message = `🔍 Filter Applied\n\nFound ${resultsCount} matching transactions`;
+                        console.log(message);
+                        
+                        // Update filter status in UI
+                        updateFilterStatus(resultsCount, data.filters_applied);
                     }
+                } else {
+                    alert('❌ Filter error. Please try again.');
                 }
-
-                return matches;
+            })
+            .catch(error => {
+                alert('❌ Filter error. Please try again.');
+                console.error('Filter error:', error);
+            })
+            .finally(() => {
+                // Restore button state
+                applyBtn.innerHTML = originalText;
+                applyBtn.disabled = false;
             });
+        }
 
-            currentPage = 1;
-            renderTransactions();
-            updatePagination();
+        function updateFilterStatus(count, appliedFilters) {
+            // Create or update filter status indicator
+            let statusDiv = document.getElementById('filterStatus');
+            if (!statusDiv) {
+                statusDiv = document.createElement('div');
+                statusDiv.id = 'filterStatus';
+                statusDiv.style.cssText = `
+                    background: rgba(0, 212, 255, 0.1);
+                    border: 1px solid rgba(0, 212, 255, 0.3);
+                    border-radius: 8px;
+                    padding: 10px 15px;
+                    margin: 15px 0;
+                    color: #00d4ff;
+                    font-size: 0.9em;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+                
+                const filtersSection = document.querySelector('.filters-section');
+                filtersSection.appendChild(statusDiv);
+            }
+            
+            const activeFilters = Object.entries(appliedFilters)
+                .filter(([key, value]) => value && value !== '')
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(', ');
+            
+            statusDiv.innerHTML = `
+                <span>🔍 Showing ${count} filtered results ${activeFilters ? `(${activeFilters})` : ''}</span>
+                <button onclick="clearFilters()" style="background: none; border: 1px solid #00d4ff; color: #00d4ff; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Clear Filters</button>
+            `;
         }
 
         function clearFilters() {
+            // Clear all filter inputs
             document.getElementById('filterTxnId').value = '';
             document.getElementById('filterStudentId').value = '';
             document.getElementById('filterDateFrom').value = '';
@@ -582,10 +635,47 @@
             document.getElementById('filterStatus').value = '';
             document.getElementById('filterAmount').value = '';
             
-            filteredTransactions = [...allTransactions];
-            currentPage = 1;
-            renderTransactions();
-            updatePagination();
+            // Remove filter status indicator
+            const statusDiv = document.getElementById('filterStatus');
+            if (statusDiv) {
+                statusDiv.remove();
+            }
+            
+            // Reset to show all transactions - call backend with empty filters
+            fetch('/finance/transactions/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    filters: {},
+                    page: 1,
+                    per_page: 10
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    allTransactions = data.transactions;
+                    filteredTransactions = [...allTransactions];
+                    currentPage = 1;
+                    totalPages = data.pagination.total_pages;
+                    
+                    updateSummaryCards(data.summary);
+                    renderTransactions();
+                    updatePagination();
+                    
+                    console.log('🗑️ Filters cleared - showing all transactions');
+                }
+            })
+            .catch(error => {
+                console.error('Clear filters error:', error);
+                // Fallback to client-side reset
+                filteredTransactions = [...allTransactions];
+                currentPage = 1;
+                renderTransactions();
+                updatePagination();
+            });
         }
 
         function renderTransactions() {
@@ -626,38 +716,151 @@
 
         function changePage(page) {
             if (page < 1 || page > totalPages) return;
-            currentPage = page;
-            renderTransactions();
-            updatePagination();
+            
+            const filters = getAppliedFilters();
+            
+            // Call backend with pagination
+            fetch('/finance/transactions/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    filters: filters,
+                    page: page,
+                    per_page: 10
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    allTransactions = data.transactions;
+                    filteredTransactions = [...allTransactions];
+                    currentPage = data.pagination.current_page;
+                    totalPages = data.pagination.total_pages;
+                    
+                    renderTransactions();
+                    updatePagination();
+                } else {
+                    alert('❌ Page load error. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Pagination error:', error);
+                // Fallback to client-side pagination
+                currentPage = page;
+                renderTransactions();
+                updatePagination();
+            });
         }
 
         function viewTransactionDetails(transactionId) {
-            const transaction = allTransactions.find(t => t.id === transactionId);
-            if (transaction) {
-                let details = `🧾 Transaction Details\n\n`;
-                details += `ID: ${transaction.id}\n`;
-                details += `Date: ${transaction.date}\n`;
-                details += `Student: ${transaction.student_id}\n`;
-                details += `Amount: $${transaction.amount.toLocaleString()}\n`;
-                details += `Type: ${transaction.type}\n`;
-                details += `Method: ${transaction.method}\n`;
-                details += `Status: ${transaction.status}\n\n`;
-                details += `This would open a detailed transaction view with:\n`;
-                details += `• Full transaction history\n`;
-                details += `• Payment verification\n`;
-                details += `• Related documents\n`;
-                details += `• Student account impact`;
-                
-                alert(details);
-            }
+            // Redirect to detailed transaction view
+            window.location.href = `/finance/transaction_detail/${transactionId}`;
         }
 
         function exportTransactions() {
-            alert('📊 Export Transactions:\n• CSV Export\n• Excel Report\n• PDF Summary\n• Email Report\n\nFiltered transactions would be exported.');
+            // Show export options modal
+            const format = prompt('Select export format:\n1. CSV\n2. Excel\n3. PDF\n\nEnter 1, 2, or 3:');
+            let exportFormat = 'csv';
+            
+            if (format === '2') exportFormat = 'excel';
+            else if (format === '3') exportFormat = 'pdf';
+            
+            const filters = getAppliedFilters();
+            
+            // Call backend export API
+            fetch('/finance/transactions/export', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    format: exportFormat,
+                    filters: filters
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ Export Generated Successfully!\n\nFormat: ${data.export_data.format.toUpperCase()}\nFile: ${data.export_data.filename}\nRecords: ${data.export_data.filtered_records}\nSize: ${data.export_data.file_size}\n\nDownload will begin shortly...`);
+                    
+                    // Simulate download
+                    setTimeout(() => {
+                        window.open(data.export_data.download_url, '_blank');
+                    }, 1000);
+                } else {
+                    alert(`❌ Export Failed: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                alert('❌ Export error. Please try again.');
+                console.error('Export error:', error);
+            });
         }
 
         function refreshTransactions() {
-            location.reload();
+            // Enhanced refresh with backend filtering
+            const filters = getAppliedFilters();
+            
+            fetch('/finance/transactions/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    filters: filters,
+                    page: currentPage,
+                    per_page: 10
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update transactions with fresh data
+                    allTransactions = data.transactions;
+                    filteredTransactions = [...allTransactions];
+                    
+                    // Update summary statistics
+                    updateSummaryCards(data.summary);
+                    
+                    // Re-render table
+                    renderTransactions();
+                    updatePagination();
+                    
+                    alert('🔄 Transactions Refreshed!\n\nLatest data loaded from server.');
+                } else {
+                    alert('❌ Refresh failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                alert('❌ Refresh error. Please try again.');
+                console.error('Refresh error:', error);
+            });
+        }
+
+        function getAppliedFilters() {
+            return {
+                txn_id: document.getElementById('filterTxnId').value,
+                student_id: document.getElementById('filterStudentId').value,
+                date_from: document.getElementById('filterDateFrom').value,
+                date_to: document.getElementById('filterDateTo').value,
+                type: document.getElementById('filterType').value,
+                method: document.getElementById('filterMethod').value,
+                status: document.getElementById('filterStatus').value,
+                amount_range: document.getElementById('filterAmount').value
+            };
+        }
+
+        function updateSummaryCards(summary) {
+            // Update summary card values with backend data
+            const cards = document.querySelectorAll('.summary-value');
+            if (cards.length >= 4) {
+                cards[0].textContent = summary.transaction_count;
+                cards[1].textContent = `$${summary.total_amount.toLocaleString()}`;
+                cards[2].textContent = summary.transaction_count; // Today's count would come from backend
+                cards[3].textContent = '0'; // Pending count would come from backend
+            }
         }
     </script>
 </body>

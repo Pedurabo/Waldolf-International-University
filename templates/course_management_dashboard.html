@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management Dashboard - Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .user-info {
+            text-align: right;
+            color: #94a3b8;
+        }
+
+        .user-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #991b1b, #7f1d1d);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .welcome-section {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 60, 0.6);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(0, 212, 255, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .dashboard-card:hover::before {
+            left: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .card-content {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .course-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(30, 30, 60, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .course-table th {
+            background: rgba(30, 30, 60, 0.8);
+            color: #00d4ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .course-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .course-table tr:hover {
+            background: rgba(30, 30, 60, 0.6);
+        }
+
+        .enrollment-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .enrollment-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .enrollment-low { background: linear-gradient(90deg, #16a085, #27ae60); }
+        .enrollment-medium { background: linear-gradient(90deg, #f39c12, #e67e22); }
+        .enrollment-high { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-active { background: #16a085; color: white; }
+        .status-full { background: #e74c3c; color: white; }
+        .status-limited { background: #f39c12; color: white; }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0099cc, #4455dd);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #475569, #334155);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #138d75, #229954);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #d68910, #dc7633);
+            transform: translateY(-2px);
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input, .filter-select {
+            padding: 10px 15px;
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .search-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .quick-action {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-desc {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-filters {
+                flex-direction: column;
+            }
+            
+            .welcome-title {
+                font-size: 2em;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-card {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+        .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+        .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+        .dashboard-card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">📚</div>
+                <div class="logo-text">
+                    <h1>Course Management System</h1>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-name">Course Administrator</div>
+                <div>Academic Management Portal</div>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Course Management Dashboard</h1>
+            <p style="color: #94a3b8; margin-bottom: 20px;">Comprehensive course catalog and enrollment management</p>
+            
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-number">{{ courses|length }}</div>
+                    <div class="stat-label">Total Courses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ faculty|length }}</div>
+                    <div class="stat-label">Faculty Members</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ students|length }}</div>
+                    <div class="stat-label">Enrolled Students</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Departments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">92%</div>
+                    <div class="stat-label">Enrollment Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Course Catalog -->
+            <div class="dashboard-card full-width">
+                <div class="card-header">
+                    <div class="card-title-section">
+                        <div class="card-icon">📋</div>
+                        <div class="card-title">Course Catalog</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="addNewCourse()">Add New Course</button>
+                        <button class="btn btn-secondary" onclick="exportCatalog()">Export Catalog</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="search-filters">
+                        <input type="text" class="search-input" placeholder="Search courses..." onkeyup="filterCourses(this.value)">
+                        <select class="filter-select" onchange="filterByDepartment(this.value)">
+                            <option value="">All Departments</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                        </select>
+                        <select class="filter-select" onchange="filterByStatus(this.value)">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="full">Full</option>
+                            <option value="limited">Limited</option>
+                        </select>
+                    </div>
+                    
+                    <table class="course-table" id="courseTable">
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Department</th>
+                                <th>Instructor</th>
+                                <th>Credits</th>
+                                <th>Enrollment</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in courses %}
+                            <tr data-department="{{ course.department }}" data-status="{% if course.enrolled >= course.capacity %}full{% elif course.enrolled >= course.capacity * 0.8 %}limited{% else %}active{% endif %}">
+                                <td><strong>{{ course.id }}</strong></td>
+                                <td>{{ course.name }}</td>
+                                <td>{{ course.department }}</td>
+                                <td>{{ course.instructor }}</td>
+                                <td>{{ course.credits }}</td>
+                                <td>
+                                    {{ course.enrolled }}/{{ course.capacity }}
+                                    <div class="enrollment-bar">
+                                        <div class="enrollment-fill {% if course.enrolled >= course.capacity * 0.8 %}enrollment-high{% elif course.enrolled >= course.capacity * 0.5 %}enrollment-medium{% else %}enrollment-low{% endif %}" 
+                                             style="width: {{ (course.enrolled / course.capacity * 100)|round }}%"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if course.enrolled >= course.capacity %}
+                                        <span class="status-badge status-full">Full</span>
+                                    {% elif course.enrolled >= course.capacity * 0.8 %}
+                                        <span class="status-badge status-limited">Limited</span>
+                                    {% else %}
+                                        <span class="status-badge status-active">Active</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="editCourse('{{ course.id }}')" style="padding: 6px 12px; font-size: 12px;">Edit</button>
+                                    <button class="btn btn-secondary" onclick="viewEnrollment('{{ course.id }}')" style="padding: 6px 12px; font-size: 12px;">Students</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Enrollment Analytics -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-section">
+                        <div class="card-icon">📊</div>
+                        <div class="card-title">Enrollment Analytics</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #00d4ff; margin-bottom: 15px;">Department Enrollment</h4>
+                        {% set departments = ['Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'Biology'] %}
+                        {% for dept in departments %}
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>{{ dept }}</span>
+                                <span>{{ ((loop.index * 23) % 100) }}%</span>
+                            </div>
+                            <div class="enrollment-bar">
+                                <div class="enrollment-fill enrollment-medium" style="width: {{ ((loop.index * 23) % 100) }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="viewDetailedAnalytics()">Detailed Analytics</button>
+                        <button class="btn btn-secondary" onclick="generateReport()">Generate Report</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Management -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-section">
+                        <div class="card-icon">🕐</div>
+                        <div class="card-title">Schedule Management</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #00d4ff; margin-bottom: 15px;">Today's Schedule Conflicts</h4>
+                        <div style="background: rgba(34, 197, 94, 0.2); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                            ✅ No scheduling conflicts detected
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.2); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                            ⚠️ 2 rooms need maintenance scheduling
+                        </div>
+                        <div style="background: rgba(59, 130, 246, 0.2); padding: 10px; border-radius: 5px;">
+                            ℹ️ 3 new course requests pending approval
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="manageSchedule()">Manage Schedule</button>
+                        <button class="btn btn-warning" onclick="resolveConflicts()">Resolve Conflicts</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="#" class="quick-action" onclick="bulkEnrollment()">
+                <div class="quick-action-icon">👥</div>
+                <div class="quick-action-title">Bulk Enrollment</div>
+                <div class="quick-action-desc">Mass enroll students in courses</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="curriculumPlanning()">
+                <div class="quick-action-icon">🗓️</div>
+                <div class="quick-action-title">Curriculum Planning</div>
+                <div class="quick-action-desc">Plan future semester offerings</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="roomManagement()">
+                <div class="quick-action-icon">🏢</div>
+                <div class="quick-action-title">Room Management</div>
+                <div class="quick-action-desc">Manage classroom assignments</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="prerequisiteManager()">
+                <div class="quick-action-icon">🔗</div>
+                <div class="quick-action-title">Prerequisites</div>
+                <div class="quick-action-desc">Manage course prerequisites</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="waitlistManagement()">
+                <div class="quick-action-icon">⏳</div>
+                <div class="quick-action-title">Waitlist Management</div>
+                <div class="quick-action-desc">Manage course waitlists</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="gradingIntegration()">
+                <div class="quick-action-icon">📝</div>
+                <div class="quick-action-title">Grading Integration</div>
+                <div class="quick-action-desc">Connect with grading systems</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Course management functionality
+        function addNewCourse() {
+            alert('➕ New course creation wizard would open here with:\n• Course information form\n• Schedule selection\n• Instructor assignment\n• Room allocation\n• Prerequisites setup');
+        }
+
+        function editCourse(courseId) {
+            alert(`✏️ Course editor for ${courseId} would open here with:\n• Basic information editing\n• Enrollment management\n• Schedule modifications\n• Instructor changes\n• Capacity adjustments`);
+        }
+
+        function viewEnrollment(courseId) {
+            alert(`👥 Student enrollment viewer for ${courseId} would open here with:\n• Current enrollments\n• Waitlist management\n• Drop/add functionality\n• Student details\n• Performance tracking`);
+        }
+
+        function exportCatalog() {
+            alert('📊 Course catalog export would generate files in multiple formats:\n• PDF catalog\n• Excel spreadsheet\n• CSV data file\n• JSON data export');
+        }
+
+        function viewDetailedAnalytics() {
+            alert('📈 Detailed analytics dashboard would open here with:\n• Enrollment trends\n• Popular courses\n• Department comparisons\n• Historical data\n• Predictive analytics');
+        }
+
+        function generateReport() {
+            alert('📋 Report generator would open here with options for:\n• Enrollment reports\n• Faculty workload reports\n• Room utilization reports\n• Student performance summaries');
+        }
+
+        function manageSchedule() {
+            alert('🕐 Schedule management system would open here with:\n• Time slot editor\n• Room assignments\n• Conflict detection\n• Batch scheduling\n• Calendar integration');
+        }
+
+        function resolveConflicts() {
+            alert('⚠️ Conflict resolution tool would open here to:\n• Identify scheduling conflicts\n• Suggest alternative times\n• Reassign rooms\n• Notify affected parties');
+        }
+
+        function bulkEnrollment() {
+            alert('👥 Bulk enrollment tool would open here for:\n• Mass student enrollment\n• CSV import functionality\n• Enrollment validation\n• Prerequisites checking\n• Notification system');
+        }
+
+        function curriculumPlanning() {
+            alert('🗓️ Curriculum planning system would open here with:\n• Semester planning tools\n• Course sequence mapping\n• Resource allocation\n• Faculty assignment planning');
+        }
+
+        function roomManagement() {
+            alert('🏢 Room management system would open here with:\n• Room availability calendar\n• Capacity management\n• Equipment tracking\n• Maintenance scheduling');
+        }
+
+        function prerequisiteManager() {
+            alert('🔗 Prerequisite management tool would open here with:\n• Course dependency mapping\n• Prerequisite validation\n• Student eligibility checking\n• Pathway visualization');
+        }
+
+        function waitlistManagement() {
+            alert('⏳ Waitlist management system would open here with:\n• Waitlist administration\n• Automatic enrollment\n• Notification system\n• Priority management');
+        }
+
+        function gradingIntegration() {
+            alert('📝 Grading integration panel would open here with:\n• Grade export/import\n• Faculty grading tools\n• Student performance tracking\n• Academic standing updates');
+        }
+
+        // Search and filter functionality
+        function filterCourses(searchTerm) {
+            const table = document.getElementById('courseTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+
+        function filterByDepartment(department) {
+            const table = document.getElementById('courseTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                if (department === '' || rows[i].getAttribute('data-department') === department) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        function filterByStatus(status) {
+            const table = document.getElementById('courseTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                if (status === '' || rows[i].getAttribute('data-status') === status) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stats
+            setTimeout(() => {
+                document.querySelectorAll('.stat-number').forEach(stat => {
+                    const finalValue = stat.textContent;
+                    if (!isNaN(parseInt(finalValue))) {
+                        stat.textContent = '0';
+                        animateNumber(stat, finalValue);
+                    }
+                });
+            }, 500);
+        });
+
+        function animateNumber(element, finalValue) {
+            const numValue = parseInt(finalValue.replace(/\D/g, ''));
+            const suffix = finalValue.replace(/\d/g, '');
+            
+            if (isNaN(numValue)) return;
+            
+            let currentValue = 0;
+            const increment = Math.ceil(numValue / 30);
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= numValue) {
+                    currentValue = numValue;
+                    clearInterval(timer);
+                }
+                element.textContent = currentValue + suffix;
+            }, 50);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case 'n':
+                        addNewCourse();
+                        break;
+                    case 's':
+                        manageSchedule();
+                        break;
+                    case 'r':
+                        generateReport();
+                        break;
+                    case 'a':
+                        viewDetailedAnalytics();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

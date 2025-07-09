@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance & Accounting Dashboard - Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .user-info {
+            text-align: right;
+            color: #94a3b8;
+        }
+
+        .user-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #991b1b, #7f1d1d);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .welcome-section {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .financial-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .financial-card {
+            background: rgba(30, 30, 60, 0.6);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .financial-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .financial-card:hover {
+            border-color: rgba(0, 212, 255, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .financial-card:hover::before {
+            left: 100%;
+        }
+
+        .financial-amount {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .financial-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .financial-change {
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .positive { background: #16a085; color: white; }
+        .negative { background: #e74c3c; color: white; }
+        .neutral { background: #f39c12; color: white; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .dashboard-card:hover::before {
+            left: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .card-content {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .student-finance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(30, 30, 60, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .student-finance-table th {
+            background: rgba(30, 30, 60, 0.8);
+            color: #00d4ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .student-finance-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .student-finance-table tr:hover {
+            background: rgba(30, 30, 60, 0.6);
+        }
+
+        .balance-amount {
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 15px;
+        }
+
+        .balance-zero { background: #16a085; color: white; }
+        .balance-low { background: #f39c12; color: white; }
+        .balance-high { background: #e74c3c; color: white; }
+
+        .payment-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-current { background: #16a085; color: white; }
+        .status-plan { background: #3498db; color: white; }
+        .status-overdue { background: #e74c3c; color: white; }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0099cc, #4455dd);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #475569, #334155);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #138d75, #229954);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #d68910, #dc7633);
+            transform: translateY(-2px);
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: rgba(30, 30, 60, 0.4);
+            border: 2px dashed rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 1.1em;
+            margin: 15px 0;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .summary-item {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .summary-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input, .filter-select {
+            padding: 10px 15px;
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .search-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .quick-action {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-desc {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .financial-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-filters {
+                flex-direction: column;
+            }
+            
+            .welcome-title {
+                font-size: 2em;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-card {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+        .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+        .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+        .dashboard-card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">💰</div>
+                <div class="logo-text">
+                    <h1>Finance & Accounting Portal</h1>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-name">{{ user_name }}</div>
+                <div>{{ role }} • Finance Department</div>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Finance & Accounting Dashboard</h1>
+            <p style="color: #94a3b8; margin-bottom: 20px;">Comprehensive financial management and reporting system</p>
+            
+            <div class="financial-overview">
+                <div class="financial-card">
+                    <div class="financial-amount">${{ "{:,.2f}".format(financial_stats.total_revenue) }}</div>
+                    <div class="financial-label">Total Revenue</div>
+                    <div class="financial-change positive">+12.5% from last month</div>
+                </div>
+                <div class="financial-card">
+                    <div class="financial-amount">${{ "{:,.2f}".format(financial_stats.outstanding_balance) }}</div>
+                    <div class="financial-label">Outstanding Balance</div>
+                    <div class="financial-change negative">-8.3% from last month</div>
+                </div>
+                <div class="financial-card">
+                    <div class="financial-amount">${{ "{:,.0f}".format(financial_stats.scholarship_amount) }}</div>
+                    <div class="financial-label">Scholarships Awarded</div>
+                    <div class="financial-change positive">+15.2% from last month</div>
+                </div>
+                <div class="financial-card">
+                    <div class="financial-amount">{{ "{:.1f}".format(financial_stats.collection_rate) }}%</div>
+                    <div class="financial-label">Collection Rate</div>
+                    <div class="financial-change positive">+2.1% from last month</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Student Financial Accounts -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-section">
+                        <div class="card-icon">👥</div>
+                        <div class="card-title">Student Financial Accounts</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="processPayments()">Process Payments</button>
+                        <button class="btn btn-warning" onclick="sendReminders()">Send Reminders</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="search-filters">
+                        <input type="text" class="search-input" placeholder="Search by student name or ID..." onkeyup="filterStudents(this.value)">
+                        <select class="filter-select" onchange="filterByBalance(this.value)">
+                            <option value="">All Balances</option>
+                            <option value="zero">Paid in Full</option>
+                            <option value="low">Low Balance</option>
+                            <option value="high">High Balance</option>
+                        </select>
+                    </div>
+                    
+                    <table class="student-finance-table" id="financeTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Balance</th>
+                                <th>Paid</th>
+                                <th>Payment Plan</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student_id, finance in student_finances.items() %}
+                            {% set student = students | selectattr('id', 'equalto', student_id) | first %}
+                            <tr data-balance="{% if finance.balance == 0 %}zero{% elif finance.balance < 2000 %}low{% else %}high{% endif %}">
+                                <td><strong>{{ student_id }}</strong></td>
+                                <td>{{ student.name if student else 'Unknown' }}</td>
+                                <td>
+                                    <span class="balance-amount {% if finance.balance == 0 %}balance-zero{% elif finance.balance < 2000 %}balance-low{% else %}balance-high{% endif %}">
+                                        ${{ "{:,.2f}".format(finance.balance) }}
+                                    </span>
+                                </td>
+                                <td>${{ "{:,.2f}".format(finance.paid) }}</td>
+                                <td>{{ 'Yes' if finance.payment_plan else 'No' }}</td>
+                                <td>
+                                    {% if finance.balance == 0 %}
+                                        <span class="payment-status status-current">Current</span>
+                                    {% elif finance.payment_plan %}
+                                        <span class="payment-status status-plan">Payment Plan</span>
+                                    {% else %}
+                                        <span class="payment-status status-overdue">Balance Due</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="viewAccount('{{ student_id }}')" style="padding: 6px 12px; font-size: 12px;">View</button>
+                                    {% if finance.balance > 0 %}
+                                    <button class="btn btn-warning" onclick="sendBill('{{ student_id }}')" style="padding: 6px 12px; font-size: 12px;">Bill</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Financial Summary -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-section">
+                        <div class="card-icon">📊</div>
+                        <div class="card-title">Financial Summary</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="summary-stats">
+                        <div class="summary-item">
+                            <div class="summary-value">{{ students|length }}</div>
+                            <div class="summary-label">Total Students</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value">{{ (student_finances.values() | selectattr('balance', 'equalto', 0) | list | length) }}</div>
+                            <div class="summary-label">Paid in Full</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value">{{ (student_finances.values() | selectattr('payment_plan', 'equalto', true) | list | length) }}</div>
+                            <div class="summary-label">Payment Plans</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value">${{ "{:,.0f}".format(financial_stats.outstanding_balance) }}</div>
+                            <div class="summary-label">Total Outstanding</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-placeholder">
+                        📈 Revenue Trend Chart<br>
+                        <small>(Integration with charting library)</small>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="generateFinancialReport()">Financial Report</button>
+                        <button class="btn btn-secondary" onclick="exportData()">Export Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Financial Tools -->
+        <div class="dashboard-card full-width">
+            <div class="card-header">
+                <div class="card-title-section">
+                    <div class="card-icon">🏦</div>
+                    <div class="card-title">Financial Management Tools</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(22, 160, 133, 0.2); padding: 20px; border-radius: 8px; border-left: 4px solid #16a085;">
+                        <h4 style="color: #16a085; margin-bottom: 10px;">✅ Recent Transactions</h4>
+                        <p style="color: #94a3b8; margin-bottom: 15px;">145 payments processed today</p>
+                        <button class="btn btn-success" onclick="viewTransactions()">View All Transactions</button>
+                    </div>
+                    
+                    <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 8px; border-left: 4px solid #3498db;">
+                        <h4 style="color: #3498db; margin-bottom: 10px;">📋 Pending Actions</h4>
+                        <p style="color: #94a3b8; margin-bottom: 15px;">8 financial aid applications to review</p>
+                        <button class="btn btn-primary" onclick="reviewApplications()">Review Applications</button>
+                    </div>
+                    
+                    <div style="background: rgba(241, 196, 15, 0.2); padding: 20px; border-radius: 8px; border-left: 4px solid #f1c40f;">
+                        <h4 style="color: #f1c40f; margin-bottom: 10px;">⚠️ Overdue Accounts</h4>
+                        <p style="color: #94a3b8; margin-bottom: 15px;">12 accounts require follow-up</p>
+                        <button class="btn btn-warning" onclick="manageOverdue()">Manage Overdue</button>
+                    </div>
+                    
+                    <div style="background: rgba(155, 89, 182, 0.2); padding: 20px; border-radius: 8px; border-left: 4px solid #9b59b6;">
+                        <h4 style="color: #9b59b6; margin-bottom: 10px;">📈 Budget Planning</h4>
+                        <p style="color: #94a3b8; margin-bottom: 15px;">Next semester budget preparation</p>
+                        <button class="btn btn-secondary" onclick="budgetPlanning()">Budget Tools</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="#" class="quick-action" onclick="scholarshipManagement()">
+                <div class="quick-action-icon">🎓</div>
+                <div class="quick-action-title">Scholarship Management</div>
+                <div class="quick-action-desc">Manage scholarships and financial aid</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="paymentProcessing()">
+                <div class="quick-action-icon">💳</div>
+                <div class="quick-action-title">Payment Processing</div>
+                <div class="quick-action-desc">Process student payments and refunds</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="budgetManagement()">
+                <div class="quick-action-icon">📊</div>
+                <div class="quick-action-title">Budget Management</div>
+                <div class="quick-action-desc">Institutional budget planning and tracking</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="taxReporting()">
+                <div class="quick-action-icon">📄</div>
+                <div class="quick-action-title">Tax Reporting</div>
+                <div class="quick-action-desc">Generate tax forms and compliance reports</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="auditTools()">
+                <div class="quick-action-icon">🔍</div>
+                <div class="quick-action-title">Audit Tools</div>
+                <div class="quick-action-desc">Financial audit and compliance tools</div>
+            </a>
+            
+            <a href="#" class="quick-action" onclick="bankingIntegration()">
+                <div class="quick-action-icon">🏛️</div>
+                <div class="quick-action-title">Banking Integration</div>
+                <div class="quick-action-desc">Bank account management and reconciliation</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Finance management functionality
+        function processPayments() {
+            alert('💳 Payment processing center would open here with:\n• Batch payment processing\n• Credit card transactions\n• Payment plan management\n• Refund processing\n• Payment verification');
+        }
+
+        function sendReminders() {
+            alert('📧 Payment reminder system would open here with:\n• Email reminder templates\n• SMS notifications\n• Automated reminder scheduling\n• Custom message creation');
+        }
+
+        function viewAccount(studentId) {
+            alert(`👤 Student financial account for ${studentId} would open here with:\n• Payment history\n• Outstanding balances\n• Payment plan details\n• Transaction log\n• Contact information`);
+        }
+
+        function sendBill(studentId) {
+            alert(`📧 Billing system for ${studentId} would open here with:\n• Generate invoice\n• Email bill to student\n• Set payment due date\n• Add late fees if applicable`);
+        }
+
+        function generateFinancialReport() {
+            alert('📊 Financial reporting system would open here with:\n• Revenue reports\n• Outstanding balance reports\n• Collection analysis\n• Trend analysis\n• Custom report builder');
+        }
+
+        function exportData() {
+            alert('💾 Data export wizard would open here with options for:\n• Excel spreadsheets\n• CSV files\n• PDF reports\n• Database backup\n• Custom data sets');
+        }
+
+        function viewTransactions() {
+            alert('💳 Transaction history viewer would open here with:\n• Daily transaction logs\n• Payment method breakdown\n• Transaction search and filtering\n• Reconciliation tools');
+        }
+
+        function reviewApplications() {
+            alert('📋 Financial aid application reviewer would open here with:\n• Pending applications\n• Approval workflow\n• Documentation review\n• Decision tracking');
+        }
+
+        function manageOverdue() {
+            alert('⚠️ Overdue account management would open here with:\n• Overdue account list\n• Payment arrangement tools\n• Collection procedures\n• Hold management');
+        }
+
+        function budgetPlanning() {
+            alert('📈 Budget planning tools would open here with:\n• Revenue forecasting\n• Expense planning\n• Department budgets\n• Capital expenditure planning');
+        }
+
+        function scholarshipManagement() {
+            alert('🎓 Scholarship management system would open here with:\n• Scholarship distribution\n• Eligibility verification\n• Award tracking\n• Renewal processing');
+        }
+
+        function paymentProcessing() {
+            alert('💳 Payment processing center would open here with:\n• Real-time payment processing\n• Multiple payment methods\n• Recurring payment setup\n• Payment verification');
+        }
+
+        function budgetManagement() {
+            alert('📊 Budget management tools would open here with:\n• Institutional budget oversight\n• Department budget allocation\n• Expense tracking\n• Financial forecasting');
+        }
+
+        function taxReporting() {
+            alert('📄 Tax reporting system would open here with:\n• 1098-T form generation\n• Tax compliance reports\n• Student tax information\n• IRS filing assistance');
+        }
+
+        function auditTools() {
+            alert('🔍 Audit and compliance tools would open here with:\n• Financial audit trails\n• Compliance monitoring\n• Risk assessment\n• Internal controls');
+        }
+
+        function bankingIntegration() {
+            alert('🏛️ Banking integration system would open here with:\n• Account reconciliation\n• Bank statement import\n• Transaction matching\n• Wire transfer management');
+        }
+
+        // Search and filter functionality
+        function filterStudents(searchTerm) {
+            const table = document.getElementById('financeTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < 2; j++) { // Search only ID and Name columns
+                    if (cells[j].textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+
+        function filterByBalance(balanceType) {
+            const table = document.getElementById('financeTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                if (balanceType === '' || rows[i].getAttribute('data-balance') === balanceType) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate financial amounts
+            setTimeout(() => {
+                document.querySelectorAll('.financial-amount, .summary-value').forEach(amount => {
+                    const finalValue = amount.textContent;
+                    const numValue = parseFloat(finalValue.replace(/[^0-9.]/g, ''));
+                    
+                    if (!isNaN(numValue)) {
+                        amount.textContent = finalValue.replace(/[0-9.]/g, '0');
+                        animateFinancialNumber(amount, finalValue, numValue);
+                    }
+                });
+            }, 500);
+        });
+
+        function animateFinancialNumber(element, finalValue, numValue) {
+            const prefix = finalValue.split(numValue.toString())[0];
+            const suffix = finalValue.split(numValue.toString())[1] || '';
+            let currentValue = 0;
+            const increment = numValue / 30;
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= numValue) {
+                    currentValue = numValue;
+                    clearInterval(timer);
+                }
+                
+                if (finalValue.includes(',')) {
+                    element.textContent = prefix + currentValue.toLocaleString(undefined, {minimumFractionDigits: finalValue.includes('.') ? 2 : 0, maximumFractionDigits: finalValue.includes('.') ? 2 : 0}) + suffix;
+                } else {
+                    element.textContent = prefix + currentValue.toFixed(finalValue.includes('.') ? 1 : 0) + suffix;
+                }
+            }, 50);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case 'p':
+                        processPayments();
+                        break;
+                    case 'r':
+                        generateFinancialReport();
+                        break;
+                    case 's':
+                        scholarshipManagement();
+                        break;
+                    case 'b':
+                        budgetManagement();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

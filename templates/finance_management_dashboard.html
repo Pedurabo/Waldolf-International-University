@@ -742,68 +742,326 @@
 
     <script>
         // Finance management functionality
-        function processPayments() {
-            alert('💳 Payment processing center would open here with:\n• Batch payment processing\n• Credit card transactions\n• Payment plan management\n• Refund processing\n• Payment verification');
+        async function processPayments() {
+            if (confirm('Are you sure you want to process pending payments?')) {
+                try {
+                    const response = await fetch('/finance/process_payments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert(`✅ Success!\n${data.message}`);
+                        location.reload(); // Refresh to show updated balances
+                    } else {
+                        alert(`❌ Error: ${data.error || 'Payment processing failed'}`);
+                    }
+                } catch (error) {
+                    alert('❌ Network error occurred. Please try again.');
+                }
+            }
         }
 
-        function sendReminders() {
-            alert('📧 Payment reminder system would open here with:\n• Email reminder templates\n• SMS notifications\n• Automated reminder scheduling\n• Custom message creation');
+        async function sendReminders() {
+            if (confirm('Send payment reminders to all students with outstanding balances?')) {
+                try {
+                    const response = await fetch('/finance/send_reminders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert(`📧 ${data.message}`);
+                    } else {
+                        alert(`❌ Error: ${data.error || 'Failed to send reminders'}`);
+                    }
+                } catch (error) {
+                    alert('❌ Network error occurred. Please try again.');
+                }
+            }
         }
 
-        function viewAccount(studentId) {
-            alert(`👤 Student financial account for ${studentId} would open here with:\n• Payment history\n• Outstanding balances\n• Payment plan details\n• Transaction log\n• Contact information`);
+        async function viewAccount(studentId) {
+            try {
+                const response = await fetch(`/finance/student_account/${studentId}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const student = data.student;
+                    const finances = data.finances;
+                    const paymentHistory = data.payment_history;
+                    
+                    let accountInfo = `👤 Account Details for ${student.name} (${student.id})\n\n`;
+                    accountInfo += `💰 Current Balance: $${finances.balance.toLocaleString()}\n`;
+                    accountInfo += `💳 Total Paid: $${finances.paid.toLocaleString()}\n`;
+                    accountInfo += `📋 Payment Plan: ${finances.payment_plan ? 'Yes' : 'No'}\n\n`;
+                    accountInfo += `📈 Recent Payment History:\n`;
+                    
+                    paymentHistory.forEach(payment => {
+                        accountInfo += `• ${payment.date}: $${payment.amount.toLocaleString()} (${payment.method}) - ${payment.type}\n`;
+                    });
+                    
+                    alert(accountInfo);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load account'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function sendBill(studentId) {
-            alert(`📧 Billing system for ${studentId} would open here with:\n• Generate invoice\n• Email bill to student\n• Set payment due date\n• Add late fees if applicable`);
+        async function sendBill(studentId) {
+            if (confirm(`Send bill to student ${studentId}?`)) {
+                try {
+                    const response = await fetch(`/finance/send_bill/${studentId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert(`📧 ${data.message}`);
+                    } else {
+                        alert(`❌ Error: ${data.error || 'Failed to send bill'}`);
+                    }
+                } catch (error) {
+                    alert('❌ Network error occurred. Please try again.');
+                }
+            }
         }
 
-        function generateFinancialReport() {
-            alert('📊 Financial reporting system would open here with:\n• Revenue reports\n• Outstanding balance reports\n• Collection analysis\n• Trend analysis\n• Custom report builder');
+        async function generateFinancialReport() {
+            // Redirect to the comprehensive financial report page
+            window.location.href = '/finance/generate_report';
         }
 
-        function exportData() {
-            alert('💾 Data export wizard would open here with options for:\n• Excel spreadsheets\n• CSV files\n• PDF reports\n• Database backup\n• Custom data sets');
+        async function exportData() {
+            try {
+                const response = await fetch('/finance/export_data');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let exportInfo = `💾 Data Export Options (Generated: ${data.export_generated})\n\n`;
+                    exportInfo += `📁 Total Records: ${data.total_records}\n`;
+                    exportInfo += `📄 Available Formats:\n`;
+                    
+                    data.file_formats.forEach(format => {
+                        exportInfo += `• ${format}\n`;
+                    });
+                    
+                    exportInfo += `\nData export would be processed and downloaded.`;
+                    alert(exportInfo);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to export data'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function viewTransactions() {
-            alert('💳 Transaction history viewer would open here with:\n• Daily transaction logs\n• Payment method breakdown\n• Transaction search and filtering\n• Reconciliation tools');
+        async function viewTransactions() {
+            // Redirect to the comprehensive transaction history page
+            window.location.href = '/finance/transactions';
         }
 
-        function reviewApplications() {
-            alert('📋 Financial aid application reviewer would open here with:\n• Pending applications\n• Approval workflow\n• Documentation review\n• Decision tracking');
+        async function reviewApplications() {
+            try {
+                const response = await fetch('/finance/applications');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let applications = `📋 Financial Aid Applications (${data.pending_count} pending)\n\n`;
+                    
+                    data.applications.forEach(app => {
+                        applications += `${app.id}: ${app.name} (${app.student_id})\n`;
+                        applications += `  Type: ${app.type} | Amount: $${app.amount.toLocaleString()}\n`;
+                        applications += `  Status: ${app.status} | Submitted: ${app.submitted}\n\n`;
+                    });
+                    
+                    alert(applications);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load applications'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function manageOverdue() {
-            alert('⚠️ Overdue account management would open here with:\n• Overdue account list\n• Payment arrangement tools\n• Collection procedures\n• Hold management');
+        async function manageOverdue() {
+            try {
+                const response = await fetch('/finance/overdue');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let overdue = `⚠️ Overdue Accounts (${data.total_overdue} accounts)\n\n`;
+                    
+                    data.overdue_accounts.forEach(account => {
+                        overdue += `${account.student_id}: ${account.name}\n`;
+                        overdue += `  Balance: $${account.balance.toLocaleString()} | ${account.days_overdue} days overdue\n`;
+                        overdue += `  Last Payment: ${account.last_payment} | Contact Attempts: ${account.contact_attempts}\n\n`;
+                    });
+                    
+                    alert(overdue);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load overdue accounts'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function budgetPlanning() {
-            alert('📈 Budget planning tools would open here with:\n• Revenue forecasting\n• Expense planning\n• Department budgets\n• Capital expenditure planning');
+        async function budgetPlanning() {
+            try {
+                const response = await fetch('/finance/budget_planning');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let budget = `📈 Budget Planning (${data.current_year})\n\n`;
+                    budget += `💰 Total Budget: $${data.total_budget.toLocaleString()}\n\n`;
+                    budget += `📈 Revenue Forecast:\n`;
+                    Object.entries(data.revenue_forecast).forEach(([category, amount]) => {
+                        budget += `• ${category}: $${amount.toLocaleString()}\n`;
+                    });
+                    
+                    budget += `\n📉 Expense Forecast:\n`;
+                    Object.entries(data.expense_forecast).forEach(([category, amount]) => {
+                        budget += `• ${category}: $${amount.toLocaleString()}\n`;
+                    });
+                    
+                    alert(budget);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load budget data'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function scholarshipManagement() {
-            alert('🎓 Scholarship management system would open here with:\n• Scholarship distribution\n• Eligibility verification\n• Award tracking\n• Renewal processing');
+        async function scholarshipManagement() {
+            try {
+                const response = await fetch('/finance/scholarships');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let scholarships = `🎓 Scholarship Management\n\n`;
+                    scholarships += `💰 Total Awarded: $${data.total_awarded.toLocaleString()}\n`;
+                    scholarships += `💵 Remaining Budget: $${data.remaining_budget.toLocaleString()}\n`;
+                    scholarships += `📋 Pending Applications: ${data.applications_pending}\n`;
+                    scholarships += `🔄 Renewals Due: ${data.renewals_due}\n\n`;
+                    
+                    scholarships += `Available Scholarships:\n`;
+                    data.available_scholarships.forEach(scholarship => {
+                        scholarships += `• ${scholarship.name}: $${scholarship.amount.toLocaleString()} x ${scholarship.recipients} recipients\n`;
+                    });
+                    
+                    alert(scholarships);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load scholarship data'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function paymentProcessing() {
-            alert('💳 Payment processing center would open here with:\n• Real-time payment processing\n• Multiple payment methods\n• Recurring payment setup\n• Payment verification');
+        async function paymentProcessing() {
+            // Redirect to payment processing functionality
+            processPayments();
         }
 
-        function budgetManagement() {
-            alert('📊 Budget management tools would open here with:\n• Institutional budget oversight\n• Department budget allocation\n• Expense tracking\n• Financial forecasting');
+        async function budgetManagement() {
+            // Redirect to budget planning functionality
+            budgetPlanning();
         }
 
-        function taxReporting() {
-            alert('📄 Tax reporting system would open here with:\n• 1098-T form generation\n• Tax compliance reports\n• Student tax information\n• IRS filing assistance');
+        async function taxReporting() {
+            try {
+                const response = await fetch('/finance/tax_reporting');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let tax = `📄 Tax Reporting (${data.tax_year})\n\n`;
+                    tax += `📋 Forms Generated:\n`;
+                    Object.entries(data.forms_generated).forEach(([form, count]) => {
+                        tax += `• ${form}: ${count} forms\n`;
+                    });
+                    
+                    tax += `\n📅 Filing Deadline: ${data.filing_deadline}\n`;
+                    tax += `💵 Estimated Refunds: $${data.estimated_refunds.toLocaleString()}\n`;
+                    tax += `🏛️ Tax Exempt Status: ${data.tax_exempt_status}\n`;
+                    tax += `✅ Compliance Status: ${data.compliance_status}`;
+                    
+                    alert(tax);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load tax data'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function auditTools() {
-            alert('🔍 Audit and compliance tools would open here with:\n• Financial audit trails\n• Compliance monitoring\n• Risk assessment\n• Internal controls');
+        async function auditTools() {
+            try {
+                const response = await fetch('/finance/audit_tools');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let audit = `🔍 Audit & Compliance Tools\n\n`;
+                    audit += `📅 Last Audit: ${data.last_audit}\n`;
+                    audit += `📅 Next Audit: ${data.next_audit}\n`;
+                    audit += `📊 Compliance Score: ${data.compliance_score}%\n\n`;
+                    
+                    audit += `🔧 Internal Controls:\n`;
+                    Object.entries(data.internal_controls).forEach(([control, status]) => {
+                        audit += `• ${control}: ${status}\n`;
+                    });
+                    
+                    audit += `\n📋 Recent Findings:\n`;
+                    data.findings.forEach(finding => {
+                        audit += `• ${finding.category}: ${finding.status} (${finding.priority} priority)\n`;
+                    });
+                    
+                    alert(audit);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load audit data'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
-        function bankingIntegration() {
-            alert('🏛️ Banking integration system would open here with:\n• Account reconciliation\n• Bank statement import\n• Transaction matching\n• Wire transfer management');
+        async function bankingIntegration() {
+            try {
+                const response = await fetch('/finance/banking');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let banking = `🏛️ Banking Integration\n\n`;
+                    banking += `💰 Bank Accounts:\n`;
+                    data.accounts.forEach(account => {
+                        banking += `• ${account.name}: $${account.balance.toLocaleString()} (Last reconciled: ${account.last_reconciled})\n`;
+                    });
+                    
+                    banking += `\n📊 Activity Summary:\n`;
+                    banking += `• Pending Transactions: ${data.pending_transactions}\n`;
+                    banking += `• Unreconciled Items: ${data.unreconciled_items}\n`;
+                    banking += `• Wire Transfers Pending: ${data.wire_transfers.pending}\n`;
+                    banking += `• Wire Transfers Completed Today: ${data.wire_transfers.completed_today}`;
+                    
+                    alert(banking);
+                } else {
+                    alert(`❌ Error: ${data.error || 'Failed to load banking data'}`);
+                }
+            } catch (error) {
+                alert('❌ Network error occurred. Please try again.');
+            }
         }
 
         // Search and filter functionality

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Report - Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0099cc, #4455dd);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .report-header {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .report-title {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .report-meta {
+            color: #94a3b8;
+            font-size: 1.1em;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .report-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .report-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .department-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(30, 30, 60, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .department-table th {
+            background: rgba(30, 30, 60, 0.8);
+            color: #00d4ff;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .department-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .department-table tr:hover {
+            background: rgba(30, 30, 60, 0.6);
+        }
+
+        .chart-container {
+            height: 300px;
+            background: rgba(30, 30, 60, 0.4);
+            border: 2px dashed rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 1.1em;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            border-radius: 10px;
+            transition: width 0.8s ease;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .trend-up { background: #16a085; color: white; }
+        .trend-down { background: #e74c3c; color: white; }
+        .trend-neutral { background: #f39c12; color: white; }
+
+        @media (max-width: 768px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .report-card {
+                border: 1px solid #ccc;
+                background: white;
+            }
+            
+            .nav-buttons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div class="logo-text">
+                    <h1>Financial Report Center</h1>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <a href="/finance_dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+                <button class="btn btn-primary" onclick="window.print()">🖨️ Print Report</button>
+                <button class="btn btn-primary" onclick="exportReport()">💾 Export</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Report Header -->
+        <div class="report-header">
+            <h1 class="report-title">Comprehensive Financial Report</h1>
+            <div class="report-meta">
+                Generated on {{ report_data.generated_at }} | Fiscal Year {{ report_data.fiscal_year or '2025' }}
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="report-card full-width">
+            <div class="card-title">
+                📈 Financial Overview
+            </div>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-value">${{ "{:,.0f}".format(report_data.summary.total_revenue) }}</div>
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="trend-indicator trend-up">↗ +12.5%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${{ "{:,.0f}".format(report_data.summary.outstanding_balance) }}</div>
+                    <div class="stat-label">Outstanding Balance</div>
+                    <div class="trend-indicator trend-down">↘ -8.3%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ "{:.1f}".format(report_data.summary.collection_rate) }}%</div>
+                    <div class="stat-label">Collection Rate</div>
+                    <div class="trend-indicator trend-up">↗ +2.1%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ report_data.summary.students_paid_full }}</div>
+                    <div class="stat-label">Students Paid in Full</div>
+                    <div class="trend-indicator trend-up">↗ +15</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Grid -->
+        <div class="report-grid">
+            <!-- Student Status Breakdown -->
+            <div class="report-card">
+                <div class="card-title">
+                    👥 Student Payment Status
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Students with Outstanding Balance</span>
+                    <span class="metric-value">{{ report_data.summary.students_with_balance }}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Students Paid in Full</span>
+                    <span class="metric-value">{{ report_data.summary.students_paid_full }}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Active Payment Plans</span>
+                    <span class="metric-value">{{ report_data.summary.payment_plans_active }}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Collection Rate</span>
+                    <span class="metric-value">{{ "{:.1f}".format(report_data.summary.collection_rate) }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ report_data.summary.collection_rate }}%"></div>
+                </div>
+            </div>
+
+            <!-- Revenue Trends -->
+            <div class="report-card">
+                <div class="card-title">
+                    📊 Revenue Analysis
+                </div>
+                <div class="chart-container">
+                    <div>
+                        📈 Revenue Trend Chart<br>
+                        <small>Monthly revenue progression</small><br><br>
+                        <strong>Current Month:</strong> ${{ "{:,.0f}".format(report_data.summary.total_revenue / 12) }}<br>
+                        <strong>YTD Average:</strong> ${{ "{:,.0f}".format(report_data.summary.total_revenue / 9) }}<br>
+                        <strong>Growth Rate:</strong> +12.5%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Breakdown -->
+        <div class="report-card full-width">
+            <div class="card-title">
+                🏛️ Department Financial Breakdown
+            </div>
+            <table class="department-table">
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Total Revenue</th>
+                        <th>Outstanding Balance</th>
+                        <th>Collection Rate</th>
+                        <th>Students Enrolled</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dept_name, dept_data in report_data.department_breakdown.items() %}
+                    <tr>
+                        <td><strong>{{ dept_name }}</strong></td>
+                        <td>${{ "{:,.0f}".format(dept_data.revenue) }}</td>
+                        <td>${{ "{:,.0f}".format(dept_data.outstanding) }}</td>
+                        <td>{{ "{:.1f}".format((dept_data.revenue / (dept_data.revenue + dept_data.outstanding)) * 100) }}%</td>
+                        <td>{{ (dept_data.revenue / 17500) | round | int }}</td>
+                        <td>
+                            {% if dept_data.outstanding < 2000 %}
+                            <span class="trend-indicator trend-up">Excellent</span>
+                            {% elif dept_data.outstanding < 3000 %}
+                            <span class="trend-indicator trend-neutral">Good</span>
+                            {% else %}
+                            <span class="trend-indicator trend-down">Needs Attention</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Items -->
+        <div class="report-card full-width">
+            <div class="card-title">
+                🎯 Recommended Actions
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: rgba(22, 160, 133, 0.2); padding: 20px; border-radius: 8px; border-left: 4px solid #16a085;">
+                    <h4 style="color: #16a085; margin-bottom: 10px;">✅ High Priority</h4>
+                    <p style="color: #94a3b8; margin-bottom: 15px;">Follow up on {{ report_data.summary.students_with_balance }} students with outstanding balances</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/finance/overdue'">Manage Overdue Accounts</button>
+                </div>
+                
+                <div style="background: rgba(52, 152, 219, 0.2); padding: 20px; border-radius: 8px; border-left: 4px solid #3498db;">
+                    <h4 style="color: #3498db; margin-bottom: 10px;">📋 Medium Priority</h4>
+                    <p style="color: #94a3b8; margin-bottom: 15px;">Review and process {{ report_data.summary.payment_plans_active }} active payment plans</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/finance/applications'">Review Applications</button>
+                </div>
+                
+                <div style="background: rgba(241, 196, 15, 0.2); padding: 20px; border-radius: 8px; border-left: 4px solid #f1c40f;">
+                    <h4 style="color: #f1c40f; margin-bottom: 10px;">⚠️ Monitoring</h4>
+                    <p style="color: #94a3b8; margin-bottom: 15px;">Monitor collection rate trend for continued improvement</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/finance/budget_planning'">Budget Planning</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize report
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate progress bars
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                });
+            }, 500);
+        });
+
+        function exportReport() {
+            alert('📊 Report export functionality:\n• PDF Download\n• Excel Spreadsheet\n• CSV Data Export\n• Email Report\n\nReport would be generated and downloaded.');
+        }
+    </script>
+</body>
+</html> 

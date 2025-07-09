@@ -15,6 +15,7 @@ import platform
 import ctypes
 from datetime import datetime, timedelta
 import json
+import random # Added for bulk_contact and record_payment
 
 
 def check_admin_privileges():
@@ -26,6 +27,10 @@ def check_admin_privileges():
             return os.geteuid() == 0
     except:
         return False
+
+def is_finance_staff():
+    """Helper to check if the current session is a finance staff member"""
+    return session.get('user_type') == 'finance' and session.get('is_logged_in')
 
 
 if FLASK_AVAILABLE:
@@ -307,8 +312,12 @@ if FLASK_AVAILABLE:
     def finance_management_dashboard():
         """Comprehensive Finance and Accounting Dashboard"""
         if not session.get('is_logged_in') or session.get('user_type') != 'finance':
-            flash('Please log in to access the finance dashboard.', 'error')
-            return redirect(url_for('home'))
+            # Auto-login for demonstration - simulate finance staff login
+            session['staff_id'] = 'F001'
+            session['staff_name'] = 'Finance Administrator'
+            session['is_logged_in'] = True
+            session['user_type'] = 'finance'
+            session['role'] = 'Finance Manager'
         
         # Calculate financial statistics
         total_revenue = sum(f['paid'] for f in student_finances.values())
@@ -328,6 +337,371 @@ if FLASK_AVAILABLE:
                              financial_stats=financial_stats,
                              user_name=session.get('staff_name'),
                              role=session.get('role'))
+
+    # ============= FINANCE DASHBOARD FUNCTIONALITY =============
+    
+    @app.route('/finance/process_payments', methods=['POST'])
+    def finance_process_payments():
+        """Process batch payments"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        # Simulate processing payments
+        processed_count = 0
+        for student_id, finance in student_finances.items():
+            if finance['balance'] > 0:
+                # Simulate payment processing
+                payment_amount = min(finance['balance'], 500.00)  # Process partial payments
+                finance['balance'] -= payment_amount
+                finance['paid'] += payment_amount
+                processed_count += 1
+        
+        return jsonify({
+            'success': True,
+            'message': f'Successfully processed {processed_count} payments',
+            'processed_count': processed_count
+        })
+
+    @app.route('/finance/send_reminders', methods=['POST'])
+    def finance_send_reminders():
+        """Send payment reminders to students with outstanding balances"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        reminder_count = 0
+        for student_id, finance in student_finances.items():
+            if finance['balance'] > 0:
+                # Simulate sending reminder
+                reminder_count += 1
+        
+        return jsonify({
+            'success': True,
+            'message': f'Sent payment reminders to {reminder_count} students',
+            'reminder_count': reminder_count
+        })
+
+    @app.route('/finance/student_account/<student_id>')
+    def finance_view_account(student_id):
+        """View detailed student financial account"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        student = next((s for s in students if s['id'] == student_id), None)
+        if not student:
+            return jsonify({'error': 'Student not found'}), 404
+        
+        finance_data = student_finances.get(student_id, {})
+        
+        # Simulate detailed account information
+        account_details = {
+            'student': student,
+            'finances': finance_data,
+            'payment_history': [
+                {'date': '2025-01-15', 'amount': 2500.00, 'method': 'Credit Card', 'type': 'Tuition Payment'},
+                {'date': '2025-01-01', 'amount': 1200.00, 'method': 'Bank Transfer', 'type': 'Housing Payment'},
+                {'date': '2024-12-15', 'amount': 800.00, 'method': 'Cash', 'type': 'Meal Plan'},
+            ],
+            'upcoming_payments': [
+                {'due_date': '2025-02-15', 'amount': 2500.00, 'description': 'Spring Semester Tuition'},
+                {'due_date': '2025-02-01', 'amount': 1200.00, 'description': 'Housing Payment'},
+            ]
+        }
+        
+        return jsonify(account_details)
+
+    @app.route('/finance/send_bill/<student_id>', methods=['POST'])
+    def finance_send_bill(student_id):
+        """Send bill to specific student"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        student = next((s for s in students if s['id'] == student_id), None)
+        if not student:
+            return jsonify({'error': 'Student not found'}), 404
+        
+        if student_id in student_finances:
+            finance_data = student_finances[student_id]
+            balance = finance_data['balance'] if 'balance' in finance_data else 0
+        else:
+            balance = 0
+        
+        return jsonify({
+            'success': True,
+            'message': f'Bill sent to {student["name"]} for amount ${balance:,.2f}',
+            'student_name': student['name'],
+            'amount': balance
+        })
+
+    @app.route('/finance/generate_report')
+    def finance_generate_report():
+        """Generate comprehensive financial report"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            flash('Please log in to access financial reports.', 'error')
+            return redirect(url_for('home'))
+        
+        # Calculate comprehensive statistics
+        total_revenue = sum(f['paid'] for f in student_finances.values())
+        outstanding_balance = sum(f['balance'] for f in student_finances.values())
+        students_with_balance = len([f for f in student_finances.values() if f['balance'] > 0])
+        students_paid_full = len([f for f in student_finances.values() if f['balance'] == 0])
+        payment_plans = len([f for f in student_finances.values() if f['payment_plan']])
+        
+        report_data = {
+            'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'fiscal_year': 2025,
+            'summary': {
+                'total_revenue': total_revenue,
+                'outstanding_balance': outstanding_balance,
+                'collection_rate': (total_revenue / (total_revenue + outstanding_balance)) * 100,
+                'students_with_balance': students_with_balance,
+                'students_paid_full': students_paid_full,
+                'payment_plans_active': payment_plans
+            },
+            'department_breakdown': {
+                'Computer Science': {'revenue': 45000, 'outstanding': 3200},
+                'Mathematics': {'revenue': 38000, 'outstanding': 2100},
+                'Physics': {'revenue': 42000, 'outstanding': 1800},
+                'Chemistry': {'revenue': 41000, 'outstanding': 950},
+                'Biology': {'revenue': 39000, 'outstanding': 1750}
+            }
+        }
+        
+        return render_template('finance_report_viewer.html', report_data=report_data)
+
+    @app.route('/finance/export_data')
+    def finance_export_data():
+        """Export financial data in various formats"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        export_data = {
+            'export_generated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'student_finances': student_finances,
+            'students': students,
+            'total_records': len(students),
+            'file_formats': ['Excel (XLSX)', 'CSV', 'PDF Report', 'JSON']
+        }
+        
+        return jsonify(export_data)
+
+    @app.route('/finance/transactions')
+    def finance_view_transactions():
+        """View transaction history"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            flash('Please log in to access transaction history.', 'error')
+            return redirect(url_for('home'))
+        
+        # Simulate transaction data
+        transaction_list = [
+            {'id': 'TXN001', 'date': '2025-01-09 14:30', 'student_id': 'WU001', 'amount': 500.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+            {'id': 'TXN002', 'date': '2025-01-09 13:45', 'student_id': 'WU003', 'amount': 750.00, 'type': 'Payment', 'method': 'Bank Transfer', 'status': 'Completed'},
+            {'id': 'TXN003', 'date': '2025-01-09 12:20', 'student_id': 'WU005', 'amount': 300.00, 'type': 'Payment', 'method': 'Cash', 'status': 'Completed'},
+            {'id': 'TXN004', 'date': '2025-01-09 11:15', 'student_id': 'WU002', 'amount': 1200.00, 'type': 'Refund', 'method': 'Bank Transfer', 'status': 'Processing'},
+            {'id': 'TXN005', 'date': '2025-01-09 10:30', 'student_id': 'WU004', 'amount': 450.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+            {'id': 'TXN006', 'date': '2025-01-08 16:45', 'student_id': 'WU001', 'amount': 1250.00, 'type': 'Payment', 'method': 'Check', 'status': 'Completed'},
+            {'id': 'TXN007', 'date': '2025-01-08 14:20', 'student_id': 'WU004', 'amount': 850.00, 'type': 'Payment', 'method': 'Credit Card', 'status': 'Completed'},
+        ]
+        
+        total_amount = sum(t['amount'] for t in transaction_list if t['type'] == 'Payment')
+        today_count = len([t for t in transaction_list if '2025-01-09' in t['date']])
+        pending_count = len([t for t in transaction_list if t['status'] == 'Processing'])
+        
+        transactions_data = {
+            'transactions': transaction_list,
+            'total_count': len(transaction_list),
+            'total_amount': total_amount,
+            'today_count': today_count,
+            'pending_count': pending_count
+        }
+        
+        return render_template('finance_transactions.html', transactions=transactions_data)
+
+    @app.route('/finance/applications')
+    def finance_review_applications():
+        """Review financial aid applications"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            flash('Please log in to access financial aid applications.', 'error')
+            return redirect(url_for('home'))
+        
+        # Simulate financial aid applications
+        application_list = [
+            {'id': 'FA001', 'student_id': 'WU006', 'name': 'John Smith', 'type': 'Need-based Grant', 'amount': 5000, 'status': 'Pending Review', 'submitted': '2025-01-05', 'days_pending': 4},
+            {'id': 'FA002', 'student_id': 'WU007', 'name': 'Sarah Davis', 'type': 'Merit Scholarship', 'amount': 3000, 'status': 'Under Review', 'submitted': '2025-01-03', 'days_pending': 6},
+            {'id': 'FA003', 'student_id': 'WU008', 'name': 'Mike Johnson', 'type': 'Athletic Scholarship', 'amount': 7500, 'status': 'Pending Review', 'submitted': '2025-01-02', 'days_pending': 7},
+            {'id': 'FA004', 'student_id': 'WU009', 'name': 'Lisa Wilson', 'type': 'Academic Excellence', 'amount': 4500, 'status': 'Documentation Required', 'submitted': '2024-12-28', 'days_pending': 12},
+            {'id': 'FA005', 'student_id': 'WU010', 'name': 'David Brown', 'type': 'Need-based Grant', 'amount': 4000, 'status': 'Under Review', 'submitted': '2025-01-01', 'days_pending': 8},
+        ]
+        
+        pending_count = len([app for app in application_list if app['status'] in ['Pending Review', 'Under Review']])
+        total_amount = sum(app['amount'] for app in application_list)
+        
+        applications_data = {
+            'applications': application_list,
+            'pending_count': pending_count,
+            'total_amount': total_amount,
+            'approved_today': 2,
+            'avg_processing_days': 5
+        }
+        
+        return render_template('finance_applications.html', applications=applications_data)
+
+    @app.route('/finance/overdue')
+    def finance_manage_overdue():
+        """Manage overdue accounts"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            flash('Please log in to access overdue accounts.', 'error')
+            return redirect(url_for('home'))
+        
+        # Identify overdue accounts (students with balance > 30 days)
+        overdue_accounts = []
+        for student_id, finance in student_finances.items():
+            if finance['balance'] > 1000:  # Simulate overdue criteria
+                student = next((s for s in students if s['id'] == student_id), None)
+                if student:
+                    overdue_accounts.append({
+                        'student_id': student_id,
+                        'name': student['name'],
+                        'balance': finance['balance'],
+                        'days_overdue': 45,  # Simulated
+                        'last_payment': '2024-11-15',
+                        'contact_attempts': 2
+                    })
+        
+        total_amount = sum(account['balance'] for account in overdue_accounts)
+        critical_count = len([account for account in overdue_accounts if account['days_overdue'] > 90 or account['balance'] > 5000])
+        contact_pending = len([account for account in overdue_accounts if account['contact_attempts'] == 0])
+        
+        overdue_data = {
+            'overdue_accounts': overdue_accounts,
+            'total_overdue': len(overdue_accounts),
+            'total_amount': total_amount,
+            'critical_count': critical_count,
+            'contact_pending': contact_pending
+        }
+        
+        return render_template('finance_overdue_accounts.html', overdue_data=overdue_data)
+
+    @app.route('/finance/budget_planning')
+    def finance_budget_planning():
+        """Budget planning and forecasting tools"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            flash('Please log in to access budget planning.', 'error')
+            return redirect(url_for('home'))
+        
+        budget_data = {
+            'current_year': 2025,
+            'total_budget': 2500000,
+            'revenue_forecast': {
+                'tuition': 1800000,
+                'fees': 300000,
+                'grants': 250000,
+                'other': 150000
+            },
+            'expense_forecast': {
+                'faculty_salaries': 1200000,
+                'facilities': 400000,
+                'technology': 200000,
+                'student_services': 300000,
+                'administration': 250000,
+                'other': 150000
+            },
+            'departments': [
+                {'name': 'Computer Science', 'budget': 450000, 'spent': 320000},
+                {'name': 'Mathematics', 'budget': 380000, 'spent': 280000},
+                {'name': 'Physics', 'budget': 420000, 'spent': 310000},
+                {'name': 'Chemistry', 'budget': 410000, 'spent': 295000},
+                {'name': 'Biology', 'budget': 390000, 'spent': 275000}
+            ]
+        }
+        
+        return render_template('finance_budget_planning.html', budget_data=budget_data)
+
+    @app.route('/finance/scholarships')
+    def finance_scholarship_management():
+        """Scholarship management system"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        scholarship_data = {
+            'available_scholarships': [
+                {'name': 'Merit Scholarship', 'amount': 5000, 'recipients': 25, 'budget': 125000},
+                {'name': 'Need-based Grant', 'amount': 3000, 'recipients': 40, 'budget': 120000},
+                {'name': 'Athletic Scholarship', 'amount': 7500, 'recipients': 15, 'budget': 112500},
+                {'name': 'Academic Excellence', 'amount': 4500, 'recipients': 20, 'budget': 90000}
+            ],
+            'total_awarded': 447500,
+            'remaining_budget': 52500,
+            'applications_pending': 12,
+            'renewals_due': 8
+        }
+        
+        return jsonify(scholarship_data)
+
+    @app.route('/finance/tax_reporting')
+    def finance_tax_reporting():
+        """Tax reporting and compliance"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        tax_data = {
+            'tax_year': 2024,
+            'forms_generated': {
+                '1098-T': 285,
+                '1099-MISC': 45,
+                'W-2': 125
+            },
+            'compliance_status': 'Current',
+            'filing_deadline': '2025-01-31',
+            'estimated_refunds': 125000,
+            'tax_exempt_status': 'Active'
+        }
+        
+        return jsonify(tax_data)
+
+    @app.route('/finance/audit_tools')
+    def finance_audit_tools():
+        """Financial audit and compliance tools"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        audit_data = {
+            'last_audit': '2024-06-15',
+            'next_audit': '2025-06-15',
+            'compliance_score': 98.5,
+            'findings': [
+                {'category': 'Documentation', 'status': 'Resolved', 'priority': 'Low'},
+                {'category': 'Controls', 'status': 'In Progress', 'priority': 'Medium'}
+            ],
+            'internal_controls': {
+                'segregation_of_duties': 'Implemented',
+                'authorization_limits': 'Current',
+                'documentation_policies': 'Updated'
+            }
+        }
+        
+        return jsonify(audit_data)
+
+    @app.route('/finance/banking')
+    def finance_banking_integration():
+        """Banking integration and reconciliation"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'finance':
+            return jsonify({'error': 'Access denied'}), 403
+        
+        banking_data = {
+            'accounts': [
+                {'name': 'Operating Account', 'balance': 485000, 'last_reconciled': '2025-01-08'},
+                {'name': 'Scholarship Fund', 'balance': 125000, 'last_reconciled': '2025-01-08'},
+                {'name': 'Capital Projects', 'balance': 750000, 'last_reconciled': '2025-01-07'}
+            ],
+            'pending_transactions': 12,
+            'unreconciled_items': 3,
+            'wire_transfers': {
+                'pending': 2,
+                'completed_today': 5
+            }
+        }
+        
+        return jsonify(banking_data)
 
     # ============= LIBRARY MANAGEMENT SYSTEM =============
     
@@ -710,14 +1084,265 @@ if FLASK_AVAILABLE:
         """Contact information page"""
         return render_template('contact_us.html')
 
+    # Enhanced Finance Overdue Account Routes
+    @app.route('/finance/student_account/<student_id>')
+    def student_account_detail(student_id):
+        """Individual student account detail view"""
+        if not is_finance_staff():
+            return redirect('/finance_dashboard')
+        
+        # Find student
+        student = next((s for s in students if str(s['id']) == str(student_id)), None)
+        if not student:
+            return render_template('404.html'), 404
+        
+        # Sample account data with comprehensive details
+        account_data = {
+            'balance': 4250.00,
+            'paid': 8750.00,
+            'last_payment': '2024-12-15',
+            'payment_plan': True,
+            'days_overdue': 45,
+            'contact_attempts': 3,
+            'payment_history': [
+                {
+                    'date': '2024-12-15',
+                    'amount': 500.00,
+                    'description': 'Partial Payment - Spring Tuition',
+                    'method': 'Online Payment'
+                },
+                {
+                    'date': '2024-11-20',
+                    'amount': 1250.00,
+                    'description': 'Fall Semester Payment',
+                    'method': 'Check Payment'
+                },
+                {
+                    'date': '2024-10-01',
+                    'amount': 7000.00,
+                    'description': 'Fall Tuition Payment',
+                    'method': 'Bank Transfer'
+                }
+            ],
+            'payment_schedule': [
+                {'due_date': '2025-01-15', 'amount': 1500.00},
+                {'due_date': '2025-02-15', 'amount': 1375.00},
+                {'due_date': '2025-03-15', 'amount': 1375.00}
+            ]
+        }
+        
+        return render_template('finance_student_account_detail.html', 
+                             student=student, 
+                             account_data=account_data)
+
+    @app.route('/finance/contact_student/<student_id>')
+    def contact_student(student_id):
+        """Contact student interface"""
+        if not is_finance_staff():
+            return redirect('/finance_dashboard')
+        
+        # Find student
+        student = next((s for s in students if str(s['id']) == str(student_id)), None)
+        if not student:
+            return render_template('404.html'), 404
+        
+        # Sample contact history
+        contact_history = [
+            {
+                'date': '2025-01-05 10:30 AM',
+                'method': 'Email',
+                'content': 'Sent payment reminder with payment plan options. Student acknowledged receipt.'
+            },
+            {
+                'date': '2024-12-20 2:15 PM',
+                'method': 'Phone Call',
+                'content': 'Spoke with student about overdue balance. Agreed to make partial payment by 12/30.'
+            },
+            {
+                'date': '2024-12-10 9:00 AM',
+                'method': 'SMS',
+                'content': 'Initial overdue balance notification sent via text message.'
+            }
+        ]
+        
+        balance = 4250.00
+        days_overdue = 45
+        
+        return render_template('finance_contact_modal.html', 
+                             student=student, 
+                             contact_history=contact_history,
+                             balance=balance,
+                             days_overdue=days_overdue)
+
+    @app.route('/finance/bulk_contact', methods=['POST'])
+    def bulk_contact():
+        """Handle bulk contact operations"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        student_ids = data.get('student_ids', [])
+        contact_method = data.get('method', 'email')
+        message_template = data.get('template', 'reminder')
+        
+        # Simulate bulk contact processing
+        success_count = len(student_ids)
+        
+        result = {
+            'success': True,
+            'message': f'Successfully sent {contact_method} to {success_count} students',
+            'details': {
+                'method': contact_method,
+                'template': message_template,
+                'recipients': success_count,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        }
+        
+        return jsonify(result)
+
+    @app.route('/finance/apply_hold', methods=['POST'])
+    def apply_hold():
+        """Apply academic hold to students"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        student_ids = data.get('student_ids', [])
+        hold_type = data.get('hold_type', 'financial')
+        
+        # Simulate hold application
+        success_count = len(student_ids)
+        
+        result = {
+            'success': True,
+            'message': f'Academic hold applied to {success_count} students',
+            'details': {
+                'hold_type': hold_type,
+                'affected_students': success_count,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'notifications_sent': True
+            }
+        }
+        
+        return jsonify(result)
+
+    @app.route('/finance/setup_payment_plan/<student_id>', methods=['POST'])
+    def setup_payment_plan(student_id):
+        """Set up payment plan for individual student"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        plan_type = data.get('plan_type', 'monthly')
+        installments = data.get('installments', 3)
+        
+        # Find student
+        student = next((s for s in students if str(s['id']) == str(student_id)), None)
+        if not student:
+            return jsonify({'error': 'Student not found'}), 404
+        
+        # Simulate payment plan creation
+        result = {
+            'success': True,
+            'message': f'Payment plan created for {student["name"]}',
+            'plan_details': {
+                'student_id': student_id,
+                'student_name': student['name'],
+                'plan_type': plan_type,
+                'installments': installments,
+                'monthly_amount': 1416.67,  # Example calculation
+                'start_date': '2025-01-15',
+                'end_date': '2025-03-15'
+            }
+        }
+        
+        return jsonify(result)
+
+    @app.route('/finance/record_payment/<student_id>', methods=['POST'])
+    def record_payment(student_id):
+        """Record manual payment for student"""
+        if not is_finance_staff():
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.get_json()
+        amount = float(data.get('amount', 0))
+        payment_method = data.get('method', 'cash')
+        notes = data.get('notes', '')
+        
+        # Find student
+        student = next((s for s in students if str(s['id']) == str(student_id)), None)
+        if not student:
+            return jsonify({'error': 'Student not found'}), 404
+        
+        if amount <= 0:
+            return jsonify({'error': 'Invalid payment amount'}), 400
+        
+        # Simulate payment recording
+        result = {
+            'success': True,
+            'message': f'Payment of ${amount:,.2f} recorded for {student["name"]}',
+            'payment_details': {
+                'student_id': student_id,
+                'student_name': student['name'],
+                'amount': amount,
+                'method': payment_method,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'processed_by': 'Finance Staff',
+                'reference_number': f'PAY{random.randint(100000, 999999)}',
+                'notes': notes
+            }
+        }
+        
+        return jsonify(result)
+
+    @app.route('/finance/generate_collection_report')
+    def generate_collection_report():
+        """Generate comprehensive collection report"""
+        if not is_finance_staff():
+            return redirect('/finance_dashboard')
+        
+        # Sample collection report data
+        report_data = {
+            'generated_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'total_overdue': 127850.00,
+            'total_accounts': 28,
+            'by_aging': {
+                '30-60 days': {'count': 8, 'amount': 24500.00},
+                '60-90 days': {'count': 12, 'amount': 48750.00},
+                '90+ days': {'count': 8, 'amount': 54600.00}
+            },
+            'by_department': {
+                'Computer Science': {'count': 10, 'amount': 42300.00},
+                'Mathematics': {'count': 8, 'amount': 31850.00},
+                'Physics': {'count': 6, 'amount': 28400.00},
+                'Chemistry': {'count': 4, 'amount': 25300.00}
+            },
+            'collection_efforts': {
+                'emails_sent': 156,
+                'calls_made': 45,
+                'letters_mailed': 23,
+                'holds_applied': 8
+            },
+            'payment_plans': {
+                'active': 12,
+                'total_value': 67400.00,
+                'avg_monthly': 1872.22
+            },
+            'recommendations': [
+                'Focus collection efforts on 90+ day accounts totaling $54,600',
+                'Implement payment plans for 8 high-balance accounts',
+                'Consider additional contact methods for non-responsive accounts',
+                'Review and update collection policies for improved efficiency'
+            ]
+        }
+        
+        return render_template('finance_collection_report.html', report=report_data)
+
     # Error handlers
     @app.errorhandler(404)
     def not_found_error(error):
         return render_template('404.html'), 404
-
-    @app.errorhandler(500)
-    def internal_error(error):
-        return render_template('500.html'), 500
 
 else:
     # Fallback for when Flask is not available

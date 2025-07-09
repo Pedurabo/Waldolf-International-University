@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Aid Applications - Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 212, 255, 0.6);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .applications-section {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 6px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .applications-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .application-card {
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .application-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .application-info h4 {
+            color: #00d4ff;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .application-meta {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #3498db; color: white; }
+        .status-review { background: #f39c12; color: white; }
+        .status-approved { background: #16a085; color: white; }
+        .status-denied { background: #e74c3c; color: white; }
+        .status-documentation { background: #9b59b6; color: white; }
+
+        .application-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .detail-item {
+            background: rgba(15, 15, 35, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .detail-label {
+            color: #94a3b8;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            border-radius: 3px;
+            transition: width 0.8s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: rgba(15, 15, 35, 0.95);
+            margin: 3% auto;
+            padding: 30px;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            color: #e2e8f0;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #00d4ff;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .application-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .application-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">📋</div>
+                <div class="logo-text">
+                    <h1>Financial Aid Applications</h1>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <a href="/finance_dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+                <button class="btn btn-primary" onclick="exportApplications()">💾 Export</button>
+                <button class="btn btn-success" onclick="bulkApprove()">✅ Bulk Approve</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Financial Aid Application Review</h1>
+            <p style="color: #94a3b8;">Review and process student financial aid applications</p>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ applications.pending_count or 0 }}</div>
+                <div class="stat-label">Pending Review</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${{ "{:,.0f}".format(applications.total_amount or 0) }}</div>
+                <div class="stat-label">Total Requested</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ applications.approved_today or 0 }}</div>
+                <div class="stat-label">Approved Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ applications.avg_processing_days or 5 }}</div>
+                <div class="stat-label">Avg Processing Days</div>
+            </div>
+        </div>
+
+        <!-- Applications Section -->
+        <div class="applications-section">
+            <div class="section-header">
+                <h3 class="section-title">📋 Application Queue</h3>
+                <div class="filter-group">
+                    <select class="filter-select" onchange="filterApplications(this.value)">
+                        <option value="">All Statuses</option>
+                        <option value="Pending Review">Pending Review</option>
+                        <option value="Under Review">Under Review</option>
+                        <option value="Documentation Required">Documentation Required</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Denied">Denied</option>
+                    </select>
+                    <select class="filter-select" onchange="filterByType(this.value)">
+                        <option value="">All Types</option>
+                        <option value="Need-based Grant">Need-based Grant</option>
+                        <option value="Merit Scholarship">Merit Scholarship</option>
+                        <option value="Athletic Scholarship">Athletic Scholarship</option>
+                        <option value="Academic Excellence">Academic Excellence</option>
+                    </select>
+                    <select class="filter-select" onchange="sortApplications(this.value)">
+                        <option value="date">Sort by Date</option>
+                        <option value="amount">Sort by Amount</option>
+                        <option value="priority">Sort by Priority</option>
+                    </select>
+                </div>
+            </div>
+
+            {% if applications.applications %}
+            <div class="applications-grid">
+                {% for app in applications.applications %}
+                <div class="application-card" data-status="{{ app.status }}" data-type="{{ app.type }}">
+                    <div class="application-header">
+                        <div class="application-info">
+                            <h4>{{ app.name }} ({{ app.student_id }})</h4>
+                            <div class="application-meta">
+                                Application ID: {{ app.id }} | Submitted: {{ app.submitted }}
+                            </div>
+                        </div>
+                        <div class="status-badge status-{{ app.status.lower().replace(' ', '-').replace('-review', '').replace('-required', '') }}">
+                            {{ app.status }}
+                        </div>
+                    </div>
+
+                    <div class="application-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Aid Type</div>
+                            <div class="detail-value">{{ app.type }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Amount Requested</div>
+                            <div class="detail-value">${{ "{:,.0f}".format(app.amount) }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Priority</div>
+                            <div class="detail-value">
+                                {% if app.amount > 5000 %}High{% elif app.amount > 3000 %}Medium{% else %}Standard{% endif %}
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Days Pending</div>
+                            <div class="detail-value">{{ app.days_pending or 3 }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% if app.status == 'Pending Review' %}20%{% elif app.status == 'Under Review' %}50%{% elif app.status == 'Documentation Required' %}75%{% elif app.status == 'Approved' %}100%{% else %}0%{% endif %}"></div>
+                    </div>
+
+                    <div class="application-actions">
+                        <button class="btn btn-primary btn-small" onclick="viewApplication('{{ app.id }}')">📄 Review</button>
+                        {% if app.status in ['Pending Review', 'Under Review'] %}
+                        <button class="btn btn-success btn-small" onclick="approveApplication('{{ app.id }}')">✅ Approve</button>
+                        <button class="btn btn-warning btn-small" onclick="requestDocumentation('{{ app.id }}')">📎 Request Docs</button>
+                        <button class="btn btn-secondary btn-small" onclick="denyApplication('{{ app.id }}')">❌ Deny</button>
+                        {% endif %}
+                        <button class="btn btn-primary btn-small" onclick="contactStudent('{{ app.student_id }}')">📞 Contact</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                <p>📭 No applications found matching your criteria.</p>
+                <p style="margin-top: 10px; font-size: 0.9em;">Check back later or adjust your filters.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Application Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #00d4ff;">Application Review</h3>
+                <span class="close" onclick="closeModal('reviewModal')">&times;</span>
+            </div>
+            <div id="applicationDetails">
+                <!-- Application details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Decision Modal -->
+    <div id="decisionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #00d4ff;">Application Decision</h3>
+                <span class="close" onclick="closeModal('decisionModal')">&times;</span>
+            </div>
+            <form onsubmit="submitDecision(event)">
+                <div class="form-group">
+                    <label class="form-label">Decision</label>
+                    <select class="form-select" id="decisionType" required>
+                        <option value="">Select decision...</option>
+                        <option value="approve">Approve</option>
+                        <option value="deny">Deny</option>
+                        <option value="request-docs">Request Documentation</option>
+                        <option value="defer">Defer for Review</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Award Amount (if approved)</label>
+                    <input type="number" class="form-input" id="awardAmount" min="0" step="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Comments/Reasoning</label>
+                    <textarea class="form-textarea" id="decisionComments" placeholder="Enter your comments..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Follow-up Required</label>
+                    <input type="date" class="form-input" id="followupDate">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('decisionModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Decision</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentApplicationId = null;
+
+        function viewApplication(applicationId) {
+            currentApplicationId = applicationId;
+            
+            // Simulate loading application details
+            const applicationDetails = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <h4 style="color: #00d4ff; margin-bottom: 10px;">Student Information</h4>
+                        <p><strong>Name:</strong> John Smith</p>
+                        <p><strong>Student ID:</strong> ${applicationId.replace('FA', 'WU')}</p>
+                        <p><strong>Email:</strong> john.smith@waldorf.edu</p>
+                        <p><strong>Phone:</strong> (555) 123-4567</p>
+                        <p><strong>GPA:</strong> 3.75</p>
+                        <p><strong>Year:</strong> Junior</p>
+                        <p><strong>Major:</strong> Computer Science</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #00d4ff; margin-bottom: 10px;">Financial Information</h4>
+                        <p><strong>Family Income:</strong> $45,000</p>
+                        <p><strong>Expected Family Contribution:</strong> $8,500</p>
+                        <p><strong>Current Aid:</strong> $15,000</p>
+                        <p><strong>Unmet Need:</strong> $12,000</p>
+                        <p><strong>Work Study:</strong> Yes</p>
+                        <p><strong>Previous Aid:</strong> Merit Scholarship</p>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #00d4ff; margin-bottom: 10px;">Application Details</h4>
+                    <p><strong>Aid Type:</strong> Need-based Grant</p>
+                    <p><strong>Amount Requested:</strong> $5,000</p>
+                    <p><strong>Justification:</strong> Increased family medical expenses and loss of part-time employment due to course load requirements.</p>
+                    <p><strong>Supporting Documents:</strong> ✅ FAFSA, ✅ Tax Returns, ✅ Medical Bills, ❌ Employment Letter</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #00d4ff; margin-bottom: 10px;">Academic Standing</h4>
+                    <p><strong>Current GPA:</strong> 3.75</p>
+                    <p><strong>SAP Status:</strong> Meeting Standards</p>
+                    <p><strong>Credit Hours:</strong> 15 (Full-time)</p>
+                    <p><strong>Graduation Progress:</strong> On Track</p>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                    <button class="btn btn-success" onclick="makeDecision('approve')">✅ Approve</button>
+                    <button class="btn btn-warning" onclick="makeDecision('request-docs')">📎 Request Docs</button>
+                    <button class="btn btn-secondary" onclick="makeDecision('deny')">❌ Deny</button>
+                </div>
+            `;
+            
+            document.getElementById('applicationDetails').innerHTML = applicationDetails;
+            document.getElementById('reviewModal').style.display = 'block';
+        }
+
+        function makeDecision(decisionType) {
+            closeModal('reviewModal');
+            document.getElementById('decisionType').value = decisionType;
+            
+            if (decisionType === 'approve') {
+                document.getElementById('awardAmount').value = '5000';
+            }
+            
+            document.getElementById('decisionModal').style.display = 'block';
+        }
+
+        function approveApplication(applicationId) {
+            if (confirm(`Approve application ${applicationId}?\n\nThis will award the requested financial aid.`)) {
+                alert(`✅ Application ${applicationId} approved!\n\nNext steps:\n• Award notification sent\n• Financial aid office notified\n• Student account updated\n• Disbursement scheduled`);
+                
+                // Update the application card
+                updateApplicationStatus(applicationId, 'Approved');
+            }
+        }
+
+        function denyApplication(applicationId) {
+            const reason = prompt('Reason for denial:');
+            if (reason) {
+                alert(`❌ Application ${applicationId} denied.\n\nReason: ${reason}\n\nNotifications sent to:\n• Student\n• Financial aid counselor\n• Academic advisor`);
+                
+                updateApplicationStatus(applicationId, 'Denied');
+            }
+        }
+
+        function requestDocumentation(applicationId) {
+            const docs = prompt('Required documentation:');
+            if (docs) {
+                alert(`📎 Documentation request sent for ${applicationId}\n\nRequired: ${docs}\n\nStudent notified via:\n• Email\n• Student portal\n• SMS reminder\n\nDeadline: 10 business days`);
+                
+                updateApplicationStatus(applicationId, 'Documentation Required');
+            }
+        }
+
+        function contactStudent(studentId) {
+            alert(`📞 Contact Student ${studentId}\n\nContact options:\n• Email notification\n• Phone call scheduling\n• In-person appointment\n• Video conference\n\nThis would open the communication center.`);
+        }
+
+        function updateApplicationStatus(applicationId, newStatus) {
+            const card = document.querySelector(`[data-application-id="${applicationId}"]`);
+            if (card) {
+                const statusBadge = card.querySelector('.status-badge');
+                statusBadge.textContent = newStatus;
+                statusBadge.className = `status-badge status-${newStatus.toLowerCase().replace(' ', '-')}`;
+            }
+        }
+
+        function filterApplications(status) {
+            const cards = document.querySelectorAll('.application-card');
+            cards.forEach(card => {
+                if (status === '' || card.dataset.status === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function filterByType(type) {
+            const cards = document.querySelectorAll('.application-card');
+            cards.forEach(card => {
+                if (type === '' || card.dataset.type === type) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function sortApplications(criteria) {
+            alert(`🔄 Sorting applications by: ${criteria}\n\nApplications would be reordered based on selected criteria.`);
+        }
+
+        function bulkApprove() {
+            if (confirm('Bulk approve all pending applications?\n\nThis will approve all applications currently in review status.')) {
+                alert('✅ Bulk approval initiated!\n\n• Processing all pending applications\n• Sending notifications\n• Updating student accounts\n• Scheduling disbursements');
+            }
+        }
+
+        function exportApplications() {
+            alert('📊 Export Applications:\n• Excel spreadsheet\n• CSV file\n• PDF report\n• Summary statistics\n\nFiltered applications would be exported.');
+        }
+
+        function submitDecision(event) {
+            event.preventDefault();
+            
+            const decision = document.getElementById('decisionType').value;
+            const amount = document.getElementById('awardAmount').value;
+            const comments = document.getElementById('decisionComments').value;
+            
+            alert(`✅ Decision submitted for application ${currentApplicationId}\n\nDecision: ${decision}\n${amount ? `Amount: $${amount}` : ''}\nComments: ${comments}\n\nAll relevant parties have been notified.`);
+            
+            closeModal('decisionModal');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize progress bar animations
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html> 

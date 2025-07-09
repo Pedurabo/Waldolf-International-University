@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Student - {{ student.name }} | Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .contact-container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .contact-header {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+
+        .contact-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .student-name {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .contact-content {
+            padding: 30px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            border-bottom: 2px solid rgba(120, 119, 198, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+        }
+
+        .tab-btn:hover {
+            color: #00d4ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(30, 30, 60, 0.6);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .template-card {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover,
+        .template-card.selected {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .template-title {
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .template-desc {
+            color: #94a3b8;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .priority-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .priority-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            background: rgba(30, 30, 60, 0.4);
+            color: #94a3b8;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .priority-btn.selected {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+        }
+
+        .priority-low { border-color: #16a085; }
+        .priority-medium { border-color: #f39c12; }
+        .priority-high { border-color: #e74c3c; }
+
+        .priority-low.selected { 
+            border-color: #16a085; 
+            background: rgba(22, 160, 133, 0.1);
+            color: #16a085;
+        }
+
+        .priority-medium.selected { 
+            border-color: #f39c12; 
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+
+        .priority-high.selected { 
+            border-color: #e74c3c; 
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .contact-info {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #00d4ff;
+        }
+
+        .history-item {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .history-date {
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .history-method {
+            color: #16a085;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .history-content {
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-navigation {
+                flex-direction: column;
+            }
+            
+            .template-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-container">
+        <div class="contact-header">
+            <h1>📞 Contact Student</h1>
+            <div class="student-name">{{ student.name }} (ID: {{ student.id }})</div>
+        </div>
+
+        <div class="contact-content">
+            <!-- Contact Information -->
+            <div class="contact-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ student.email }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value">{{ student.phone }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Outstanding Balance</div>
+                        <div class="info-value">${{ "{:,.2f}".format(balance) }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Days Overdue</div>
+                        <div class="info-value">{{ days_overdue }} days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="showTab('email')">📧 Email</button>
+                <button class="tab-btn" onclick="showTab('sms')">📱 SMS</button>
+                <button class="tab-btn" onclick="showTab('call')">📞 Call</button>
+                <button class="tab-btn" onclick="showTab('history')">📋 History</button>
+            </div>
+
+            <!-- Email Tab -->
+            <div id="email-tab" class="tab-content active">
+                <div class="form-group">
+                    <label class="form-label">Email Template</label>
+                    <div class="template-selector">
+                        <div class="template-card" onclick="selectTemplate(this, 'reminder')">
+                            <div class="template-title">Payment Reminder</div>
+                            <div class="template-desc">Friendly reminder about overdue balance with payment options</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate(this, 'urgent')">
+                            <div class="template-title">Urgent Notice</div>
+                            <div class="template-desc">Formal notice requiring immediate attention and action</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate(this, 'plan')">
+                            <div class="template-title">Payment Plan Offer</div>
+                            <div class="template-desc">Invitation to set up structured payment arrangement</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate(this, 'custom')">
+                            <div class="template-title">Custom Message</div>
+                            <div class="template-desc">Create personalized communication</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Subject Line</label>
+                    <input type="text" class="form-control" id="email-subject" 
+                           placeholder="Enter email subject">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Message Content</label>
+                    <textarea class="form-control" id="email-content" 
+                              placeholder="Enter your message here..."></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cc-parent" class="checkbox">
+                    <label for="cc-parent">CC: Parent/Guardian</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="copy-advisor" class="checkbox">
+                    <label for="copy-advisor">Copy Academic Advisor</label>
+                </div>
+            </div>
+
+            <!-- SMS Tab -->
+            <div id="sms-tab" class="tab-content">
+                <div class="form-group">
+                    <label class="form-label">SMS Template</label>
+                    <div class="template-selector">
+                        <div class="template-card" onclick="selectTemplate(this, 'sms-reminder')">
+                            <div class="template-title">Payment Reminder</div>
+                            <div class="template-desc">Brief reminder about overdue payment with contact info</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate(this, 'sms-urgent')">
+                            <div class="template-title">Urgent Alert</div>
+                            <div class="template-desc">Immediate action required message</div>
+                        </div>
+                        <div class="template-card" onclick="selectTemplate(this, 'sms-custom')">
+                            <div class="template-title">Custom SMS</div>
+                            <div class="template-desc">Write your own message</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">SMS Message (160 characters max)</label>
+                    <textarea class="form-control" id="sms-content" maxlength="160"
+                              placeholder="Enter SMS message..."></textarea>
+                    <small style="color: #94a3b8;">Character count: <span id="char-count">0</span>/160</small>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="send-parent-sms" class="checkbox">
+                    <label for="send-parent-sms">Also send to parent/guardian</label>
+                </div>
+            </div>
+
+            <!-- Call Tab -->
+            <div id="call-tab" class="tab-content">
+                <div class="form-group">
+                    <label class="form-label">Call Priority</label>
+                    <div class="priority-selector">
+                        <div class="priority-btn priority-low" onclick="selectPriority(this, 'low')">
+                            <strong>Low Priority</strong><br>
+                            <small>Routine follow-up</small>
+                        </div>
+                        <div class="priority-btn priority-medium" onclick="selectPriority(this, 'medium')">
+                            <strong>Medium Priority</strong><br>
+                            <small>Important follow-up</small>
+                        </div>
+                        <div class="priority-btn priority-high" onclick="selectPriority(this, 'high')">
+                            <strong>High Priority</strong><br>
+                            <small>Urgent attention needed</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Preferred Call Time</label>
+                        <input type="datetime-local" class="form-control" id="call-time">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assigned Staff</label>
+                        <select class="form-control" id="assigned-staff">
+                            <option value="">Select staff member</option>
+                            <option value="sarah.johnson">Sarah Johnson</option>
+                            <option value="mike.davis">Mike Davis</option>
+                            <option value="emily.wilson">Emily Wilson</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Call Notes</label>
+                    <textarea class="form-control" id="call-notes" 
+                              placeholder="Add notes about the call purpose, talking points, etc."></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="reminder-before" class="checkbox">
+                    <label for="reminder-before">Send reminder 30 minutes before call</label>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history-tab" class="tab-content">
+                <h3 style="color: #00d4ff; margin-bottom: 20px;">Contact History</h3>
+                
+                {% for contact in contact_history %}
+                <div class="history-item">
+                    <div class="history-date">{{ contact.date }}</div>
+                    <div class="history-method">{{ contact.method }}</div>
+                    <div class="history-content">{{ contact.content }}</div>
+                </div>
+                {% endfor %}
+                
+                {% if not contact_history %}
+                <div style="text-align: center; color: #94a3b8; padding: 40px;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">📭</div>
+                    <p>No contact history found</p>
+                    <p>This will be the first contact attempt</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/finance/overdue" class="btn btn-secondary">Cancel</a>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn btn-primary" onclick="previewMessage()">👁️ Preview</button>
+                    <button class="btn btn-success" onclick="sendMessage()">📤 Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function selectTemplate(element, templateType) {
+            // Remove previous selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select current template
+            element.classList.add('selected');
+            
+            // Load template content based on type
+            loadTemplateContent(templateType);
+        }
+
+        function selectPriority(element, priority) {
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        function loadTemplateContent(templateType) {
+            const templates = {
+                'reminder': {
+                    subject: 'Payment Reminder - Account Balance Due',
+                    content: 'Dear {{ student.name }},\n\nThis is a friendly reminder that your student account has an outstanding balance of ${{ balance }}. The payment was due {{ days_overdue }} days ago.\n\nPlease contact our office at (555) 123-4567 to arrange payment or discuss payment plan options.\n\nThank you,\nWaldorf Finance Office'
+                },
+                'urgent': {
+                    subject: 'URGENT: Immediate Action Required - Account Past Due',
+                    content: 'Dear {{ student.name }},\n\nYour student account is seriously past due with a balance of ${{ balance }}. Immediate action is required to avoid academic holds and additional fees.\n\nPlease contact us immediately at (555) 123-4567.\n\nWaldorf Finance Office'
+                },
+                'plan': {
+                    subject: 'Payment Plan Options Available',
+                    content: 'Dear {{ student.name }},\n\nWe understand that paying large balances can be challenging. We offer flexible payment plans to help manage your ${{ balance }} balance.\n\nContact us at (555) 123-4567 to discuss options.\n\nWaldorf Finance Office'
+                }
+            };
+
+            if (templates[templateType]) {
+                document.getElementById('email-subject').value = templates[templateType].subject;
+                document.getElementById('email-content').value = templates[templateType].content;
+            }
+        }
+
+        function previewMessage() {
+            const activeTab = document.querySelector('.tab-content.active').id;
+            if (activeTab === 'email-tab') {
+                const subject = document.getElementById('email-subject').value;
+                const content = document.getElementById('email-content').value;
+                alert(`Email Preview:\n\nSubject: ${subject}\n\nContent:\n${content}`);
+            } else if (activeTab === 'sms-tab') {
+                const content = document.getElementById('sms-content').value;
+                alert(`SMS Preview:\n\n${content}`);
+            }
+        }
+
+        function sendMessage() {
+            const activeTab = document.querySelector('.tab-content.active').id;
+            
+            if (activeTab === 'email-tab') {
+                const subject = document.getElementById('email-subject').value;
+                const content = document.getElementById('email-content').value;
+                
+                if (!subject || !content) {
+                    alert('Please fill in both subject and content fields.');
+                    return;
+                }
+                
+                alert('📧 Email Sent Successfully!\n\nThe email has been sent to {{ student.name }} at {{ student.email }}.\n\nA copy has been saved to the contact history.');
+                
+            } else if (activeTab === 'sms-tab') {
+                const content = document.getElementById('sms-content').value;
+                
+                if (!content) {
+                    alert('Please enter an SMS message.');
+                    return;
+                }
+                
+                alert('📱 SMS Sent Successfully!\n\nThe message has been sent to {{ student.name }} at {{ student.phone }}.\n\nA copy has been saved to the contact history.');
+                
+            } else if (activeTab === 'call-tab') {
+                const callTime = document.getElementById('call-time').value;
+                const staff = document.getElementById('assigned-staff').value;
+                
+                if (!callTime || !staff) {
+                    alert('Please select a call time and assign staff member.');
+                    return;
+                }
+                
+                alert('📞 Call Scheduled Successfully!\n\nCall has been scheduled and assigned staff will be notified.\n\nThe appointment has been added to the contact history.');
+            }
+            
+            // Redirect back to overdue accounts
+            setTimeout(() => {
+                window.location.href = '/finance/overdue';
+            }, 2000);
+        }
+
+        // Character counter for SMS
+        document.getElementById('sms-content').addEventListener('input', function() {
+            document.getElementById('char-count').textContent = this.value.length;
+        });
+
+        // Set default call time to 1 hour from now
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            document.getElementById('call-time').value = now.toISOString().slice(0, 16);
+        });
+    </script>
+</body>
+</html> 

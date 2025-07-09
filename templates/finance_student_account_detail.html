@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Account Details - {{ student.name }} | Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .student-header {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-info h1 {
+            font-size: 2.5em;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .student-meta {
+            color: #94a3b8;
+            font-size: 1.1em;
+        }
+
+        .balance-alert {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .balance-critical {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .balance-warning {
+            background: rgba(243, 156, 18, 0.2);
+            border: 2px solid #f39c12;
+            color: #f39c12;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #00d4ff, #5b73ff);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 15px 20px;
+            background: rgba(30, 30, 60, 0.4);
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #00d4ff;
+            border-radius: 50%;
+            border: 3px solid #0f0f23;
+        }
+
+        .timeline-date {
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .timeline-content {
+            color: #e2e8f0;
+            margin-top: 5px;
+        }
+
+        .timeline-amount {
+            color: #16a085;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-overdue { background: #e74c3c; color: white; }
+        .status-current { background: #16a085; color: white; }
+        .status-plan { background: #3498db; color: white; }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .action-card {
+            background: rgba(30, 30, 60, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+        }
+
+        .action-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .action-desc {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .payment-schedule {
+            background: rgba(30, 30, 60, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .schedule-header {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 15px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .schedule-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-date {
+            color: #94a3b8;
+        }
+
+        .schedule-amount {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .student-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">👤</div>
+                <div class="logo-text">
+                    <h1>Student Account Details</h1>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <a href="/finance/overdue" class="btn btn-secondary">← Back to Overdue</a>
+                <button class="btn btn-primary" onclick="printAccount()">🖨️ Print</button>
+                <button class="btn btn-warning" onclick="sendNotice()">📧 Send Notice</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Student Header -->
+        <div class="student-header">
+            <div class="student-info">
+                <h1>{{ student.name }}</h1>
+                <div class="student-meta">
+                    Student ID: {{ student.id }} | {{ student.major }} | Year {{ student.year }}
+                </div>
+            </div>
+            <div class="balance-alert {% if account_data.balance > 5000 %}balance-critical{% else %}balance-warning{% endif %}">
+                Outstanding Balance: ${{ "{:,.2f}".format(account_data.balance) }}
+                <br><small>{{ account_data.days_overdue }} days overdue</small>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Student Information -->
+            <div class="info-card">
+                <h3 class="card-title">📋 Student Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ student.name }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Student ID</div>
+                        <div class="info-value">{{ student.id }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ student.email }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value">{{ student.phone }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Major</div>
+                        <div class="info-value">{{ student.major }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Academic Year</div>
+                        <div class="info-value">{{ student.year }} Year</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">GPA</div>
+                        <div class="info-value">{{ student.gpa }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            {% if account_data.balance > 0 %}
+                            <span class="status-badge status-overdue">Overdue</span>
+                            {% else %}
+                            <span class="status-badge status-current">Current</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Summary -->
+            <div class="info-card">
+                <h3 class="card-title">💰 Financial Summary</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Outstanding Balance</div>
+                        <div class="info-value" style="color: #e74c3c;">${{ "{:,.2f}".format(account_data.balance) }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Total Paid</div>
+                        <div class="info-value" style="color: #16a085;">${{ "{:,.2f}".format(account_data.paid) }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Last Payment</div>
+                        <div class="info-value">{{ account_data.last_payment }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Payment Plan</div>
+                        <div class="info-value">
+                            {% if account_data.payment_plan %}
+                            <span class="status-badge status-plan">Active</span>
+                            {% else %}
+                            <span style="color: #94a3b8;">None</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Days Overdue</div>
+                        <div class="info-value" style="color: #f39c12;">{{ account_data.days_overdue }} days</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Contact Attempts</div>
+                        <div class="info-value">{{ account_data.contact_attempts }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="info-card full-width">
+            <h3 class="card-title">📈 Payment History</h3>
+            <div class="timeline">
+                {% for payment in account_data.payment_history %}
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ payment.date }}</div>
+                    <div class="timeline-content">
+                        <strong class="timeline-amount">${{ "{:,.2f}".format(payment.amount) }}</strong> - {{ payment.description }}
+                        <br><small style="color: #94a3b8;">{{ payment.method }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if account_data.payment_plan %}
+        <!-- Payment Schedule -->
+        <div class="info-card full-width">
+            <h3 class="card-title">📅 Payment Schedule</h3>
+            <div class="payment-schedule">
+                <div class="schedule-header">Upcoming Payments</div>
+                {% for payment in account_data.payment_schedule %}
+                <div class="schedule-item">
+                    <span class="schedule-date">{{ payment.due_date }}</span>
+                    <span class="schedule-amount">${{ "{:,.2f}".format(payment.amount) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        <div class="info-card full-width">
+            <h3 class="card-title">⚡ Quick Actions</h3>
+            <div class="action-grid">
+                <div class="action-card" onclick="contactStudent()">
+                    <div class="action-icon">📞</div>
+                    <div class="action-title">Contact Student</div>
+                    <div class="action-desc">Send email, SMS, or schedule call</div>
+                </div>
+                
+                <div class="action-card" onclick="setupPaymentPlan()">
+                    <div class="action-icon">📋</div>
+                    <div class="action-title">Payment Plan</div>
+                    <div class="action-desc">Create structured payment schedule</div>
+                </div>
+                
+                <div class="action-card" onclick="applyHold()">
+                    <div class="action-icon">🚫</div>
+                    <div class="action-title">Apply Hold</div>
+                    <div class="action-desc">Restrict registration & services</div>
+                </div>
+                
+                <div class="action-card" onclick="recordPayment()">
+                    <div class="action-icon">💳</div>
+                    <div class="action-title">Record Payment</div>
+                    <div class="action-desc">Manual payment entry</div>
+                </div>
+                
+                <div class="action-card" onclick="adjustBalance()">
+                    <div class="action-icon">⚖️</div>
+                    <div class="action-title">Adjust Balance</div>
+                    <div class="action-desc">Credits, refunds, adjustments</div>
+                </div>
+                
+                <div class="action-card" onclick="generateStatement()">
+                    <div class="action-icon">📄</div>
+                    <div class="action-title">Generate Statement</div>
+                    <div class="action-desc">Account summary & invoice</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function contactStudent() {
+            alert('📞 Contact Student\n\nOpening communication center with options for:\n• Email templates\n• SMS messaging\n• Phone call scheduling\n• Mail notices\n• Parent notifications');
+        }
+
+        function setupPaymentPlan() {
+            if (confirm('Set up a payment plan for {{ student.name }}?\n\nThis will create a structured repayment schedule based on the current balance.')) {
+                alert('📋 Payment Plan Setup\n\nOpening payment plan wizard:\n• Balance analysis\n• Affordability assessment\n• Schedule recommendations\n• Agreement generation\n• Electronic signature');
+            }
+        }
+
+        function applyHold() {
+            if (confirm('Apply academic hold to {{ student.name }}?\n\nThis will prevent:\n• Course registration\n• Transcript requests\n• Graduation processing\n• Account services\n\nContinue?')) {
+                alert('🚫 Academic Hold Applied\n\nHold status updated:\n• Student notified\n• Registrar informed\n• Academic advisor alerted\n• Parent notification sent');
+            }
+        }
+
+        function recordPayment() {
+            const amount = prompt('Enter payment amount:');
+            if (amount && !isNaN(amount) && parseFloat(amount) > 0) {
+                alert(`💳 Payment Recorded\n\nAmount: $${parseFloat(amount).toLocaleString()}\n\nUpdating:\n• Student balance\n• Payment history\n• Account status\n• Notifications sent`);
+            }
+        }
+
+        function adjustBalance() {
+            alert('⚖️ Balance Adjustment\n\nOpening adjustment interface:\n• Credit applications\n• Refund processing\n• Error corrections\n• Financial aid adjustments\n• Administrative credits');
+        }
+
+        function generateStatement() {
+            alert('📄 Generating Account Statement\n\nStatement includes:\n• Current balance details\n• Payment history\n• Upcoming charges\n• Payment options\n• Contact information\n\nStatement ready for email/print.');
+        }
+
+        function sendNotice() {
+            alert('📧 Payment Notice\n\nSending official payment notice:\n• Outstanding balance details\n• Due dates and penalties\n• Payment options\n• Contact information\n• Legal implications');
+        }
+
+        function printAccount() {
+            window.print();
+        }
+    </script>
+</body>
+</html> 

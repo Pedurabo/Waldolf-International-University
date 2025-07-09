@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection Report | Waldorf Colleges & Universities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+            padding: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #9c27ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text h1 {
+            color: #e2e8f0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #5b73ff);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a085, #27ae60);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .report-header {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .report-title {
+            font-size: 2.5em;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .report-date {
+            color: #94a3b8;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.6);
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .report-section {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .breakdown-table th,
+        .breakdown-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .breakdown-table th {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .breakdown-table tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .amount {
+            color: #16a085;
+            font-weight: 600;
+        }
+
+        .critical {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .warning {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        .good {
+            color: #16a085;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-critical { background: #e74c3c; }
+        .progress-warning { background: #f39c12; }
+        .progress-good { background: #16a085; }
+
+        .recommendations {
+            background: rgba(30, 30, 60, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+
+        .recommendation-icon {
+            font-size: 1.5em;
+            color: #00d4ff;
+        }
+
+        .recommendation-text {
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .chart-container {
+            background: rgba(30, 30, 60, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-style: italic;
+            border: 2px dashed rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .export-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(15, 15, 35, 0.95);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 8px;
+            min-width: 150px;
+            z-index: 1000;
+        }
+
+        .export-menu.show {
+            display: block;
+        }
+
+        .export-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border-bottom: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .export-option:last-child {
+            border-bottom: none;
+        }
+
+        .export-option:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div class="logo-text">
+                    <h1>Collection Report</h1>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <a href="/finance/overdue" class="btn btn-secondary">← Back to Overdue</a>
+                <button class="btn btn-primary" onclick="refreshReport()">🔄 Refresh</button>
+                <div class="export-dropdown">
+                    <button class="btn btn-success" onclick="toggleExportMenu()">📥 Export</button>
+                    <div class="export-menu" id="exportMenu">
+                        <div class="export-option" onclick="exportReport('pdf')">📄 PDF</div>
+                        <div class="export-option" onclick="exportReport('excel')">📊 Excel</div>
+                        <div class="export-option" onclick="exportReport('csv')">📋 CSV</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Report Header -->
+        <div class="report-header">
+            <h1 class="report-title">📈 Collection Analytics Report</h1>
+            <div class="report-date">Generated: {{ report.generated_date }}</div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">${{ "{:,.0f}".format(report.total_overdue) }}</div>
+                <div class="stat-label">Total Overdue</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">{{ report.total_accounts }}</div>
+                <div class="stat-label">Overdue Accounts</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📧</div>
+                <div class="stat-value">{{ report.collection_efforts.emails_sent }}</div>
+                <div class="stat-label">Emails Sent</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📞</div>
+                <div class="stat-value">{{ report.collection_efforts.calls_made }}</div>
+                <div class="stat-label">Calls Made</div>
+            </div>
+        </div>
+
+        <!-- Aging Analysis -->
+        <div class="report-section">
+            <h2 class="section-title">📅 Aging Analysis</h2>
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Age Range</th>
+                        <th>Account Count</th>
+                        <th>Total Amount</th>
+                        <th>Percentage</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for range, data in report.by_aging.items() %}
+                    <tr>
+                        <td>{{ range }}</td>
+                        <td>{{ data.count }}</td>
+                        <td class="amount">${{ "{:,.2f}".format(data.amount) }}</td>
+                        <td>{{ "{:.1f}".format((data.amount / report.total_overdue) * 100) }}%</td>
+                        <td>
+                            {% if '90+' in range %}
+                                <span class="critical">Critical</span>
+                            {% elif '60-90' in range %}
+                                <span class="warning">High</span>
+                            {% else %}
+                                <span class="good">Medium</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="chart-container">
+                <div class="chart-placeholder">
+                    📊 Aging Distribution Chart<br>
+                    <small>Interactive chart would display here showing aging breakdown</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Analysis -->
+        <div class="report-section">
+            <h2 class="section-title">🏛️ Department Breakdown</h2>
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Account Count</th>
+                        <th>Total Amount</th>
+                        <th>Avg Per Account</th>
+                        <th>Progress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dept, data in report.by_department.items() %}
+                    <tr>
+                        <td>{{ dept }}</td>
+                        <td>{{ data.count }}</td>
+                        <td class="amount">${{ "{:,.2f}".format(data.amount) }}</td>
+                        <td class="amount">${{ "{:,.2f}".format(data.amount / data.count) }}</td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-{% if data.amount > 40000 %}critical{% elif data.amount > 30000 %}warning{% else %}good{% endif %}" 
+                                     style="width: {{ (data.amount / 50000) * 100 }}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Collection Efforts -->
+        <div class="report-section">
+            <h2 class="section-title">🎯 Collection Efforts Summary</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📧</div>
+                    <div class="stat-value">{{ report.collection_efforts.emails_sent }}</div>
+                    <div class="stat-label">Emails Sent</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📞</div>
+                    <div class="stat-value">{{ report.collection_efforts.calls_made }}</div>
+                    <div class="stat-label">Phone Calls</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📮</div>
+                    <div class="stat-value">{{ report.collection_efforts.letters_mailed }}</div>
+                    <div class="stat-label">Letters Mailed</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🚫</div>
+                    <div class="stat-value">{{ report.collection_efforts.holds_applied }}</div>
+                    <div class="stat-label">Holds Applied</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Plans -->
+        <div class="report-section">
+            <h2 class="section-title">📋 Payment Plans</h2>
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Active Plans</td>
+                        <td class="good">{{ report.payment_plans.active }}</td>
+                        <td>Currently active payment arrangements</td>
+                    </tr>
+                    <tr>
+                        <td>Total Plan Value</td>
+                        <td class="amount">${{ "{:,.2f}".format(report.payment_plans.total_value) }}</td>
+                        <td>Combined value of all active plans</td>
+                    </tr>
+                    <tr>
+                        <td>Average Monthly</td>
+                        <td class="amount">${{ "{:,.2f}".format(report.payment_plans.avg_monthly) }}</td>
+                        <td>Average monthly payment across all plans</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="report-section">
+            <h2 class="section-title">💡 Recommendations</h2>
+            <div class="recommendations">
+                {% for recommendation in report.recommendations %}
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🎯</div>
+                    <div class="recommendation-text">{{ recommendation }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="scheduleFollowUp()">📅 Schedule Follow-up</button>
+            <button class="btn btn-success" onclick="generateActionPlan()">📋 Generate Action Plan</button>
+            <button class="btn btn-secondary" onclick="printReport()">🖨️ Print Report</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleExportMenu() {
+            const menu = document.getElementById('exportMenu');
+            menu.classList.toggle('show');
+        }
+
+        function exportReport(format) {
+            alert(`📥 Exporting Report\n\nFormat: ${format.toUpperCase()}\n\nReport will be downloaded shortly with collection analytics data.`);
+            document.getElementById('exportMenu').classList.remove('show');
+        }
+
+        function refreshReport() {
+            alert('🔄 Refreshing Report\n\nUpdating collection data with latest information...');
+            // In a real app, this would reload the data
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+
+        function scheduleFollowUp() {
+            alert('📅 Schedule Follow-up\n\nOpening follow-up scheduling interface:\n• Review high-priority accounts\n• Set reminder dates\n• Assign collection staff\n• Plan next contact attempts');
+        }
+
+        function generateActionPlan() {
+            alert('📋 Generate Action Plan\n\nCreating strategic action plan:\n• Priority account identification\n• Resource allocation\n• Timeline recommendations\n• Success metrics\n• Implementation steps');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // Close export menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.export-dropdown');
+            if (!dropdown.contains(event.target)) {
+                document.getElementById('exportMenu').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html> 

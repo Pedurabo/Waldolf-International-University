@@ -2,6 +2,7 @@
 """
 Waldorf Colleges and Universities Management System - Web Application
 Comprehensive Flask web app with complete management systems
+Now with SQLite Database Integration
 """
 
 try:
@@ -16,6 +17,19 @@ import ctypes
 from datetime import datetime, timedelta
 import json
 import random # Added for bulk_contact and record_payment
+
+# Import database module for persistent data storage
+try:
+    from database import (
+        db, get_all_students, get_all_faculty, get_all_courses,
+        get_student_by_id, get_faculty_by_id, get_course_by_id
+    )
+    DATABASE_AVAILABLE = True
+    print("✅ Database module loaded successfully!")
+except ImportError as e:
+    DATABASE_AVAILABLE = False
+    print(f"⚠️  Database module not available: {e}")
+    print("   Using fallback in-memory data...")
 
 
 def check_admin_privileges():
@@ -37,49 +51,134 @@ if FLASK_AVAILABLE:
     app = Flask(__name__)
     app.secret_key = 'waldorf_secret_key_2025_comprehensive'
 
-    # Comprehensive sample data
-    students = [
-        {"id": "WU001", "name": "Alice Johnson", "major": "Computer Science", "year": 2, "gpa": 3.8, "email": "alice.johnson@waldorf.edu", "phone": "(555) 123-4567", "address": "123 Campus Dr, University City", "status": "Active", "enrollment_date": "2022-08-15"},
-        {"id": "WU002", "name": "Bob Smith", "major": "Mathematics", "year": 3, "gpa": 3.6, "email": "bob.smith@waldorf.edu", "phone": "(555) 234-5678", "address": "456 College Ave, University City", "status": "Active", "enrollment_date": "2021-08-20"},
-        {"id": "WU003", "name": "Carol Davis", "major": "Physics", "year": 1, "gpa": 3.9, "email": "carol.davis@waldorf.edu", "phone": "(555) 345-6789", "address": "789 Student Blvd, University City", "status": "Active", "enrollment_date": "2023-08-25"},
-        {"id": "WU004", "name": "David Wilson", "major": "Chemistry", "year": 4, "gpa": 3.7, "email": "david.wilson@waldorf.edu", "phone": "(555) 456-7890", "address": "321 Academic St, University City", "status": "Active", "enrollment_date": "2020-08-10"},
-        {"id": "WU005", "name": "Emma Thompson", "major": "Biology", "year": 2, "gpa": 3.5, "email": "emma.thompson@waldorf.edu", "phone": "(555) 567-8901", "address": "654 Science Way, University City", "status": "Active", "enrollment_date": "2022-08-18"}
-    ]
+    # ============= DATABASE-CONNECTED DATA =============
+    # Data is now loaded from database instead of hardcoded lists
+    
+    def get_students_data():
+        """Get students from database with fallback to sample data"""
+        if DATABASE_AVAILABLE:
+            try:
+                students_db = get_all_students()
+                # Convert database format to match expected format for compatibility
+                students_formatted = []
+                for student in students_db:
+                    formatted = {
+                        "id": student["id"],
+                        "name": f"{student['first_name']} {student['last_name']}",
+                        "major": student["major"] or "Undeclared",
+                        "year": student["academic_year"] or 1,
+                        "gpa": float(student["gpa"]) if student["gpa"] else 0.0,
+                        "email": student["email"],
+                        "phone": student["phone"] or "",
+                        "address": student["address"] or "",
+                        "status": student["status"].title() if student["status"] else "Active",
+                        "enrollment_date": student["enrollment_date"] or ""
+                    }
+                    students_formatted.append(formatted)
+                return students_formatted
+            except Exception as e:
+                print(f"Database error loading students: {e}")
+        
+        # Fallback sample data
+        return [
+            {"id": "WU001", "name": "Alice Johnson", "major": "Computer Science", "year": 2, "gpa": 3.8, "email": "alice.johnson@waldorf.edu", "phone": "(555) 123-4567", "address": "123 Campus Dr, University City", "status": "Active", "enrollment_date": "2022-08-15"},
+            {"id": "WU002", "name": "Bob Smith", "major": "Mathematics", "year": 3, "gpa": 3.6, "email": "bob.smith@waldorf.edu", "phone": "(555) 234-5678", "address": "456 College Ave, University City", "status": "Active", "enrollment_date": "2021-08-20"},
+            {"id": "WU003", "name": "Carol Davis", "major": "Physics", "year": 1, "gpa": 3.9, "email": "carol.davis@waldorf.edu", "phone": "(555) 345-6789", "address": "789 Student Blvd, University City", "status": "Active", "enrollment_date": "2023-08-25"},
+            {"id": "WU004", "name": "David Wilson", "major": "Chemistry", "year": 4, "gpa": 3.7, "email": "david.wilson@waldorf.edu", "phone": "(555) 456-7890", "address": "321 Academic St, University City", "status": "Active", "enrollment_date": "2020-08-10"},
+            {"id": "WU005", "name": "Emma Thompson", "major": "Biology", "year": 2, "gpa": 3.5, "email": "emma.thompson@waldorf.edu", "phone": "(555) 567-8901", "address": "654 Science Way, University City", "status": "Active", "enrollment_date": "2022-08-18"}
+        ]
 
-    faculty = [
-        {"id": "F001", "name": "Dr. Sarah Johnson", "department": "Computer Science", "title": "Professor", "email": "s.johnson@waldorf.edu", "phone": "(555) 111-1111", "office": "CS-301", "specialization": "Artificial Intelligence", "hire_date": "2015-08-01"},
-        {"id": "F002", "name": "Dr. Michael Brown", "department": "Mathematics", "title": "Associate Professor", "email": "m.brown@waldorf.edu", "phone": "(555) 222-2222", "office": "MATH-205", "specialization": "Applied Mathematics", "hire_date": "2018-01-15"},
-        {"id": "F003", "name": "Dr. Emily Davis", "department": "Physics", "title": "Assistant Professor", "email": "e.davis@waldorf.edu", "phone": "(555) 333-3333", "office": "PHYS-102", "specialization": "Quantum Physics", "hire_date": "2020-08-20"},
-        {"id": "F004", "name": "Prof. Robert Miller", "department": "Chemistry", "title": "Professor", "email": "r.miller@waldorf.edu", "phone": "(555) 444-4444", "office": "CHEM-115", "specialization": "Organic Chemistry", "hire_date": "2012-09-01"},
-        {"id": "F005", "name": "Dr. Lisa Anderson", "department": "Biology", "title": "Associate Professor", "email": "l.anderson@waldorf.edu", "phone": "(555) 555-5555", "office": "BIO-208", "specialization": "Molecular Biology", "hire_date": "2017-01-10"}
-    ]
+    def get_faculty_data():
+        """Get faculty from database with fallback to sample data"""
+        if DATABASE_AVAILABLE:
+            try:
+                faculty_db = get_all_faculty()
+                # Convert database format to match expected format
+                faculty_formatted = []
+                for faculty_member in faculty_db:
+                    formatted = {
+                        "id": faculty_member["id"],
+                        "name": f"{faculty_member['first_name']} {faculty_member['last_name']}",
+                        "department": faculty_member["department"] or "General",
+                        "title": faculty_member["title"] or "Faculty",
+                        "email": faculty_member["email"],
+                        "phone": faculty_member["phone"] or "",
+                        "office": faculty_member["office"] or "",
+                        "specialization": faculty_member["specialization"] or "",
+                        "hire_date": faculty_member["hire_date"] or ""
+                    }
+                    faculty_formatted.append(formatted)
+                return faculty_formatted
+            except Exception as e:
+                print(f"Database error loading faculty: {e}")
+        
+        # Fallback sample data
+        return [
+            {"id": "F001", "name": "Dr. Sarah Johnson", "department": "Computer Science", "title": "Professor", "email": "s.johnson@waldorf.edu", "phone": "(555) 111-1111", "office": "CS-301", "specialization": "Artificial Intelligence", "hire_date": "2015-08-01"},
+            {"id": "F002", "name": "Dr. Michael Brown", "department": "Mathematics", "title": "Associate Professor", "email": "m.brown@waldorf.edu", "phone": "(555) 222-2222", "office": "MATH-205", "specialization": "Applied Mathematics", "hire_date": "2018-01-15"},
+            {"id": "F003", "name": "Dr. Emily Davis", "department": "Physics", "title": "Assistant Professor", "email": "e.davis@waldorf.edu", "phone": "(555) 333-3333", "office": "PHYS-102", "specialization": "Quantum Physics", "hire_date": "2020-08-20"},
+            {"id": "F004", "name": "Prof. Robert Miller", "department": "Chemistry", "title": "Professor", "email": "r.miller@waldorf.edu", "phone": "(555) 444-4444", "office": "CHEM-115", "specialization": "Organic Chemistry", "hire_date": "2012-09-01"},
+            {"id": "F005", "name": "Dr. Lisa Anderson", "department": "Biology", "title": "Associate Professor", "email": "l.anderson@waldorf.edu", "phone": "(555) 555-5555", "office": "BIO-208", "specialization": "Molecular Biology", "hire_date": "2017-01-10"}
+        ]
 
-    # Comprehensive course data
-    courses = [
-        {"id": "CS101", "name": "Introduction to Computer Science", "department": "Computer Science", "credits": 3, "instructor": "Dr. Sarah Johnson", "capacity": 30, "enrolled": 25, "schedule": "MWF 9:00-9:50 AM", "room": "CS-101", "description": "Fundamentals of programming and computer science concepts"},
-        {"id": "CS201", "name": "Data Structures", "department": "Computer Science", "credits": 4, "instructor": "Dr. Sarah Johnson", "capacity": 25, "enrolled": 20, "schedule": "TTh 10:00-11:15 AM", "room": "CS-102", "description": "Advanced data structures and algorithms"},
-        {"id": "MATH101", "name": "Calculus I", "department": "Mathematics", "credits": 4, "instructor": "Dr. Michael Brown", "capacity": 35, "enrolled": 30, "schedule": "MWF 10:00-10:50 AM", "room": "MATH-101", "description": "Introduction to differential calculus"},
-        {"id": "MATH201", "name": "Linear Algebra", "department": "Mathematics", "credits": 3, "instructor": "Dr. Michael Brown", "capacity": 30, "enrolled": 25, "schedule": "TTh 1:00-2:15 PM", "room": "MATH-102", "description": "Vector spaces, matrices, and linear transformations"},
-        {"id": "PHYS101", "name": "General Physics I", "department": "Physics", "credits": 4, "instructor": "Dr. Emily Davis", "capacity": 40, "enrolled": 35, "schedule": "MWF 11:00-11:50 AM", "room": "PHYS-101", "description": "Mechanics, waves, and thermodynamics"},
-        {"id": "CHEM101", "name": "General Chemistry", "department": "Chemistry", "credits": 4, "instructor": "Prof. Robert Miller", "capacity": 30, "enrolled": 28, "schedule": "TTh 9:00-10:15 AM", "room": "CHEM-101", "description": "Fundamental principles of chemistry"},
-        {"id": "BIO101", "name": "General Biology", "department": "Biology", "credits": 4, "instructor": "Dr. Lisa Anderson", "capacity": 35, "enrolled": 32, "schedule": "MWF 2:00-2:50 PM", "room": "BIO-101", "description": "Introduction to biological systems and processes"}
-    ]
+    def get_courses_data():
+        """Get courses from database with fallback to sample data"""
+        if DATABASE_AVAILABLE:
+            try:
+                courses_db = get_all_courses()
+                # Convert database format to match expected format
+                courses_formatted = []
+                for course in courses_db:
+                    formatted = {
+                        "id": course["id"],
+                        "name": course["course_name"],
+                        "department": course["department"] or "General",
+                        "credits": course["credits"] or 3,
+                        "instructor": course.get("instructor_name", "TBA"),
+                        "capacity": course["capacity"] or 30,
+                        "enrolled": course["enrolled"] or 0,
+                        "schedule": course["schedule"] or "TBA",
+                        "room": course["room"] or "TBA",
+                        "description": course["description"] or "Course description not available"
+                    }
+                    courses_formatted.append(formatted)
+                return courses_formatted
+            except Exception as e:
+                print(f"Database error loading courses: {e}")
+        
+        # Fallback sample data
+        return [
+            {"id": "CS101", "name": "Introduction to Computer Science", "department": "Computer Science", "credits": 3, "instructor": "Dr. Sarah Johnson", "capacity": 30, "enrolled": 25, "schedule": "MWF 9:00-9:50 AM", "room": "CS-101", "description": "Fundamentals of programming and computer science concepts"},
+            {"id": "CS201", "name": "Data Structures", "department": "Computer Science", "credits": 4, "instructor": "Dr. Sarah Johnson", "capacity": 25, "enrolled": 20, "schedule": "TTh 10:00-11:15 AM", "room": "CS-102", "description": "Advanced data structures and algorithms"},
+            {"id": "MATH101", "name": "Calculus I", "department": "Mathematics", "credits": 4, "instructor": "Dr. Michael Brown", "capacity": 35, "enrolled": 30, "schedule": "MWF 10:00-10:50 AM", "room": "MATH-101", "description": "Introduction to differential calculus"},
+            {"id": "MATH201", "name": "Linear Algebra", "department": "Mathematics", "credits": 3, "instructor": "Dr. Michael Brown", "capacity": 30, "enrolled": 25, "schedule": "TTh 1:00-2:15 PM", "room": "MATH-102", "description": "Vector spaces, matrices, and linear transformations"},
+            {"id": "PHYS101", "name": "General Physics I", "department": "Physics", "credits": 4, "instructor": "Dr. Emily Davis", "capacity": 40, "enrolled": 35, "schedule": "MWF 11:00-11:50 AM", "room": "PHYS-101", "description": "Mechanics, waves, and thermodynamics"},
+            {"id": "CHEM101", "name": "General Chemistry", "department": "Chemistry", "credits": 4, "instructor": "Prof. Robert Miller", "capacity": 30, "enrolled": 28, "schedule": "TTh 9:00-10:15 AM", "room": "CHEM-101", "description": "Fundamental principles of chemistry"},
+            {"id": "BIO101", "name": "General Biology", "department": "Biology", "credits": 4, "instructor": "Dr. Lisa Anderson", "capacity": 35, "enrolled": 32, "schedule": "MWF 2:00-2:50 PM", "room": "BIO-101", "description": "Introduction to biological systems and processes"}
+        ]
+    
+    # Initialize data from database or fallback
+    students = get_students_data()
+    faculty = get_faculty_data()
+    courses = get_courses_data()
+    
+    print(f"📊 Data loaded: {len(students)} students, {len(faculty)} faculty, {len(courses)} courses")
 
-    # Comprehensive department credentials
+    # Updated department credentials (synchronized with database)
     department_credentials = {
         'students': {
-            'WU001': {'password': 'alice123', 'name': 'Alice Johnson'},
-            'WU002': {'password': 'bob456', 'name': 'Bob Smith'},
-            'WU003': {'password': 'carol789', 'name': 'Carol Davis'},
-            'WU004': {'password': 'david012', 'name': 'David Wilson'},
-            'WU005': {'password': 'emma345', 'name': 'Emma Thompson'}
+            'alice123': {'password': 'student123', 'name': 'Alice Johnson'},
+            'bob456': {'password': 'student456', 'name': 'Bob Smith'},
+            'charlie789': {'password': 'student789', 'name': 'Charlie Brown'},
+            'diana012': {'password': 'student012', 'name': 'Diana Miller'},
+            'emma345': {'password': 'student345', 'name': 'Emma Davis'}
         },
         'faculty': {
-            'F001': {'password': 'sarah123', 'name': 'Dr. Sarah Johnson', 'department': 'Computer Science'},
-            'F002': {'password': 'michael456', 'name': 'Dr. Michael Brown', 'department': 'Mathematics'},
-            'F003': {'password': 'emily789', 'name': 'Dr. Emily Davis', 'department': 'Physics'},
-            'F004': {'password': 'robert012', 'name': 'Prof. Robert Miller', 'department': 'Chemistry'},
-            'F005': {'password': 'lisa345', 'name': 'Dr. Lisa Anderson', 'department': 'Biology'}
+            'prof001': {'password': 'faculty123', 'name': 'Dr. Sarah Wilson', 'department': 'Computer Science'},
+            'prof002': {'password': 'faculty456', 'name': 'Dr. Michael Johnson', 'department': 'Business'},
+            'prof003': {'password': 'faculty789', 'name': 'Dr. Emily Rodriguez', 'department': 'Engineering'},
+            'prof004': {'password': 'faculty012', 'name': 'Dr. James Chen', 'department': 'Psychology'},
+            'prof005': {'password': 'faculty345', 'name': 'Dr. Lisa Anderson', 'department': 'Biology'}
         },
         'admissions': {
             'ADM001': {'password': 'admin123', 'name': 'John Administrator', 'role': 'Admissions Director'},
@@ -160,7 +259,7 @@ if FLASK_AVAILABLE:
             'python_version': platform.python_version(),
             'admin_status': 'ENABLED' if is_admin else 'DISABLED'
         }
-        return render_template('homepage.html', 
+        return render_template('dashboard.html', 
                              system_info=system_info, 
                              is_admin=is_admin,
                              student_count=len(students),
@@ -2804,6 +2903,867 @@ if FLASK_AVAILABLE:
         }
         
         return jsonify(support_data)
+
+    # ============= ENHANCED FACULTY DASHBOARD FUNCTIONALITY =============
+    
+    @app.route('/faculty/course/<course_id>')
+    def faculty_manage_course(course_id):
+        """Detailed course management for faculty"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        course = next((c for c in courses if c['id'] == course_id), None)
+        if not course:
+            return jsonify({'error': 'Course not found'}), 404
+        
+        # Generate detailed course data
+        course_data = {
+            'course': course,
+            'enrolled_students': [s for s in students if s['id'] in ['WU001', 'WU002', 'WU003', 'WU004']],
+            'assignments': [
+                {'id': 'A001', 'title': 'Midterm Project', 'due_date': '2025-02-15', 'submissions': 18, 'total': 25, 'avg_grade': 85.2},
+                {'id': 'A002', 'title': 'Quiz 3', 'due_date': '2025-02-10', 'submissions': 25, 'total': 25, 'avg_grade': 92.1},
+                {'id': 'A003', 'title': 'Lab Report 4', 'due_date': '2025-02-08', 'submissions': 23, 'total': 25, 'avg_grade': 88.7}
+            ],
+            'attendance': [
+                {'date': '2025-01-09', 'present': 23, 'absent': 2, 'percentage': 92.0},
+                {'date': '2025-01-07', 'present': 24, 'absent': 1, 'percentage': 96.0},
+                {'date': '2025-01-05', 'present': 22, 'absent': 3, 'percentage': 88.0}
+            ],
+            'grade_distribution': {
+                'A': 8, 'B': 12, 'C': 4, 'D': 1, 'F': 0
+            }
+        }
+        
+        return jsonify(course_data)
+
+    @app.route('/faculty/course/add', methods=['POST'])
+    def faculty_add_course():
+        """Add new course for faculty"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        data = request.get_json() or {}
+        
+        # Simulate course creation
+        new_course = {
+            'id': f"NEW{len(courses)+1:03d}",
+            'name': data.get('name', 'New Course'),
+            'department': session.get('department', 'Computer Science'),
+            'credits': int(data.get('credits', 3)),
+            'instructor': session.get('faculty_name'),
+            'capacity': int(data.get('capacity', 30)),
+            'enrolled': 0,
+            'schedule': data.get('schedule', 'TBD'),
+            'room': data.get('room', 'TBD'),
+            'description': data.get('description', 'Course description')
+        }
+        
+        return jsonify({
+            'success': True,
+            'message': f'Course {new_course["id"]} created successfully!',
+            'course': new_course
+        })
+
+    @app.route('/faculty/student/<student_id>')
+    def faculty_view_student(student_id):
+        """View detailed student information for faculty"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        student = next((s for s in students if s['id'] == student_id), None)
+        if not student:
+            return jsonify({'error': 'Student not found'}), 404
+        
+        # Generate detailed student data
+        student_data = {
+            'student': student,
+            'enrollment_history': [
+                {'semester': 'Fall 2024', 'courses': 5, 'gpa': 3.8, 'credits': 15},
+                {'semester': 'Spring 2024', 'courses': 4, 'gpa': 3.6, 'credits': 12},
+                {'semester': 'Fall 2023', 'courses': 5, 'gpa': 3.9, 'credits': 15}
+            ],
+            'current_courses': [c for c in courses if c['instructor'] == session.get('faculty_name')],
+            'grades': [
+                {'course': 'CS101', 'assignment': 'Midterm', 'grade': 88, 'date': '2025-01-08'},
+                {'course': 'CS101', 'assignment': 'Quiz 2', 'grade': 92, 'date': '2025-01-05'},
+                {'course': 'CS101', 'assignment': 'Lab 3', 'grade': 85, 'date': '2025-01-03'}
+            ],
+            'attendance': {
+                'total_classes': 45,
+                'attended': 42,
+                'percentage': 93.3,
+                'recent_absences': ['2025-01-07', '2025-01-03']
+            }
+        }
+        
+        return jsonify(student_data)
+
+    @app.route('/faculty/gradebook')
+    def faculty_gradebook():
+        """Digital gradebook for faculty"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        faculty_courses = [c for c in courses if c['instructor'] == session.get('faculty_name')]
+        
+        gradebook_data = {
+            'courses': faculty_courses,
+            'grade_entries': [
+                {
+                    'student_id': 'WU001',
+                    'student_name': 'Alice Johnson',
+                    'course_id': 'CS101',
+                    'assignments': {
+                        'Midterm': 88,
+                        'Quiz 1': 95,
+                        'Quiz 2': 92,
+                        'Lab 1': 90,
+                        'Lab 2': 87,
+                        'Project': 'Pending'
+                    },
+                    'current_grade': 90.4
+                },
+                {
+                    'student_id': 'WU002',
+                    'student_name': 'Bob Smith',
+                    'course_id': 'CS101',
+                    'assignments': {
+                        'Midterm': 82,
+                        'Quiz 1': 88,
+                        'Quiz 2': 85,
+                        'Lab 1': 94,
+                        'Lab 2': 91,
+                        'Project': 'Pending'
+                    },
+                    'current_grade': 88.0
+                }
+            ],
+            'assignment_types': [
+                {'name': 'Exams', 'weight': 40},
+                {'name': 'Quizzes', 'weight': 25},
+                {'name': 'Labs', 'weight': 20},
+                {'name': 'Projects', 'weight': 15}
+            ]
+        }
+        
+        return jsonify(gradebook_data)
+
+    @app.route('/faculty/gradebook/submit', methods=['POST'])
+    def faculty_submit_grades():
+        """Submit grades through gradebook"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        data = request.get_json() or {}
+        
+        return jsonify({
+            'success': True,
+            'message': f'Grades submitted for {len(data.get("grades", []))} students',
+            'submitted_count': len(data.get('grades', []))
+        })
+
+    @app.route('/faculty/assignment/create', methods=['POST'])
+    def faculty_create_assignment():
+        """Create new assignment"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        data = request.get_json() or {}
+        
+        assignment = {
+            'id': f"A{datetime.now().strftime('%Y%m%d%H%M')}",
+            'title': data.get('title', 'New Assignment'),
+            'course': data.get('course_id'),
+            'type': data.get('type', 'Assignment'),
+            'due_date': data.get('due_date'),
+            'points': int(data.get('points', 100)),
+            'description': data.get('description', ''),
+            'instructions': data.get('instructions', ''),
+            'created_by': session.get('faculty_name'),
+            'created_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        return jsonify({
+            'success': True,
+            'message': f'Assignment "{assignment["title"]}" created successfully!',
+            'assignment': assignment
+        })
+
+    @app.route('/faculty/analytics')
+    def faculty_course_analytics():
+        """Course analytics and reports for faculty"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        faculty_courses = [c for c in courses if c['instructor'] == session.get('faculty_name')]
+        
+        analytics_data = {
+            'course_performance': [
+                {
+                    'course_id': 'CS101',
+                    'course_name': 'Introduction to Computer Science',
+                    'enrollment': 25,
+                    'avg_grade': 87.2,
+                    'attendance_rate': 92.5,
+                    'completion_rate': 96.0,
+                    'satisfaction_score': 4.3
+                }
+            ],
+            'grade_trends': {
+                'weeks': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                'average_scores': [88.5, 86.2, 89.1, 87.8, 90.3]
+            },
+            'attendance_trends': {
+                'dates': ['2025-01-03', '2025-01-05', '2025-01-07', '2025-01-09'],
+                'attendance_rates': [96.0, 88.0, 92.0, 94.0]
+            },
+            'student_performance_distribution': {
+                'excellent': 8,  # 90-100
+                'good': 12,      # 80-89
+                'average': 4,    # 70-79
+                'below_average': 1  # 60-69
+            },
+            'assignment_statistics': [
+                {'name': 'Midterm Exam', 'avg_score': 85.2, 'highest': 98, 'lowest': 72, 'submissions': 25},
+                {'name': 'Quiz 3', 'avg_score': 92.1, 'highest': 100, 'lowest': 85, 'submissions': 25},
+                {'name': 'Lab Report 4', 'avg_score': 88.7, 'highest': 96, 'lowest': 78, 'submissions': 23}
+            ]
+        }
+        
+        return jsonify(analytics_data)
+
+    @app.route('/faculty/office-hours')
+    def faculty_office_hours():
+        """Office hours management for faculty"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        office_hours_data = {
+            'current_schedule': [
+                {'day': 'Monday', 'start': '14:00', 'end': '16:00', 'location': 'CS-301'},
+                {'day': 'Wednesday', 'start': '10:00', 'end': '12:00', 'location': 'CS-301'},
+                {'day': 'Friday', 'start': '15:00', 'end': '17:00', 'location': 'CS-301'}
+            ],
+            'upcoming_appointments': [
+                {
+                    'student_name': 'Alice Johnson',
+                    'student_id': 'WU001',
+                    'date': '2025-01-10',
+                    'time': '14:30',
+                    'topic': 'Project discussion',
+                    'status': 'Confirmed'
+                },
+                {
+                    'student_name': 'Bob Smith',
+                    'student_id': 'WU002',
+                    'date': '2025-01-10',
+                    'time': '15:00',
+                    'topic': 'Grade review',
+                    'status': 'Pending'
+                }
+            ],
+            'availability': {
+                '2025-01-10': [
+                    {'time': '14:00', 'available': False, 'student': 'Alice Johnson'},
+                    {'time': '14:30', 'available': False, 'student': 'Alice Johnson'},
+                    {'time': '15:00', 'available': False, 'student': 'Bob Smith'},
+                    {'time': '15:30', 'available': True},
+                    {'time': '16:00', 'available': True}
+                ]
+            }
+        }
+        
+        return jsonify(office_hours_data)
+
+    @app.route('/faculty/communication')
+    def faculty_communication_center():
+        """Communication center for faculty"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        communication_data = {
+            'recent_messages': [
+                {
+                    'from': 'Alice Johnson (WU001)',
+                    'subject': 'Question about Assignment 3',
+                    'date': '2025-01-09 10:30',
+                    'status': 'Unread',
+                    'priority': 'Normal'
+                },
+                {
+                    'from': 'Bob Smith (WU002)',
+                    'subject': 'Grade Appeal Request',
+                    'date': '2025-01-08 15:45',
+                    'status': 'Read',
+                    'priority': 'High'
+                }
+            ],
+            'announcements': [
+                {
+                    'title': 'Upcoming Midterm Exam',
+                    'content': 'The midterm exam is scheduled for February 15th. Please review chapters 1-8.',
+                    'course': 'CS101',
+                    'date_posted': '2025-01-08',
+                    'views': 23
+                }
+            ],
+            'email_templates': [
+                {'name': 'Assignment Reminder', 'subject': 'Upcoming Assignment Due'},
+                {'name': 'Grade Posted', 'subject': 'Your Grade is Now Available'},
+                {'name': 'Office Hours Reminder', 'subject': 'Office Hours Available'}
+            ]
+        }
+        
+        return jsonify(communication_data)
+
+    @app.route('/faculty/resources')
+    def faculty_resources():
+        """Faculty resource center"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        resources_data = {
+            'teaching_materials': [
+                {'title': 'Computer Science Curriculum Guidelines', 'type': 'PDF', 'size': '2.4 MB'},
+                {'title': 'Programming Assignment Templates', 'type': 'ZIP', 'size': '1.8 MB'},
+                {'title': 'Lecture Slide Templates', 'type': 'PPTX', 'size': '15.2 MB'}
+            ],
+            'professional_development': [
+                {
+                    'event': 'Teaching Excellence Workshop',
+                    'date': '2025-02-15',
+                    'location': 'Faculty Center',
+                    'registration_required': True
+                },
+                {
+                    'event': 'Research Grant Writing Seminar',
+                    'date': '2025-02-20',
+                    'location': 'Virtual',
+                    'registration_required': True
+                }
+            ],
+            'it_support': [
+                {'service': 'LMS Technical Support', 'contact': 'help@waldorf.edu', 'hours': '8 AM - 5 PM'},
+                {'service': 'Classroom Technology', 'contact': 'tech@waldorf.edu', 'hours': '24/7'},
+                {'service': 'Software Installation', 'contact': 'software@waldorf.edu', 'hours': '9 AM - 4 PM'}
+            ],
+            'department_policies': [
+                {'title': 'Grading Policy', 'last_updated': '2024-08-15'},
+                {'title': 'Attendance Requirements', 'last_updated': '2024-08-10'},
+                {'title': 'Academic Integrity Guidelines', 'last_updated': '2024-09-01'}
+            ]
+        }
+        
+        return jsonify(resources_data)
+
+    @app.route('/faculty/profile', methods=['GET', 'POST'])
+    def faculty_profile():
+        """Faculty profile management"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        faculty_id = session.get('faculty_id')
+        current_faculty = next((f for f in faculty if f['id'] == faculty_id), None)
+        
+        if not current_faculty:
+            return jsonify({'error': 'Faculty record not found'}), 404
+        
+        if request.method == 'POST':
+            # Handle profile update
+            update_data = request.get_json() or {}
+            
+            return jsonify({
+                'success': True,
+                'message': 'Profile updated successfully!',
+                'updated_fields': list(update_data.keys())
+            })
+        
+        # GET request - return current profile
+        profile_data = {
+            'faculty': current_faculty,
+            'contact_info': {
+                'office': current_faculty.get('office', 'CS-301'),
+                'phone': current_faculty.get('phone', '(555) 123-4567'),
+                'email': current_faculty.get('email', f'{faculty_id.lower() if faculty_id else "faculty"}@waldorf.edu'),
+                'office_hours': 'Mon/Wed/Fri 2:00-4:00 PM'
+            },
+            'academic_info': {
+                'department': current_faculty.get('department'),
+                'title': current_faculty.get('title'),
+                'specialization': current_faculty.get('specialization', 'Not specified'),
+                'hire_date': current_faculty.get('hire_date', '2015-08-01'),
+                'tenure_status': 'Tenured'
+            },
+            'courses_taught': [c for c in courses if c['instructor'] == current_faculty['name']],
+            'research_interests': [
+                'Machine Learning',
+                'Data Structures',
+                'Algorithm Design',
+                'Computer Science Education'
+            ]
+        }
+        
+        return jsonify(profile_data)
+
+    @app.route('/faculty/students')
+    def faculty_all_students():
+        """View all students for faculty with filtering"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        # Get faculty's courses to filter relevant students
+        faculty_courses = [c for c in courses if c['instructor'] == session.get('faculty_name')]
+        course_ids = [c['id'] for c in faculty_courses]
+        
+        students_data = {
+            'students': students,
+            'faculty_courses': faculty_courses,
+            'filters': {
+                'majors': list(set([s['major'] for s in students])),
+                'years': [1, 2, 3, 4],
+                'gpa_ranges': ['4.0-3.5', '3.5-3.0', '3.0-2.5', '2.5-2.0']
+            },
+            'statistics': {
+                'total_students': len(students),
+                'students_in_my_courses': len([s for s in students if s['id'] in ['WU001', 'WU002', 'WU003']]),
+                'avg_gpa': round(sum(s['gpa'] for s in students) / len(students), 2),
+                'honor_students': len([s for s in students if s['gpa'] >= 3.5])
+            }
+        }
+        
+        return jsonify(students_data)
+
+    # ============= ENHANCED FACULTY MANAGEMENT SYSTEM END =============
+
+    # ============= CURRICULUM MANAGEMENT SYSTEM =============
+    
+    @app.route('/faculty/curriculum')
+    def faculty_curriculum_management():
+        """Comprehensive Curriculum Management Dashboard"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        faculty_id = session.get('faculty_id')
+        department = session.get('department', 'Computer Science')
+        
+        curriculum_data = {
+            'department': department,
+            'faculty_id': faculty_id,
+            'overview': {
+                'total_courses': 15,
+                'core_courses': 8,
+                'elective_courses': 7,
+                'prerequisite_chains': 12,
+                'learning_outcomes': 45,
+                'assessment_points': 32
+            },
+            'recent_changes': [
+                {'date': '2025-01-08', 'type': 'Course Added', 'details': 'CS401 - Advanced Algorithms', 'by': 'Dr. Smith'},
+                {'date': '2025-01-05', 'type': 'Prerequisite Updated', 'details': 'CS301 now requires CS201', 'by': 'Dr. Johnson'},
+                {'date': '2025-01-03', 'type': 'Learning Outcome Modified', 'details': 'Updated CS101 outcome 3', 'by': 'Dr. Brown'}
+            ],
+            'pending_reviews': [
+                {'course': 'CS301', 'type': 'Learning Outcomes', 'due_date': '2025-01-15', 'priority': 'High'},
+                {'course': 'CS401', 'type': 'Prerequisites', 'due_date': '2025-01-20', 'priority': 'Medium'},
+                {'course': 'CS201', 'type': 'Assessment Plan', 'due_date': '2025-01-25', 'priority': 'Low'}
+            ]
+        }
+        
+        return jsonify(curriculum_data)
+
+    @app.route('/faculty/curriculum/sequences')
+    def faculty_course_sequencing():
+        """Course sequencing management"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        sequencing_data = {
+            'sequences': [
+                {
+                    'track': 'Core Programming Track',
+                    'courses': [
+                        {'id': 'CS101', 'name': 'Intro to Programming', 'semester': 1, 'prerequisites': []},
+                        {'id': 'CS201', 'name': 'Data Structures', 'semester': 2, 'prerequisites': ['CS101']},
+                        {'id': 'CS301', 'name': 'Algorithms', 'semester': 3, 'prerequisites': ['CS201']},
+                        {'id': 'CS401', 'name': 'Advanced Algorithms', 'semester': 4, 'prerequisites': ['CS301']}
+                    ]
+                },
+                {
+                    'track': 'Database Track',
+                    'courses': [
+                        {'id': 'CS101', 'name': 'Intro to Programming', 'semester': 1, 'prerequisites': []},
+                        {'id': 'CS205', 'name': 'Database Fundamentals', 'semester': 2, 'prerequisites': ['CS101']},
+                        {'id': 'CS305', 'name': 'Advanced Databases', 'semester': 3, 'prerequisites': ['CS205']},
+                        {'id': 'CS405', 'name': 'Data Mining', 'semester': 4, 'prerequisites': ['CS305']}
+                    ]
+                }
+            ],
+            'statistics': {
+                'total_tracks': 5,
+                'total_sequences': 12,
+                'avg_track_length': 4.2,
+                'completion_rate': 87.5
+            }
+        }
+        
+        return jsonify(sequencing_data)
+
+    @app.route('/faculty/curriculum/prerequisites')
+    def faculty_prerequisites_management():
+        """Prerequisites management system"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        prerequisites_data = {
+            'courses': [
+                {
+                    'id': 'CS101',
+                    'name': 'Introduction to Programming',
+                    'prerequisites': [],
+                    'required_for': ['CS201', 'CS205', 'CS210'],
+                    'enrollment_impact': 'High'
+                },
+                {
+                    'id': 'CS201',
+                    'name': 'Data Structures',
+                    'prerequisites': ['CS101'],
+                    'required_for': ['CS301', 'CS320', 'CS350'],
+                    'enrollment_impact': 'High'
+                },
+                {
+                    'id': 'CS301',
+                    'name': 'Algorithms',
+                    'prerequisites': ['CS201', 'MATH201'],
+                    'required_for': ['CS401', 'CS420'],
+                    'enrollment_impact': 'Medium'
+                },
+                {
+                    'id': 'CS401',
+                    'name': 'Advanced Algorithms',
+                    'prerequisites': ['CS301', 'CS350'],
+                    'required_for': [],
+                    'enrollment_impact': 'Low'
+                }
+            ],
+            'prerequisite_issues': [
+                {
+                    'course': 'CS301',
+                    'issue': 'High failure rate due to MATH201 prerequisite',
+                    'impact': 'Blocks 25% of students from advancing',
+                    'suggested_action': 'Consider math remediation or alternative path'
+                },
+                {
+                    'course': 'CS401',
+                    'issue': 'Too many prerequisites creating bottleneck',
+                    'impact': 'Low enrollment in advanced course',
+                    'suggested_action': 'Review if all prerequisites are necessary'
+                }
+            ],
+            'analytics': {
+                'prerequisite_violations': 3,
+                'blocked_enrollments': 15,
+                'completion_delays': 8,
+                'prerequisite_satisfaction_rate': 92.3
+            }
+        }
+        
+        return jsonify(prerequisites_data)
+
+    @app.route('/faculty/curriculum/learning-outcomes')
+    def faculty_learning_outcomes():
+        """Learning outcomes management"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        outcomes_data = {
+            'program_outcomes': [
+                {
+                    'id': 'PLO1',
+                    'description': 'Design and implement software solutions using appropriate algorithms and data structures',
+                    'bloom_level': 'Synthesis',
+                    'assessment_methods': ['Projects', 'Exams', 'Labs'],
+                    'courses_mapped': ['CS101', 'CS201', 'CS301'],
+                    'achievement_rate': 85.2
+                },
+                {
+                    'id': 'PLO2', 
+                    'description': 'Analyze computational problems and develop efficient algorithmic solutions',
+                    'bloom_level': 'Analysis',
+                    'assessment_methods': ['Problem Sets', 'Exams'],
+                    'courses_mapped': ['CS201', 'CS301', 'CS401'],
+                    'achievement_rate': 78.9
+                },
+                {
+                    'id': 'PLO3',
+                    'description': 'Demonstrate effective communication skills in technical contexts',
+                    'bloom_level': 'Application',
+                    'assessment_methods': ['Presentations', 'Documentation'],
+                    'courses_mapped': ['CS101', 'CS350', 'CS490'],
+                    'achievement_rate': 92.1
+                }
+            ],
+            'course_outcomes': {
+                'CS101': [
+                    {'id': 'CLO1.1', 'description': 'Write basic programs using fundamental programming constructs'},
+                    {'id': 'CLO1.2', 'description': 'Debug and test simple programs effectively'},
+                    {'id': 'CLO1.3', 'description': 'Explain basic programming concepts and syntax'}
+                ],
+                'CS201': [
+                    {'id': 'CLO2.1', 'description': 'Implement and analyze fundamental data structures'},
+                    {'id': 'CLO2.2', 'description': 'Select appropriate data structures for given problems'},
+                    {'id': 'CLO2.3', 'description': 'Analyze time and space complexity of algorithms'}
+                ]
+            },
+            'assessment_alignment': {
+                'well_aligned': 12,
+                'partially_aligned': 5,
+                'poorly_aligned': 2,
+                'not_assessed': 1
+            }
+        }
+        
+        return jsonify(outcomes_data)
+
+    @app.route('/faculty/curriculum/assessment-planning')
+    def faculty_assessment_planning():
+        """Assessment planning and management"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        assessment_data = {
+            'assessment_framework': {
+                'formative_assessments': [
+                    {'type': 'Quizzes', 'frequency': 'Weekly', 'weight': '15%', 'purpose': 'Knowledge Check'},
+                    {'type': 'Lab Exercises', 'frequency': 'Bi-weekly', 'weight': '25%', 'purpose': 'Skill Application'},
+                    {'type': 'Discussion Posts', 'frequency': 'Weekly', 'weight': '10%', 'purpose': 'Critical Thinking'}
+                ],
+                'summative_assessments': [
+                    {'type': 'Midterm Exam', 'frequency': 'Mid-semester', 'weight': '20%', 'purpose': 'Comprehensive Evaluation'},
+                    {'type': 'Final Project', 'frequency': 'End of semester', 'weight': '25%', 'purpose': 'Applied Learning'},
+                    {'type': 'Final Exam', 'frequency': 'End of semester', 'weight': '5%', 'purpose': 'Knowledge Synthesis'}
+                ]
+            },
+            'assessment_schedule': [
+                {
+                    'course': 'CS101',
+                    'week': 3,
+                    'assessment': 'Quiz 1 - Variables and Data Types',
+                    'learning_outcomes': ['CLO1.1', 'CLO1.3'],
+                    'status': 'Completed'
+                },
+                {
+                    'course': 'CS101',
+                    'week': 5,
+                    'assessment': 'Lab 2 - Control Structures',
+                    'learning_outcomes': ['CLO1.1', 'CLO1.2'],
+                    'status': 'Scheduled'
+                },
+                {
+                    'course': 'CS201',
+                    'week': 4,
+                    'assessment': 'Programming Assignment - Linked Lists',
+                    'learning_outcomes': ['CLO2.1', 'CLO2.2'],
+                    'status': 'In Progress'
+                }
+            ],
+            'assessment_analytics': {
+                'total_assessments': 45,
+                'completed_assessments': 32,
+                'upcoming_assessments': 8,
+                'overdue_assessments': 5,
+                'average_completion_rate': 89.4,
+                'student_satisfaction': 4.2
+            },
+            'rubrics': [
+                {
+                    'name': 'Programming Assignment Rubric',
+                    'criteria': ['Correctness', 'Efficiency', 'Code Quality', 'Documentation'],
+                    'used_in': ['CS101', 'CS201', 'CS301']
+                },
+                {
+                    'name': 'Project Presentation Rubric',
+                    'criteria': ['Content', 'Delivery', 'Visual Aids', 'Q&A Response'],
+                    'used_in': ['CS350', 'CS490']
+                }
+            ]
+        }
+        
+        return jsonify(assessment_data)
+
+    @app.route('/faculty/curriculum/mapping')
+    def faculty_curriculum_mapping():
+        """Curriculum mapping and visualization"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        mapping_data = {
+            'course_outcome_matrix': {
+                'courses': ['CS101', 'CS201', 'CS301', 'CS350', 'CS401', 'CS490'],
+                'program_outcomes': ['PLO1', 'PLO2', 'PLO3', 'PLO4', 'PLO5'],
+                'mappings': [
+                    {'course': 'CS101', 'PLO1': 'I', 'PLO2': '', 'PLO3': 'I', 'PLO4': '', 'PLO5': ''},
+                    {'course': 'CS201', 'PLO1': 'D', 'PLO2': 'I', 'PLO3': '', 'PLO4': 'I', 'PLO5': ''},
+                    {'course': 'CS301', 'PLO1': 'D', 'PLO2': 'D', 'PLO3': '', 'PLO4': 'D', 'PLO5': 'I'},
+                    {'course': 'CS350', 'PLO1': '', 'PLO2': '', 'PLO3': 'D', 'PLO4': '', 'PLO5': 'D'},
+                    {'course': 'CS401', 'PLO1': 'M', 'PLO2': 'M', 'PLO3': '', 'PLO4': 'M', 'PLO5': ''},
+                    {'course': 'CS490', 'PLO1': 'M', 'PLO2': 'M', 'PLO3': 'M', 'PLO4': 'M', 'PLO5': 'M'}
+                ]
+            },
+            'mapping_legend': {
+                'I': 'Introduced - Student is introduced to the outcome',
+                'D': 'Developed - Student develops competency in the outcome',
+                'M': 'Mastered - Student demonstrates mastery of the outcome'
+            },
+            'coverage_analysis': {
+                'outcomes_well_covered': ['PLO1', 'PLO2', 'PLO4'],
+                'outcomes_under_covered': ['PLO5'],
+                'outcomes_over_covered': [],
+                'gaps_identified': [
+                    {
+                        'outcome': 'PLO5',
+                        'gap': 'Insufficient development opportunities',
+                        'recommendation': 'Add PLO5 development to CS201 or CS301'
+                    }
+                ]
+            },
+            'pathway_analysis': {
+                'critical_path_courses': ['CS101', 'CS201', 'CS301'],
+                'bottleneck_courses': ['CS201'],
+                'elective_distribution': {
+                    'well_balanced': True,
+                    'recommendations': ['Consider adding more advanced electives']
+                }
+            }
+        }
+        
+        return jsonify(mapping_data)
+
+    @app.route('/faculty/curriculum/standards')
+    def faculty_standards_alignment():
+        """Standards alignment management"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        standards_data = {
+            'accreditation_standards': {
+                'ABET_CS': {
+                    'name': 'ABET Computer Science Criteria',
+                    'outcomes': [
+                        {
+                            'id': 'ABET-1',
+                            'description': 'Analyze a complex computing problem and apply principles of computing',
+                            'mapped_courses': ['CS201', 'CS301', 'CS401'],
+                            'alignment_strength': 'Strong'
+                        },
+                        {
+                            'id': 'ABET-2',
+                            'description': 'Design, implement, and evaluate a computing-based solution',
+                            'mapped_courses': ['CS101', 'CS350', 'CS490'],
+                            'alignment_strength': 'Strong'
+                        },
+                        {
+                            'id': 'ABET-3',
+                            'description': 'Communicate effectively in a variety of professional contexts',
+                            'mapped_courses': ['CS350', 'CS490'],
+                            'alignment_strength': 'Moderate'
+                        },
+                        {
+                            'id': 'ABET-4',
+                            'description': 'Recognize professional responsibilities and make informed judgments',
+                            'mapped_courses': ['CS350', 'CS490'],
+                            'alignment_strength': 'Weak'
+                        }
+                    ]
+                },
+                'ACM_CS2013': {
+                    'name': 'ACM Computer Science Curricula 2013',
+                    'knowledge_areas': [
+                        {
+                            'area': 'Algorithms and Complexity',
+                            'coverage': 85,
+                            'courses': ['CS201', 'CS301', 'CS401'],
+                            'gaps': ['Advanced complexity theory']
+                        },
+                        {
+                            'area': 'Programming Languages',
+                            'coverage': 75,
+                            'courses': ['CS101', 'CS201', 'CS320'],
+                            'gaps': ['Functional programming paradigms']
+                        },
+                        {
+                            'area': 'Software Engineering',
+                            'coverage': 90,
+                            'courses': ['CS350', 'CS490'],
+                            'gaps': ['None identified']
+                        }
+                    ]
+                }
+            },
+            'compliance_status': {
+                'overall_compliance': 82.5,
+                'strong_areas': ['Software Engineering', 'Algorithms', 'Programming Fundamentals'],
+                'improvement_needed': ['Ethics and Professional Practice', 'Systems Architecture'],
+                'action_items': [
+                    {
+                        'priority': 'High',
+                        'item': 'Strengthen ethics coverage in capstone course',
+                        'deadline': '2025-05-01',
+                        'responsible': 'Curriculum Committee'
+                    },
+                    {
+                        'priority': 'Medium',
+                        'item': 'Add systems architecture elective',
+                        'deadline': '2025-08-01',
+                        'responsible': 'Department Chair'
+                    }
+                ]
+            },
+            'industry_standards': {
+                'programming_languages': {
+                    'taught': ['Python', 'Java', 'C++', 'JavaScript'],
+                    'industry_demand': ['Python', 'JavaScript', 'Java', 'TypeScript', 'Go'],
+                    'alignment_score': 75,
+                    'recommendations': ['Consider adding TypeScript module', 'Explore Go programming introduction']
+                },
+                'technologies': {
+                    'taught': ['Git', 'SQL', 'REST APIs', 'Web Development'],
+                    'industry_demand': ['Git', 'Docker', 'Cloud Platforms', 'Microservices', 'REST APIs'],
+                    'alignment_score': 60,
+                    'recommendations': ['Integrate Docker in DevOps course', 'Add cloud computing elective']
+                }
+            }
+        }
+        
+        return jsonify(standards_data)
+
+    @app.route('/faculty/curriculum/update', methods=['POST'])
+    def faculty_update_curriculum():
+        """Update curriculum components"""
+        if not session.get('is_logged_in') or session.get('user_type') != 'faculty':
+            return jsonify({'error': 'Faculty access required'}), 403
+        
+        data = request.get_json() or {}
+        update_type = data.get('type')
+        
+        # Simulate curriculum update based on type
+        response_messages = {
+            'prerequisite': f'Prerequisites updated for {data.get("course", "course")}',
+            'outcome': f'Learning outcome {data.get("outcome_id", "ID")} updated successfully',
+            'assessment': f'Assessment plan updated for {data.get("course", "course")}',
+            'mapping': f'Curriculum mapping updated for {data.get("course", "course")}',
+            'sequence': f'Course sequence updated for {data.get("track", "track")}',
+            'standard': f'Standards alignment updated for {data.get("standard", "standard")}'
+        }
+        
+        return jsonify({
+            'success': True,
+            'message': response_messages.get(update_type, 'Curriculum updated successfully'),
+            'updated_by': session.get('faculty_name'),
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        })
+
+    # ============= CURRICULUM MANAGEMENT SYSTEM END =============
 
 else:
     # Fallback for when Flask is not available

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waldorf Management System - Dashboard</title>
+    <title>Waldorf University - Access Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -13,18 +13,20 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            color: #333;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
         }
 
-        .nav-container {
+        .header-content {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
@@ -33,269 +35,620 @@
             padding: 0 20px;
         }
 
-        .nav-brand {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .nav-links {
+        .logo {
             display: flex;
-            gap: 20px;
+            align-items: center;
+            gap: 15px;
         }
 
-        .nav-links a {
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
             color: white;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background 0.3s ease;
         }
 
-        .nav-links a:hover {
-            background: rgba(255,255,255,0.2);
+        .logo-text h1 {
+            color: #2d3748;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .system-info {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 30px 20px;
+            padding: 0 20px;
         }
 
         .welcome-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            margin-bottom: 30px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 50px;
+        }
+
+        .welcome-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+        }
+
+        .welcome-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 25px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
-        .dashboard-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .user-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        .dashboard-card:hover {
+        .user-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
         }
 
-        .card-header {
-            display: flex;
-            align-items: center;
+        .user-icon {
+            font-size: 4rem;
             margin-bottom: 20px;
+            color: #667eea;
         }
 
-        .card-icon {
-            font-size: 2em;
-            margin-right: 15px;
-        }
-
-        .card-title {
-            font-size: 1.3em;
-            color: #2c5530;
-            font-weight: 600;
-        }
-
-        .stat-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #2c5530;
-            text-align: center;
-        }
-
-        .stat-label {
-            color: #666;
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .system-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .system-info h4 {
-            color: #2c5530;
+        .user-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
             margin-bottom: 10px;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
+        .user-description {
+            color: #718096;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .user-features {
+            list-style: none;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .user-features li {
+            color: #4a5568;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .user-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
             font-weight: bold;
         }
 
-        .status-enabled {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-disabled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
         .btn {
-            background: linear-gradient(135deg, #2c5530 0%, #3e7b3e 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
             display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
             transition: all 0.3s ease;
-            font-weight: 500;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
         }
 
         .btn:hover {
-            background: linear-gradient(135deg, #1e3a23 0%, #2c5530 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .demo-credentials {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .demo-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .demo-account {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #4a5568;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 8px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .admin-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .admin-warning {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .admin-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
         }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-title {
+                font-size: 2.5rem;
+            }
+
+            .user-card {
+                padding: 20px;
+            }
+
+            .admin-section {
+                padding: 30px 20px;
+            }
+
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .user-card:nth-child(1) { animation-delay: 0.1s; }
+        .user-card:nth-child(2) { animation-delay: 0.2s; }
+        .user-card:nth-child(3) { animation-delay: 0.3s; }
+        .user-card:nth-child(4) { animation-delay: 0.4s; }
+        .user-card:nth-child(5) { animation-delay: 0.5s; }
+        .user-card:nth-child(6) { animation-delay: 0.6s; }
+        .user-card:nth-child(7) { animation-delay: 0.7s; }
+        .user-card:nth-child(8) { animation-delay: 0.8s; }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">🎓 Waldorf Management System</div>
-            <div class="nav-links">
-                <a href="/">Dashboard</a>
-                <a href="/students">Students</a>
-                <a href="/faculty">Faculty</a>
-                {% if is_admin %}
-                <a href="/admin">Admin Panel</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-            <h1>🎓 Welcome to Waldorf Management System</h1>
-            <p>Comprehensive educational management platform</p>
-        </div>
-
-        <!-- Dashboard Grid -->
-        <div class="dashboard-grid">
-            <!-- Student Statistics -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">👥</div>
-                    <div class="card-title">Students</div>
-                </div>
-                <div class="stat-number">{{ student_count }}</div>
-                <div class="stat-label">Total Students Enrolled</div>
-                <div style="margin-top: 15px;">
-                    <a href="/students" class="btn">Manage Students</a>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🎓</div>
+                <div class="logo-text">
+                    <h1>Waldorf University</h1>
+                    <p>Access Dashboard</p>
                 </div>
             </div>
-
-            <!-- Faculty Statistics -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">👨‍🏫</div>
-                    <div class="card-title">Faculty</div>
-                </div>
-                <div class="stat-number">{{ faculty_count }}</div>
-                <div class="stat-label">Faculty Members</div>
-                <div style="margin-top: 15px;">
-                    <a href="/faculty" class="btn">Manage Faculty</a>
-                </div>
-            </div>
-
-            <!-- System Information -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">🖥️</div>
-                    <div class="card-title">System Status</div>
-                </div>
-                <div class="system-info">
-                    <h4>System Information</h4>
-                    <p><strong>OS:</strong> {{ system_info.os }}</p>
-                    <p><strong>User:</strong> {{ system_info.user }}</p>
-                    <p><strong>Python:</strong> {{ system_info.python_version }}</p>
-                    <p><strong>Admin Status:</strong> 
-                        <span class="status-badge {% if is_admin %}status-enabled{% else %}status-disabled{% endif %}">
-                            {{ system_info.admin_status }}
-                        </span>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">⚡</div>
-                    <div class="card-title">Quick Actions</div>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <a href="/add_student" class="btn">Add New Student</a>
-                    <a href="/students" class="btn">View All Students</a>
-                    <a href="/faculty" class="btn">Faculty Management</a>
+            <div class="system-info">
+                <div>{{ system_info.os if system_info else 'Windows 10' }} • Python {{ system_info.python_version if system_info else '3.11' }}</div>
+                <div>Admin: {{ system_info.admin_status if system_info else 'ENABLED' }}
                     {% if is_admin %}
-                    <a href="/admin" class="btn">Admin Panel</a>
+                    <span class="admin-badge">ADMIN ACCESS</span>
                     {% endif %}
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- API Status -->
-        <div class="dashboard-card" style="margin-top: 20px;">
-            <div class="card-header">
-                <div class="card-icon">📊</div>
-                <div class="card-title">API Status</div>
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Welcome to Waldorf University</h1>
+            <p class="welcome-subtitle">Comprehensive Management System</p>
+            <p class="welcome-description">Access your personalized portal and manage all your academic, administrative, and campus needs from one central location.</p>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Students -->
+            <div class="user-card">
+                <div class="user-icon">👨‍🎓</div>
+                <h2 class="user-title">Students</h2>
+                <p class="user-description">Access your academic records, course schedules, grades, and campus services.</p>
+                <ul class="user-features">
+                    <li>View course schedules and grades</li>
+                    <li>Access academic transcripts</li>
+                    <li>Make tuition payments</li>
+                    <li>Connect with faculty and advisors</li>
+                    <li>Campus news and announcements</li>
+                </ul>
+                <form action="/" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="student_id" value="alice123">
+                    <input type="hidden" name="password" value="student123">
+                    <button type="submit" class="btn">Quick Access - Alice</button>
+                </form>
+                <a href="/course_catalog" class="btn btn-secondary">Course Catalog</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">alice123 / student123</div>
+                    <div class="demo-account">bob456 / student456</div>
+                    <div class="demo-account">charlie789 / student789</div>
+                </div>
             </div>
-            <div style="text-align: center;">
-                <p>System API endpoint available at:</p>
-                <code style="background: #f8f9fa; padding: 5px 10px; border-radius: 4px;">/api/status</code>
-                <div style="margin-top: 10px;">
-                    <a href="/api/status" class="btn" target="_blank">Check API Status</a>
+
+            <!-- Faculty -->
+            <div class="user-card">
+                <div class="user-icon">👨‍🏫</div>
+                <h2 class="user-title">Faculty</h2>
+                <p class="user-description">Manage courses, grades, curriculum, and connect with students and colleagues.</p>
+                <ul class="user-features">
+                    <li>Course and curriculum management</li>
+                    <li>Student grading and assessment</li>
+                    <li>Academic resources and tools</li>
+                    <li>Professional development</li>
+                    <li>Research collaboration</li>
+                </ul>
+                <form action="/faculty_login" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="faculty_id" value="prof001">
+                    <input type="hidden" name="password" value="faculty123">
+                    <button type="submit" class="btn">Quick Access - Prof. Smith</button>
+                </form>
+                <a href="/academic_calendar" class="btn btn-secondary">Academic Calendar</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">prof001 / faculty123</div>
+                    <div class="demo-account">prof002 / faculty456</div>
+                </div>
+            </div>
+
+            <!-- Admissions -->
+            <div class="user-card">
+                <div class="user-icon">📝</div>
+                <h2 class="user-title">Admissions</h2>
+                <p class="user-description">Process applications, manage enrollment, and support prospective students.</p>
+                <ul class="user-features">
+                    <li>Application review and processing</li>
+                    <li>Student recruitment and outreach</li>
+                    <li>Enrollment management</li>
+                    <li>Scholarship coordination</li>
+                    <li>Transfer credit evaluation</li>
+                </ul>
+                <form action="/admissions_login" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="staff_id" value="ADM001">
+                    <input type="hidden" name="password" value="admit123">
+                    <button type="submit" class="btn">Access Admissions Portal</button>
+                </form>
+                <a href="/apply" class="btn btn-secondary">Apply Now</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">ADM001 / admit123</div>
+                    <div class="demo-account">ADM002 / enroll456</div>
+                </div>
+            </div>
+
+            <!-- Registrar -->
+            <div class="user-card">
+                <div class="user-icon">📋</div>
+                <h2 class="user-title">Registrar</h2>
+                <p class="user-description">Academic records, course scheduling, and degree requirements management.</p>
+                <ul class="user-features">
+                    <li>Student academic records</li>
+                    <li>Course registration and scheduling</li>
+                    <li>Degree audit and verification</li>
+                    <li>Transcript processing</li>
+                    <li>Academic policy compliance</li>
+                </ul>
+                <form action="/registrar_login" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="staff_id" value="REG001">
+                    <input type="hidden" name="password" value="register123">
+                    <button type="submit" class="btn">Access Registrar Portal</button>
+                </form>
+                <a href="/degree_requirements" class="btn btn-secondary">Degree Requirements</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">REG001 / register123</div>
+                    <div class="demo-account">REG002 / records456</div>
+                </div>
+            </div>
+
+            <!-- Finance -->
+            <div class="user-card">
+                <div class="user-icon">💰</div>
+                <h2 class="user-title">Finance</h2>
+                <p class="user-description">Financial management, billing, payments, and financial aid administration.</p>
+                <ul class="user-features">
+                    <li>Student billing and payments</li>
+                    <li>Financial aid management</li>
+                    <li>Budget planning and reporting</li>
+                    <li>Scholarship administration</li>
+                    <li>Financial compliance</li>
+                </ul>
+                <form action="/finance_login" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="staff_id" value="FIN001">
+                    <input type="hidden" name="password" value="finance123">
+                    <button type="submit" class="btn">Access Finance Portal</button>
+                </form>
+                <a href="/payment_portal" class="btn btn-secondary">Payment Portal</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">FIN001 / finance123</div>
+                    <div class="demo-account">FIN002 / accounting456</div>
+                </div>
+            </div>
+
+            <!-- Library -->
+            <div class="user-card">
+                <div class="user-icon">📚</div>
+                <h2 class="user-title">Library</h2>
+                <p class="user-description">Academic resources, research support, and information services.</p>
+                <ul class="user-features">
+                    <li>Catalog and database access</li>
+                    <li>Research assistance</li>
+                    <li>Digital resources</li>
+                    <li>Study spaces and equipment</li>
+                    <li>Interlibrary loan services</li>
+                </ul>
+                <form action="/library_login" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="staff_id" value="LIB001">
+                    <input type="hidden" name="password" value="library123">
+                    <button type="submit" class="btn">Access Library Portal</button>
+                </form>
+                <a href="/library_catalog" class="btn btn-secondary">Browse Catalog</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">LIB001 / library123</div>
+                    <div class="demo-account">LIB002 / books456</div>
+                </div>
+            </div>
+
+            <!-- Human Resources -->
+            <div class="user-card">
+                <div class="user-icon">👥</div>
+                <h2 class="user-title">Human Resources</h2>
+                <p class="user-description">Employee management, benefits, payroll, and professional development.</p>
+                <ul class="user-features">
+                    <li>Employee records and benefits</li>
+                    <li>Payroll and time management</li>
+                    <li>Recruitment and hiring</li>
+                    <li>Professional development</li>
+                    <li>Policy and compliance</li>
+                </ul>
+                <form action="/hr_login" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="staff_id" value="HR001">
+                    <input type="hidden" name="password" value="human123">
+                    <button type="submit" class="btn">Access HR Portal</button>
+                </form>
+                <a href="/job_opportunities" class="btn btn-secondary">Job Opportunities</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">HR001 / human123</div>
+                    <div class="demo-account">HR002 / resources456</div>
+                </div>
+            </div>
+
+            <!-- Campus Services -->
+            <div class="user-card">
+                <div class="user-icon">🏢</div>
+                <h2 class="user-title">Campus Services</h2>
+                <p class="user-description">Facilities, security, IT support, and campus operations.</p>
+                <ul class="user-features">
+                    <li>Facilities management</li>
+                    <li>Campus security</li>
+                    <li>IT support services</li>
+                    <li>Transportation services</li>
+                    <li>Event planning</li>
+                </ul>
+                <form action="/campus_services_login" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="staff_id" value="CS001">
+                    <input type="hidden" name="password" value="campus123">
+                    <button type="submit" class="btn">Access Campus Portal</button>
+                </form>
+                <a href="/campus_map" class="btn btn-secondary">Campus Map</a>
+                <div class="demo-credentials">
+                    <div class="demo-title">Demo Accounts:</div>
+                    <div class="demo-account">CS001 / campus123</div>
+                    <div class="demo-account">CS002 / services456</div>
                 </div>
             </div>
         </div>
+
+        <!-- Admin Section (Only if admin) -->
+        {% if is_admin %}
+        <div class="admin-section">
+            <div class="user-icon">🔐</div>
+            <h2 class="user-title">System Administration</h2>
+            <div class="admin-warning">
+                <strong>⚠️ ADMINISTRATOR ACCESS DETECTED</strong><br>
+                You have super user privileges with access to all departments and system functions.
+            </div>
+            
+            <div class="admin-grid">
+                <a href="/admin" class="admin-btn">🛠️ Admin Dashboard</a>
+                <a href="/admin/users" class="admin-btn">👥 User Management</a>
+                <a href="/admin/system" class="admin-btn">⚙️ System Settings</a>
+                <a href="/admin/security" class="admin-btn">🔒 Security Center</a>
+                <a href="/admin/reports" class="admin-btn">📊 System Reports</a>
+                <a href="/admin/backup" class="admin-btn">💾 Backup & Recovery</a>
+            </div>
+        </div>
+        {% endif %}
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/contact" class="footer-link">Contact Us</a>
+            <a href="/support" class="footer-link">Technical Support</a>
+            <a href="/privacy" class="footer-link">Privacy Policy</a>
+            <a href="/terms" class="footer-link">Terms of Service</a>
+            <a href="/accessibility" class="footer-link">Accessibility</a>
+        </div>
+        <p>&copy; 2025 Waldorf University. All rights reserved. | Comprehensive Management System</p>
+    </footer>
 
     <script>
         // Add some interactivity
         document.addEventListener('DOMContentLoaded', function() {
-            // Add loading animation
-            document.querySelectorAll('.dashboard-card').forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                
-                setTimeout(() => {
-                    card.style.transition = 'all 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.user-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
             });
 
-            // Real-time updates
-            setInterval(function() {
-                fetch('/api/status')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('System status:', data.status);
-                    })
-                    .catch(error => console.log('API check failed:', error));
-            }, 30000); // Check every 30 seconds
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+
+            // Add click effects
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
         });
     </script>
 </body>
